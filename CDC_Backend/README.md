@@ -2,11 +2,11 @@
 1. [**Common APIs**](#common-apis)
     1. [**api/login/**](#apilogin)
 2. [**Student APIs**](#student-portal-apis)
-    2. [**api/student/profile/**](#apistudentprofile)
-    3. [**api/student/getDashboard/**](#apistudentgetdashboard)
-    4. [**api/student/addResume/**](#apistudentaddresume)
-    5. [**api/student/deleteResume/**](#apistudentdeleteresume)
-    6. [**api/student/submitApplication/**](#apistudentsubmitapplication)
+   1. [**api/student/profile/**](#apistudentprofile)
+   2. [**api/student/getDashboard/**](#apistudentgetdashboard)
+   3. [**api/student/addResume/**](#apistudentaddresume)
+   4. [**api/student/deleteResume/**](#apistudentdeleteresume)
+   5. [**api/student/submitApplication/**](#apistudentsubmitapplication)
 3. [**Common Errors**](#common-errors)
 
 ---
