@@ -1,6 +1,6 @@
 asgiref==3.4.1
 astroid==2.7.1
-cachetools==4.2.2
+cachetools==4.2.4
 certifi==2021.5.30
 chardet==4.0.0
 colorama==0.4.4
