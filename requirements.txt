@@ -6,7 +6,7 @@ chardet==4.0.0
 colorama==0.4.4
 dj-database-url==0.5.0
 Django==3.2.8
-django-cors-headers==3.8.0
+django-cors-headers==3.10.0
 django-db-logger==0.1.10
 djangorestframework==3.12.4
 google-auth==2.0.0
