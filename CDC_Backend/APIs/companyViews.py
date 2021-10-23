@@ -10,10 +10,10 @@ logger = logging.getLogger('db')
 
 
 @api_view(['POST'])
-@precheck([OPENING_DESIGNATION, OPENING_DESCRIPTION, OPENING_TYPE, OPENING_CITY, OPENING_CITY_TYPE,
-           OPENING_COMPENSATION, OPENING_COMPENSATION_DETAILS, OPENING_ALLOWED_BATCH, OPENING_ALLOWED_BRANCH,
-           OPENING_ROUNDS, OPENING_CO_OP, OPENING_START_DATE, OPENING_ADDITIONAL_INFO,
-           OPENING_DURATION, OPENING_ROUND_DETAILS])
+@precheck([DESIGNATION, DESCRIPTION, OPENING_TYPE, CITY, CITY_TYPE,
+           COMPENSATION, COMPENSATION_DETAILS, ALLOWED_BATCH, ALLOWED_BRANCH,
+           ROUNDS, CO_OP, START_DATE, ADDITIONAL_INFO,
+           DURATION, ROUND_DETAILS])
 def addOpening(request):
     try:
         data = request.data
@@ -28,61 +28,61 @@ def addOpening(request):
 
         #  Some new code above
 
-        if data[OPENING_DESIGNATION] != "":
-            opening.designation = data[OPENING_DESIGNATION]
+        if data[DESIGNATION] != "":
+            opening.designation = data[DESIGNATION]
         else:
-            raise ValueError(OPENING_DESIGNATION + " Not Found")
+            raise ValueError(DESIGNATION + " Not Found")
 
-        opening.description = data[OPENING_DESCRIPTION]
+        opening.description = data[DESCRIPTION]
 
-        if data[OPENING_START_DATE] != "":
-            opening.description = data[OPENING_START_DATE]
+        if data[START_DATE] != "":
+            opening.description = data[START_DATE]
         else:
-            raise ValueError(OPENING_START_DATE + " Not Found")
-        if data[OPENING_START_DATE] != "":
-            opening.start_date = datetime.strptime(data[OPENING_START_DATE], '%d-%m-%Y')
+            raise ValueError(START_DATE + " Not Found")
+        if data[START_DATE] != "":
+            opening.start_date = datetime.strptime(data[START_DATE], '%d-%m-%Y')
         else:
-            raise ValueError(OPENING_START_DATE + " Not Found")
-        if data[OPENING_CITY] != "":
-            opening.city = data[OPENING_CITY]
+            raise ValueError(START_DATE + " Not Found")
+        if data[CITY] != "":
+            opening.city = data[CITY]
         else:
-            raise ValueError(OPENING_CITY + " Not Found")
-        if data[OPENING_CITY_TYPE] != "":
-            opening.city_type = data[OPENING_CITY_TYPE]
+            raise ValueError(CITY + " Not Found")
+        if data[CITY_TYPE] != "":
+            opening.city_type = data[CITY_TYPE]
         else:
-            raise ValueError(OPENING_CITY_TYPE + " Not Found")
-        if data[OPENING_COMPENSATION] != "":
-            opening.compensation = data[OPENING_COMPENSATION]
+            raise ValueError(CITY_TYPE + " Not Found")
+        if data[COMPENSATION] != "":
+            opening.compensation = data[COMPENSATION]
         else:
-            raise ValueError(OPENING_COMPENSATION + " Not Found")
+            raise ValueError(COMPENSATION + " Not Found")
 
-        opening.compensation_details = data[OPENING_COMPENSATION_DETAILS]
+        opening.compensation_details = data[COMPENSATION_DETAILS]
 
-        if data[OPENING_ALLOWED_BATCH] != "":
-            if set(json.loads(data[OPENING_ALLOWED_BATCH])).issubset(BATCHES):
-                opening.allowed_batch = json.loads(data[OPENING_ALLOWED_BATCH])
+        if data[ALLOWED_BATCH] != "":
+            if set(json.loads(data[ALLOWED_BATCH])).issubset(BATCHES):
+                opening.allowed_batch = json.loads(data[ALLOWED_BATCH])
             else:
-                raise ValueError(OPENING_ALLOWED_BATCH + " is Invalid")
+                raise ValueError(ALLOWED_BATCH + " is Invalid")
         else:
-            raise ValueError(OPENING_ALLOWED_BATCH + " Not Found")
-        if data[OPENING_ALLOWED_BRANCH] != "":
-            if set(json.loads(data[OPENING_ALLOWED_BRANCH])).issubset(BRANCHES):
-                opening.allowed_branch = json.loads(data[OPENING_ALLOWED_BRANCH])
+            raise ValueError(ALLOWED_BATCH + " Not Found")
+        if data[ALLOWED_BRANCH] != "":
+            if set(json.loads(data[ALLOWED_BRANCH])).issubset(BRANCHES):
+                opening.allowed_branch = json.loads(data[ALLOWED_BRANCH])
             else:
-                raise ValueError(OPENING_ALLOWED_BATCH + " is Invalid")
+                raise ValueError(ALLOWED_BATCH + " is Invalid")
         else:
-            raise ValueError(OPENING_ALLOWED_BRANCH + " Not Found")
+            raise ValueError(ALLOWED_BRANCH + " Not Found")
 
-        opening.rounds = json.loads(data[OPENING_ROUNDS])
+        opening.rounds = json.loads(data[ROUNDS])
 
-        opening.additional_info = json.loads(data[OPENING_ADDITIONAL_INFO])
+        opening.additional_info = json.loads(data[ADDITIONAL_INFO])
 
         opening.status = STATUS_ACCEPTING_APPLICATIONS
 
-        opening.rounds_details = json.loads(data[OPENING_ROUND_DETAILS])
+        opening.rounds_details = json.loads(data[ROUND_DETAILS])
 
         opening.created_at = make_aware(datetime.now())
-        files = request.FILES.getlist(OPENING_ATTACHMENTS)
+        files = request.FILES.getlist(ATTACHMENTS)
         attachments = []
         for file in files:
             attachments.append(saveFile(file, STORAGE_DESTINATION_COMPANY_ATTACHMENTS))
