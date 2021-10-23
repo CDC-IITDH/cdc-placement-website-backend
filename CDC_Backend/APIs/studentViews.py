@@ -168,6 +168,7 @@ def submitApplication(request, id, email, user_type):
                 raise AttributeError(i + " not found in Additional Info")
 
         application.additional_info = data[ADDITIONAL_INFO]
+
         data = {
             "name": student.name,
             "company_name": opening.company.name,
@@ -176,6 +177,7 @@ def submitApplication(request, id, email, user_type):
         }
         subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company.name)
         sendEmail(email, subject, data, STUDENT_APPLICATION_SUBMITTED_TEMPLATE)
+
 
         application.save()
         return Response({'action': "Submit Application", 'message': "Application Submitted"},
