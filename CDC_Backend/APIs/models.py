@@ -28,12 +28,12 @@ class Admin(models.Model):
 
 class Placement(models.Model):
     id = models.CharField(blank=False, primary_key=True, max_length=15)
-    name = models.CharField(blank=False, max_length=50)
-    address = models.CharField(blank=False, max_length=150)
-    companyType = models.CharField(blank=False, max_length=50)
-    website = models.CharField(blank=True, max_length=50)
-    contact_person_name = models.CharField(blank=False, max_length=50)
-    phone_number = models.PositiveBigIntegerField(blank=False)
+    name = models.CharField(blank=False, max_length=50, default="")
+    address = models.CharField(blank=False, max_length=150, default="")
+    companyType = models.CharField(blank=False, max_length=50, default="")
+    website = models.CharField(blank=True, max_length=50, default="")
+    contact_person_name = models.CharField(blank=False, max_length=50, default="")
+    phone_number = models.PositiveBigIntegerField(blank=False, default=0)
     designation = models.CharField(blank=False, max_length=25, default=None, null=True)
     description = models.CharField(blank=False, max_length=200)
     start_date = models.DateField(blank=False, verbose_name="Start Date")
@@ -90,12 +90,13 @@ class PlacementApplication(models.Model):
 
     class Meta:
         verbose_name_plural = "Placement Applications"
+        unique_together = ('placement_id', 'student_id')
 
 
 class PrePlacementOffer(models.Model):
     id = models.AutoField(primary_key=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE, blank=False)
-    company = models.CharField(max_length=50, blank=False)
+    company = models.CharField(max_length=50, blank=False, default="")
     compensation = models.IntegerField(blank=False)  # Job - Per Year
     compensation_details = models.CharField(blank=True, max_length=200)
     tier = models.CharField(blank=False, choices=TIERS, max_length=10)

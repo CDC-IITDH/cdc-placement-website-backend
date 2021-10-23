@@ -38,15 +38,16 @@ EMAIL = "email"
 STUDENT = 'student'
 ADMIN = 'Admin'
 COMPANY = ''
+
 STORAGE_DESTINATION = "./Storage/Resumes/"
 STORAGE_DESTINATION_COMPANY_ATTACHMENTS = './Storage/Company_Attachments/'
 
 RESUME_FILE_NAME = 'resume_file_name'
 
 APPLICATION_ID = "application_id"
-APPLICATION_OPENING_TYPE = "opening_type"
-APPLICATION_OPENING_ID = "opening_id"
-APPLICATION_ADDITIONAL_INFO = "additional_info"
+OPENING_ID = "opening_id"
+STUDENT_ID = "student_id"
+ADDITIONAL_INFO = "additional_info"
 
 STATUS_ACCEPTING_APPLICATIONS = "Accepting Applications"
 
@@ -54,25 +55,27 @@ PLACEMENT = "Placement"
 
 COMPANY_WEBSITE = 'website'
 COMPANY_ADDRESS = 'address'
-COMPANY_PHONE_NUMBER = 'phone_number'
-COMPANY_CONTACT_PERSON_NAME = 'contact_person_name'
+PHONE_NUMBER = 'phone_number'
+CONTACT_PERSON_NAME = 'contact_person_name'
 
-OPENING_DESIGNATION = 'designation'
-OPENING_DESCRIPTION = 'description'
+DESIGNATION = 'designation'
+DESCRIPTION = 'description'
 OPENING_TYPE = 'opening_type'
-OPENING_CITY = 'city'
-OPENING_CITY_TYPE = 'city_type'
-OPENING_COMPENSATION = 'compensation'
-OPENING_COMPENSATION_DETAILS = 'compensation_details'
-OPENING_ALLOWED_BATCH = 'allowed_batch'
-OPENING_ALLOWED_BRANCH = 'allowed_branch'
-OPENING_ATTACHMENTS = 'attachments'
-OPENING_ROUNDS = 'rounds'
-OPENING_ADDITIONAL_INFO = 'additional_info'
-OPENING_ROUND_DETAILS = 'round_details'
-OPENING_DURATION = 'duration'
-OPENING_CO_OP = 'co_op'
-OPENING_START_DATE = 'start_date'
+CITY = 'city'
+CITY_TYPE = 'city_type'
+COMPENSATION = 'compensation'
+COMPENSATION_DETAILS = 'compensation_details'
+ALLOWED_BATCH = 'allowed_batch'
+ALLOWED_BRANCH = 'allowed_branch'
+ATTACHMENTS = 'attachments'
+ROUNDS = 'rounds'
+ROUND_DETAILS = 'round_details'
+DURATION = 'duration'
+CO_OP = 'co_op'
+START_DATE = "start_date"
+
+STUDENT_LIST = "student_list"
+STUDENT_STATUS = "student_status"
 
 BRANCHES = [
     "CSE",
