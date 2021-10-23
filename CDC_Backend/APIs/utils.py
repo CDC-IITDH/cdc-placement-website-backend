@@ -15,6 +15,7 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 from rest_framework import status
 from rest_framework.response import Response
+import background_task
 
 from .models import *
 
@@ -108,30 +109,6 @@ def generateRandomString():
         return False
 
 
-def sendApplicationEmail(email, name, company_name, applicaton_type, additional_info):
-    try:
-        subject = 'CDC - Application Submitted - ' + str(company_name)
-        data = {
-            "name": name,
-            "company_name": company_name,
-            "applicaton_type": applicaton_type,
-            "additional_info": additional_info
-        }
-
-        html_content = render_to_string('student_application_submited.html', data)  # render with dynamic value
-        text_content = strip_tags(html_content)
-
-        email_from = settings.EMAIL_HOST_USER
-        recipient_list = [str(email), ]
-
-        msg = EmailMultiAlternatives(subject, text_content, email_from, recipient_list)
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
-        return True
-    except:
-        return False
-
-
 def saveFile(file, location):
     prefix = generateRandomString()
     file_name = prefix + "_" + file.name
@@ -149,7 +126,7 @@ def saveFile(file, location):
 
     return file_name
 
-
+@background_task.background(schedule=10)
 def sendEmail(email_to, subject, data, template):
     try:
         html_content = render_to_string(template, data)  # render with dynamic value
@@ -163,8 +140,9 @@ def sendEmail(email_to, subject, data, template):
         msg.send()
         return True
     except:
+        logger.error("Send Email: " + str(sys.exc_info()))
         print(str(sys.exc_info()[1]))
-        return str(sys.exc_info()[1])
+        return False
 
 
 def PlacementApplicationConditions(student, placement):

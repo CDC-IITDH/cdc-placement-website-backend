@@ -90,12 +90,13 @@ class PlacementApplication(models.Model):
 
     class Meta:
         verbose_name_plural = "Placement Applications"
+        unique_together = ('placement_id', 'student_id')
 
 
 class PrePlacementOffer(models.Model):
     id = models.AutoField(primary_key=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE, blank=False)
-    company = models.CharField(max_length=50, blank=False)
+    company = models.CharField(max_length=50, blank=False, default="")
     compensation = models.IntegerField(blank=False)  # Job - Per Year
     compensation_details = models.CharField(blank=True, max_length=200)
     tier = models.CharField(blank=False, choices=TIERS, max_length=10)

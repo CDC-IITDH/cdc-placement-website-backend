@@ -132,18 +132,18 @@ def deleteResume(request, id, email, user_type):
 
 @api_view(['POST'])
 @isAuthorized(allowed_users=[STUDENT])
-@precheck(required_data=[APPLICATION_OPENING_TYPE, APPLICATION_OPENING_ID, RESUME_FILE_NAME,
-                         APPLICATION_ADDITIONAL_INFO])
+@precheck(required_data=[OPENING_TYPE, OPENING_ID, RESUME_FILE_NAME,
+                         ADDITIONAL_INFO])
 def submitApplication(request, id, email, user_type):
     try:
         data = request.data
         student = get_object_or_404(Student, id=id)
 
-        if data[APPLICATION_OPENING_TYPE] == PLACEMENT:
+        if data[OPENING_TYPE] == PLACEMENT:
             if not len(PlacementApplication.objects.filter(
-                    student_id=id, placement_id=data[APPLICATION_OPENING_ID])):
+                    student_id=id, placement_id=data[OPENING_ID])):
                 application = PlacementApplication()
-                opening = get_object_or_404(Placement, id=data[APPLICATION_OPENING_ID],
+                opening = get_object_or_404(Placement, id=data[OPENING_ID],
                                             status=STATUS_ACCEPTING_APPLICATIONS)
                 cond_stat, cond_msg = PlacementApplicationConditions(student, opening)
                 print(cond_stat, cond_msg)
@@ -153,7 +153,7 @@ def submitApplication(request, id, email, user_type):
             else:
                 raise PermissionError("Application is already Submitted")
         else:
-            raise ValueError(APPLICATION_OPENING_TYPE + " is Invalid")
+            raise ValueError(OPENING_TYPE + " is Invalid")
 
         if data[RESUME_FILE_NAME] in student.resumes:
             application.resume = data[RESUME_FILE_NAME]
@@ -163,15 +163,19 @@ def submitApplication(request, id, email, user_type):
         application.student = student
         application.id = generateRandomString()
         for i in opening.additional_info:
-            if i not in data[APPLICATION_ADDITIONAL_INFO]:
+            if i not in data[ADDITIONAL_INFO]:
                 print(i)
                 raise AttributeError(i + " not found in Additional Info")
 
-        application.additional_info = data[APPLICATION_ADDITIONAL_INFO]
-        if not sendApplicationEmail(email, student.name, opening.company.name, data[APPLICATION_OPENING_TYPE],
-                                    data[APPLICATION_ADDITIONAL_INFO]):
-            logger.error("Submit Application: Unable to Send Email")
-            # raise RuntimeError("Unable to Send Email")
+        application.additional_info = data[ADDITIONAL_INFO]
+        data = {
+            "name": student.name,
+            "company_name": opening.company.name,
+            "application_type": data[OPENING_TYPE],
+            "additional_info": data[ADDITIONAL_INFO]
+        }
+        subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company.name)
+        sendEmail(email, subject, data, STUDENT_APPLICATION_SUBMITTED_TEMPLATE)
 
         application.save()
         return Response({'action': "Submit Application", 'message': "Application Submitted"},
