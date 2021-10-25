@@ -8,10 +8,10 @@ from rest_framework.decorators import api_view
 def markStatus(request, id, email, user_type):
     try:
         data = request.data
-        applications = PlacementApplication.objects.filter(placement_id=data[OPENING_ID])       # Getting All
-        # application form db for this opening
+        applications = PlacementApplication.objects.filter(placement_id=data[OPENING_ID])  # Getting All
+        # application from db for this opening
         for i in data[STUDENT_LIST]:
-            application = applications.filter(student_id=i[STUDENT_ID])       # Filtering student's application
+            application = applications.filter(student_id=i[STUDENT_ID])  # Filtering student's application
             if len(application) > 0:
                 application = application[0]
                 application.selected = i[STUDENT_STATUS]
@@ -24,7 +24,7 @@ def markStatus(request, id, email, user_type):
                     "designation": application.placement.designation,
                     "student_name": application.student.name
                 }
-                if application.selected:    # Sending corresponding email to students
+                if application.selected:  # Sending corresponding email to students
                     sendEmail(email, subject, data, STUDENT_APPLICATION_STATUS_SELECTED_TEMPLATE)
                     # This one needs to be created
                 else:
@@ -32,10 +32,13 @@ def markStatus(request, id, email, user_type):
                     # This one needs to be created
             else:
                 raise ValueError("Student - " + i[STUDENT_ID] + " didn't apply for this opening")
+        return Response({'action': "Mark Status", 'message': "Marked Status"},
+                        status=status.HTTP_200_OK)
+
     except ValueError as e:
-        return Response({'action': "Mark Selected", 'message': str(e)},
+        return Response({'action': "Mark Status", 'message': str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
     except:
         logger.warning("Mark Status: " + str(sys.exc_info()))
-        return Response({'action': "Mark Stauts", 'message': "Error Occurred!"},
+        return Response({'action': "Mark Status", 'message': "Error Occurred!"},
                         status=status.HTTP_400_BAD_REQUEST)

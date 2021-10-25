@@ -7,7 +7,9 @@
    3. [**api/student/addResume/**](#apistudentaddresume)
    4. [**api/student/deleteResume/**](#apistudentdeleteresume)
    5. [**api/student/submitApplication/**](#apistudentsubmitapplication)
-3. [**Common Errors**](#common-errors)
+3. [**Admin APIs**](#admin-portal-apis)
+   1. [**api/admin/markStatus/**](#apiadminmarkstatus)
+4. [**Common Errors**](#common-errors)
 
 ---
 
@@ -390,6 +392,58 @@ You can see some common errors [here](#common-errors)
 
 ---
 
+
+# Admin Portal APIs
+
+## `api/admin/markStatus`
+
+This Api is used to mark the status for application for a specific placement.
+
+### How to Use?
+
+Send a `POST` request to `api/admin/markStatus`<br>
+Request_Body:
+
+```json
+{
+  "opening_id": "RIDNK323JD3JD",
+  "student_list": [
+    "DBJDH32JDDDRE",
+    "HFJGJHE7JGDHE"
+  ]
+}
+```
+
+> Headers <br>
+> Authorization: "Bearer {tokenID}"
+
+### Response
+
+Response is a Json with these fields
+
+```json
+{
+    "action": "Mark Status",
+    "message": "Marked Status"
+}
+```
+
+- action: Tells us about the message creator<Br>
+- message: Tells us what happened with our Request.
+
+### Status Codes
+
+The possible responses for this api request are as follows
+
+| Status Codes    | Possible Messages        |
+| --------------- | ------------------------ |
+| 200 OK          | `Marked Status`          |
+| 400 BAD_REQUEST | `Error Occurred` | 
+
+You may see some different errors which can be seen [here](#common-errors)
+
+---
+
 ## `Common Errors`
 
 Some common errors that you may see while accessing the Apis
@@ -401,3 +455,5 @@ Some common errors that you may see while accessing the Apis
 | 401 UNAUTHORIZED | `Token has wrong audience`                               | You may be using wrong credentials for Google OAuth2.0.                                      |
 | 404 NOT FOUND    | `User Not Found. Contact CDC for more details`           | You may not be a user at CDC, IIT Dharwad. Please contact us to get your user account        |
 | 400 BAD_REQUEST  | `Error Occurred {error}`                                 | Any random Error which can be seen in the {error} string.                                    |
+
+
