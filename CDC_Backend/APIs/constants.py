@@ -41,6 +41,7 @@ COMPANY = ''
 
 STORAGE_DESTINATION = "./Storage/Resumes/"
 STORAGE_DESTINATION_COMPANY_ATTACHMENTS = './Storage/Company_Attachments/'
+STORAGE_DESTINATION_APPLICATION_CSV = './Storage/Application_CSV'
 
 RESUME_FILE_NAME = 'resume_file_name'
 
@@ -93,3 +94,11 @@ COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT = "Notification Submitted - {id} - CD
 
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE = 'student_application_submitted.html'
 COMPANY_OPENING_SUBMITTED_TEMPLATE = 'company_opening_submitted.html'
+
+COL_NAMES = "col_names"
+ROLL_NO = "roll_no"
+NAME = 'name'
+BATCH = "batch"
+BRANCH = "branch"
+CPI = "cpi"
+RESUME = "resume"
