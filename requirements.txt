@@ -12,7 +12,7 @@ django-compat==1.0.15
 django-cors-headers==3.10.0
 django-db-logger==0.1.10
 djangorestframework==3.12.4
-google-auth==2.3.1
+google-auth==2.3.2
 idna==3.3
 isort==5.9.3
 jsonfield==3.1.0
