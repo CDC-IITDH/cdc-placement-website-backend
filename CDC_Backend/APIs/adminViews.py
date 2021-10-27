@@ -13,26 +13,29 @@ def generateCSV(request, id, email, user_type):
         data = request.data
         applications=PlacementApplication.objects.filter(placement_id = data[OPENING_ID])
         f = open('../Storage/', 'w')
+        filename = generateRandomString()
         writer = csv.writer(f)
         writer.writerow(COL_NAMES)
         for apl in applications:
             row_details=[]
             for col in COL_NAMES:
-                if col== ROLL_NO:
+                if col == ROLL_NO:
                     row_details.append(apl.student.roll_no)
-                if col== NAME:
+                if col == NAME:
                     row_details.append(apl.student.name)
-                if col== BATCH:
+                if col == BATCH:
                     row_details.append(apl.student.batch)
-                if col== BRANCH:
+                if col == BRANCH:
                     row_details.append(apl.student.branch)
-                if col== PHONE_NUMBER:
+                if col == PHONE_NUMBER:
                     row_details.append(apl.student.phone_number)
-                if col== CPI:
+                if col == CPI:
                     row_details.append(apl.student.cpi)
-                if col== RESUME:
+                if col == RESUME:
                     row_details.append(apl.student.resume)
             writer.writerow(apl)
+        return Response({'action': "Create csv", 'message': "CSV created", 'file': filename},
+                        status=status.HTTP_200_OK)
     except:
         logger.warning("Delete Resume: " + str(sys.exc_info()))
         return Response({'action': "Delete Resume", 'message': "Error Occurred {0}".format(
