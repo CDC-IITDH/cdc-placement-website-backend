@@ -1,6 +1,8 @@
 from .utils import *
 from rest_framework.decorators import api_view
 
+from .serializers import *
+
 
 @api_view(['POST'])
 @isAuthorized([ADMIN])
@@ -41,4 +43,27 @@ def markStatus(request, id, email, user_type):
     except:
         logger.warning("Mark Status: " + str(sys.exc_info()))
         return Response({'action': "Mark Status", 'message': "Error Occurred!"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@isAuthorized([ADMIN])
+def getDashboard(request, id, email, user_type):
+    try:
+
+        placements = Placement.objects.all()
+        ongoing = placements.filter(status=STATUS_ACCEPTING_APPLICATIONS)
+        previous = placements.exclude(status = STATUS_ACCEPTING_APPLICATIONS)
+        ongoing = PlacementSerializer(ongoing, many=True).data
+        previous = PlacementSerializer(previous, many=True).data
+
+        return Response(
+            {'action': "Placement and Internships", 'message': "Data Found", "ongoing": ongoing, "previous": previous},
+            status=status.HTTP_200_OK)
+    except Http404:
+        return Response({'action': "Placements and Internships", 'message': 'Student Not Found'},
+                        status=status.HTTP_404_NOT_FOUND)
+    except:
+        logger.warning("Placements and Internships: " + str(sys.exc_info()))
+        return Response({'action': "Placements and Internships", 'message': "Error Occurred"},
                         status=status.HTTP_400_BAD_REQUEST)
