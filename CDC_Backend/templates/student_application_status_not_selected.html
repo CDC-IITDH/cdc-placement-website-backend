@@ -43,20 +43,8 @@
                                     <h1 style="font-size:24px;margin:0 0 20px 0;font-family: 'Roboto', sans-serif;
 ">Hey, {{ student_name }}</h1>
                                     <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family: 'Roboto', sans-serif;">
-                                        We are sorry to inform that your application for a <b>{{ designation }}</b>  at <b>
-                                        {{ company_name }}</b> was not selected.<br>
-                                    <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:
-                                        'Roboto', sans-serif;text-align: center">
-                                    <table style="border:solid 1px; margin: auto; text-align: center;width: 80%;
-                                border-radius:15px; background-color: #e0e3ee">
-                                        {% for i,j in additional_info.items %}
-                                            <tr>
-                                                <td style="padding:8px 10px;color:#153643; ">{{ i }}:</td>
-                                                <td style="padding:8px 10px;color:#153643;">{{ j }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </table>
-                                    </p>
+                                        We regret to inform you that you have not been selected for {designation} role at {company_name}.
+                                        CDC will keep bringing more such opportunities for you in the future.
                                 </td>
                             </tr>
                             <tr>
