@@ -12,8 +12,9 @@ def generateCSV(request, id, email, user_type):
     try:
         data = request.data
         applications=PlacementApplication.objects.filter(placement_id = data[OPENING_ID])
-        f = open('../Storage/', 'w')
         filename = generateRandomString()
+        destination_path = STORAGE_DESTINATION_APPLICATION_CSV + filename
+        f = open(destination_path, 'w')
         writer = csv.writer(f)
         writer.writerow(COL_NAMES)
         for apl in applications:
@@ -34,10 +35,10 @@ def generateCSV(request, id, email, user_type):
                 if col == RESUME:
                     row_details.append(apl.student.resume)
             writer.writerow(apl)
+        f.close()
         return Response({'action': "Create csv", 'message': "CSV created", 'file': filename},
                         status=status.HTTP_200_OK)
     except:
-        logger.warning("Delete Resume: " + str(sys.exc_info()))
-        return Response({'action': "Delete Resume", 'message': "Error Occurred {0}".format(
-            str(sys.exc_info()))},
+        logger.warning("Create csv: " + str(sys.exc_info()))
+        return Response({'action': "Create csv", 'message': "Error Occurred"},
                         status=status.HTTP_400_BAD_REQUEST)
