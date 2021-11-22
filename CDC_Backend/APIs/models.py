@@ -28,20 +28,37 @@ class Admin(models.Model):
 
 class Placement(models.Model):
     id = models.CharField(blank=False, primary_key=True, max_length=15)
-    name = models.CharField(blank=False, max_length=50, default="")
-    address = models.CharField(blank=False, max_length=150, default="")
-    companyType = models.CharField(blank=False, max_length=50, default="")
-    website = models.CharField(blank=True, max_length=50, default="")
-    contact_person_name = models.CharField(blank=False, max_length=50, default="")
-    phone_number = models.PositiveBigIntegerField(blank=False, default=0)
-    designation = models.CharField(blank=False, max_length=25, default=None, null=True)
-    description = models.CharField(blank=False, max_length=200)
-    start_date = models.DateField(blank=False, verbose_name="Start Date")
+    # Company Details
+    company_name = models.CharField(blank=False, max_length=50)
+    address = models.CharField(blank=False, max_length=150)
+    companyType = models.CharField(blank=False, max_length=50)
+    nature_of_business = models.CharField(blank=False, max_length=50, default="")
+    website = models.CharField(blank=True, max_length=50)
+    company_details = models.CharField(blank=False, max_length=500, default="")
+    is_company_details_pdf = models.BooleanField(blank=False, default=False)
+    contact_person_name = models.CharField(blank=False, max_length=50)
+    phone_number = models.PositiveBigIntegerField(blank=False)
+    email = models.CharField(blank=False, max_length=50, default="")
     city = models.CharField(blank=False, max_length=100, default="")
+    state = models.CharField(blank=False, max_length=100, default="")
+    country = models.CharField(blank=False, max_length=100, default="")
+    pin_code = models.IntegerField(blank=False, default=None, null=True)
     city_type = models.CharField(blank=False, max_length=15, choices=OFFER_CITY_TYPE)
-    compensation = models.IntegerField(blank=False)  # Job - Per Year
+    # Job Details
+    designation = models.CharField(blank=False, max_length=25, default=None, null=True)
+    description = models.CharField(blank=False, max_length=200, default="")
+    is_description_pdf = models.BooleanField(blank=False, default=False)
+    compensation_CTC = models.IntegerField(blank=False, default=0)  # Job - Per Year
+    compensation_gross = models.IntegerField(blank=False, default=0)
+    compensation_take_home = models.IntegerField(blank=False, default=0)
+    compensation_bonus = models.IntegerField(blank=True, default=0)
     compensation_details = models.CharField(blank=True, max_length=200)
+    bond_details = models.CharField(blank=True, max_length=200)
+    selection_procedure_rounds = models.CharField(blank=False, max_length=200, default="")
+    selection_procedure_details = models.CharField(blank=True, max_length=200)
+    is_selection_procedure_details_pdf = models.BooleanField(blank=False, default=False)
     tier = models.CharField(blank=False, choices=TIERS, max_length=10, default=None, null=True)
+    tenative_date_of_joining = models.DateField(blank=False, verbose_name="Tentative Date", default=timezone.now)
     allowed_batch = ArrayField(
         models.CharField(max_length=10, choices=BATCH_CHOICES),
         size=TOTAL_BATCHES,
@@ -52,22 +69,13 @@ class Placement(models.Model):
         size=TOTAL_BRANCHES,
         default=list
     )
+    tenative_no_of_offers = models.IntegerField(blank=False, default=1)
     attachments = ArrayField(
         models.CharField(max_length=100, blank=True),
         size=10,
         blank=True
     )
-    rounds = ArrayField(
-        models.CharField(max_length=25, blank=True),
-        size=10,
-    )
-    additional_info = ArrayField(
-        models.CharField(max_length=25, blank=True),
-        size=10,
-        blank=True
-    )
-    status = models.CharField(max_length=50, blank=False)
-    rounds_details = models.JSONField(blank=True, default=dict)
+    other_requirements = models.CharField(blank=True, max_length=200, default="")
     created_at = models.DateTimeField(blank=False, default=None, null=True)
 
 
