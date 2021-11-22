@@ -1,5 +1,5 @@
 ﻿asgiref==3.4.1
-astroid==2.8.5
+astroid==2.9.0
 cachetools==4.2.4
 certifi==2021.10.8
 chardet==4.0.0
