@@ -36,6 +36,7 @@ class Placement(models.Model):
     phone_number = models.PositiveBigIntegerField(blank=False, default=0)
     designation = models.CharField(blank=False, max_length=25, default=None, null=True)
     description = models.CharField(blank=False, max_length=200)
+    descriptionPDF = models.FileField(blank=True, upload_to='none', max_length=254)
     start_date = models.DateField(blank=False, verbose_name="Start Date")
     city = models.CharField(blank=False, max_length=100, default="")
     city_type = models.CharField(blank=False, max_length=15, choices=OFFER_CITY_TYPE)
@@ -69,6 +70,15 @@ class Placement(models.Model):
     status = models.CharField(max_length=50, blank=False)
     rounds_details = models.JSONField(blank=True, default=dict)
     created_at = models.DateTimeField(blank=False, default=None, null=True)
+    takeHome = mmodels.BooleanField(blank=False, default=False)
+    noOfOffers = models.IntegerField(blank=True, defdefault=1)
+    openToMS = models.BooleanField(blank=False, default=False)
+    nature = models.CharField(blank=False, max_length=100, default="")
+    pin = models.IntegerField(blank=False, max_length=100)
+    country = models.CharField(blank=False, max_length=100, default="")
+    state = models.CharField(blank=False, max_length=100, default="")
+    about = models.CharField(blank=True, max_length=50, default="")
+    aboutPDF = models.FileField(blank=True, upload_to='none', max_length=254)
 
 
 class PlacementApplication(models.Model):
