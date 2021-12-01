@@ -16,8 +16,7 @@ def login(request, id, email, user_type):
         return Response({'action': "Login", 'message': "Verified", "user_type": user_type},
                         status=status.HTTP_200_OK)
     except:
-        return Response({'action': "Login", 'message': "Error Occurred {0}".format(
-            str(sys.exc_info()[1]))},
+        return Response({'action': "Login", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -31,7 +30,7 @@ def studentProfile(request, id, email, user_type):
         return Response({'action': "Student Profile", 'message': "Details Found", "details": data},
                         status=status.HTTP_200_OK)
     except:
-        return Response({'action': "Student Profile", 'message': "Error Occurred {0}".format(str(sys.exc_info()[1]))},
+        return Response({'action': "Student Profile", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -48,7 +47,7 @@ def addResume(request, id, email, user_type):
         student.resumes.append(file_name)
 
         file = files['file']
-        destination_path = STORAGE_DESTINATION + str(file_name)
+        destination_path = STORAGE_DESTINATION_RESUMES + str(file_name)
         if path.exists(destination_path):
             remove(destination_path)
 
@@ -68,8 +67,7 @@ def addResume(request, id, email, user_type):
             remove(destination_path)
         else:
             logger.warning("Upload Resume: " + str(sys.exc_info()))
-        return Response({'action': "Upload Resume", 'message': "Error Occurred {0}".format(
-            str(sys.exc_info()[1]))},
+        return Response({'action': "Upload Resume", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -96,8 +94,7 @@ def getDashboard(request, id, email, user_type):
                         status=status.HTTP_404_NOT_FOUND)
     except:
         logger.warning("Placements and Internships: " + str(sys.exc_info()))
-        return Response({'action': "Placements and Internships", 'message': "Error Occurred {0}".format(
-            str(sys.exc_info()[1]))},
+        return Response({'action': "Placements and Internships", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -108,7 +105,7 @@ def deleteResume(request, id, email, user_type):
     try:
         student = get_object_or_404(Student, id=id)
         file_name = request.data[RESUME_FILE_NAME]
-        destination_path = STORAGE_DESTINATION + str(file_name)
+        destination_path = STORAGE_DESTINATION_RESUMES + str(file_name)
         if path.exists(destination_path):
             remove(destination_path)
             student.resumes.remove(file_name)
@@ -125,8 +122,7 @@ def deleteResume(request, id, email, user_type):
                         status=status.HTTP_404_NOT_FOUND)
     except:
         logger.warning("Delete Resume: " + str(sys.exc_info()))
-        return Response({'action': "Delete Resume", 'message': "Error Occurred {0}".format(
-            str(sys.exc_info()))},
+        return Response({'action': "Delete Resume", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -168,10 +164,14 @@ def submitApplication(request, id, email, user_type):
                 raise AttributeError(i + " not found in Additional Info")
 
         application.additional_info = data[ADDITIONAL_INFO]
-        if not sendApplicationEmail(email, student.name, opening.company.name, data[OPENING_TYPE],
-                                    data[ADDITIONAL_INFO]):
-            logger.error("Submit Application: Unable to Send Email")
-            # raise RuntimeError("Unable to Send Email")
+        data = {
+            "name": student.name,
+            "company_name": opening.company.name,
+            "application_type": data[OPENING_TYPE],
+            "additional_info": data[ADDITIONAL_INFO]
+        }
+        subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company.name)
+        sendEmail(email, subject, data, STUDENT_APPLICATION_SUBMITTED_TEMPLATE)
 
         application.save()
         return Response({'action': "Submit Application", 'message': "Application Submitted"},
@@ -185,6 +185,5 @@ def submitApplication(request, id, email, user_type):
                         status=status.HTTP_404_NOT_FOUND)
     except:
         logger.warning("Submit Application: " + str(sys.exc_info()))
-        return Response({'action': "Submit Application", 'message': "Error Occurred {0}".format(
-            str(sys.exc_info()[1]))},
+        return Response({'action': "Submit Application", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)

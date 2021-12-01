@@ -15,6 +15,7 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 from rest_framework import status
 from rest_framework.response import Response
+import background_task
 
 from .models import *
 
@@ -35,6 +36,7 @@ def precheck(required_data=None):
                     request_data = request.data
                     if not len(request_data):
                         request_data = request.POST
+                print(request_data)
                 if len(request_data):
                     for i in required_data:
                         if i not in request_data:
@@ -108,30 +110,6 @@ def generateRandomString():
         return False
 
 
-def sendApplicationEmail(email, name, company_name, applicaton_type, additional_info):
-    try:
-        subject = 'CDC - Application Submitted - ' + str(company_name)
-        data = {
-            "name": name,
-            "company_name": company_name,
-            "applicaton_type": applicaton_type,
-            "additional_info": additional_info
-        }
-
-        html_content = render_to_string('student_application_submited.html', data)  # render with dynamic value
-        text_content = strip_tags(html_content)
-
-        email_from = settings.EMAIL_HOST_USER
-        recipient_list = [str(email), ]
-
-        msg = EmailMultiAlternatives(subject, text_content, email_from, recipient_list)
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
-        return True
-    except:
-        return False
-
-
 def saveFile(file, location):
     prefix = generateRandomString()
     file_name = prefix + "_" + file.name
@@ -139,7 +117,7 @@ def saveFile(file, location):
     if not path.isdir(location):
         os.mkdir(location)
 
-    destination_path = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + str(file_name)
+    destination_path = location + str(file_name)
     if path.exists(destination_path):
         remove(destination_path)
 
@@ -149,7 +127,7 @@ def saveFile(file, location):
 
     return file_name
 
-
+@background_task.background(schedule=60)
 def sendEmail(email_to, subject, data, template):
     try:
         html_content = render_to_string(template, data)  # render with dynamic value
@@ -163,8 +141,9 @@ def sendEmail(email_to, subject, data, template):
         msg.send()
         return True
     except:
+        logger.error("Send Email: " + str(sys.exc_info()))
         print(str(sys.exc_info()[1]))
-        return str(sys.exc_info()[1])
+        return False
 
 
 def PlacementApplicationConditions(student, placement):
@@ -195,3 +174,45 @@ def PlacementApplicationConditions(student, placement):
         print(sys.exc_info())
         logger.warning("Utils - PlacementApplicationConditions: " + str(sys.exc_info()))
         return False, "_"
+
+def getTier(compensation_gross, is_psu=False):
+    try:
+        if is_psu:
+            return True, 'psu'
+        if compensation_gross < 0:
+            raise ValueError("Negative Compensation")
+        elif compensation_gross < 600000:     # Tier 7 If less than 600,000
+            return True, "7"
+        # Tier 6 If less than 800,000 and greater than or equal to 600,000
+        elif compensation_gross < 800000:
+            return True, "6"
+        # Tier 5 If less than 1,000,000 and greater than or equal to 800,000
+        elif compensation_gross < 1000000:
+            return True, "5"
+        # Tier 4 If less than 1,200,000 and greater than or equal to 1,000,000
+        elif compensation_gross < 1200000:
+            return True, "4"
+        # Tier 3 If less than 1,500,000 and greater than or equal to 1,200,000
+        elif compensation_gross < 1500000:
+            return True, "3"
+        # Tier 2 If less than 1,800,000 and greater than or equal to 1,500,000
+        elif compensation_gross < 1800000:
+            return True, "2"
+        # Tier 1 If greater than or equal to 1,800,000
+        elif compensation_gross >= 1800000:
+            return True, "1"
+        else:
+            raise ValueError("Invalid Compensation")
+
+    except ValueError as e:
+        logger.warning("Utils - getTier: " + str(sys.exc_info()))
+        return False, e
+    except:
+        print(sys.exc_info())
+        logger.warning("Utils - getTier: " + str(sys.exc_info()))
+        return False, "_"
+
+
+
+def two_day_after_today():
+    return timezone.now() + timezone.timedelta(days=2)
