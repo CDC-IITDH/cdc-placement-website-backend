@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'django_db_logger',
+    'background_task'
 ]
 
 MIDDLEWARE = [
@@ -160,7 +161,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'saisurya3127@gmail.com'#'email here'
-EMAIL_HOST_PASSWORD = 'ehwkqmryyqjiifcz'#'password here'
+EMAIL_HOST_PASSWORD = 'yeylqcnsyjfpzsew'#'password here'
 
 LOGGING = {
     'version': 1,
