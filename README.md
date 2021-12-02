@@ -37,3 +37,5 @@
 ### API Reference
 
 Check [here](./CDC_Backend/README.md) for Api Reference
+
+For Documentation with Postman Collection, click [here](https://documenter.getpostman.com/view/15531322/UVJfhuhQ#568ad036-ad0e-449a-a26f-4d86616b1393)
