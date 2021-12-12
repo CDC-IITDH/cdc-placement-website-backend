@@ -103,7 +103,7 @@ def isAuthorized(allowed_users=None):
 def generateRandomString():
     try:
         N = 15
-        res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
+        res = ''.join(random.choices(string.ascii_uppercase +string.ascii_lowercase+ string.digits, k=N))
         return res
     except:
         return False

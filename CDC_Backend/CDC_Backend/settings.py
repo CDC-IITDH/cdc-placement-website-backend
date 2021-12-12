@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from dotenv import load_dotenv
 
+load_dotenv("../dev.env")
 # import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -81,19 +83,15 @@ WSGI_APPLICATION = 'CDC_Backend.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #    'ENGINE': 'django.db.backends.sqlite3',
-    #    'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
-
     'default': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'cdc',
-       'USER': 'postgres',
-       'PASSWORD': 'root',
-       'HOST': 'localhost',
-       'PORT': '5432',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get("DB_NAME"),
+        'USER': os.environ.get("DB_USER"),
+        'PASSWORD': os.environ.get("DB_PASSWORD"),
+        'HOST': os.environ.get("DB_HOST"),
+        'PORT': os.environ.get("DB_PORT"),
     },
+
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
     #     'NAME': 'd84i5cbjig5rrf',
@@ -160,8 +158,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'saisurya3127@gmail.com'#'email here'
-EMAIL_HOST_PASSWORD = 'yeylqcnsyjfpzsew'#'password here'
+EMAIL_HOST_USER = os.environ.get("EMAIL")  # 'email here'
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")  # 'password here'
 
 LOGGING = {
     'version': 1,
@@ -179,6 +177,11 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'django_db_logger.db_log_handler.DatabaseLogHandler'
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        }
     },
     'loggers': {
         'db': {
@@ -187,6 +190,5 @@ LOGGING = {
         }
     }
 }
-
 
 # django_heroku.settings(locals())

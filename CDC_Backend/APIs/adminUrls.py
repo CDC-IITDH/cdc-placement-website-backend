@@ -9,5 +9,7 @@ urlpatterns = [
     path('updateOfferAccepted/', adminViews.updateOfferAccepted, name="Update Offer Accepted"),
     path('updateEmailVerified', adminViews.updateEmailVerified, name="Update Email Verified"),
     path('updateAdditionalInfo/', adminViews.updateAdditionalInfo, name="Update Additional Info"),
-
+    path('getApplications/', adminViews.getApplications, name="Get Applications"),
+    path("submitApplication/", adminViews.submitApplication, name="Submit Application"),
+    path('generateCSV/', adminViews.generateCSV, name="Generate CSV"),
 ]
