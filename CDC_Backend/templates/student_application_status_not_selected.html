@@ -21,7 +21,6 @@
         table, td, div, h1, p {
             font-family: 'Roboto', sans-serif;
         }
-
     </style>
 </head>
 <body style="margin:0;padding:0;">
@@ -42,34 +41,10 @@
                             <tr>
                                 <td style="padding:0 0 36px 0;color:#153643;">
                                     <h1 style="font-size:24px;margin:0 0 20px 0;font-family: 'Roboto', sans-serif;
-">Hello there, {{ name }}</h1>
+">Hey, {{ student_name }}</h1>
                                     <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family: 'Roboto', sans-serif;">
-                                        We have received your application for a <b>{{ application_type }}</b> offer at <b>
-                                        {{ company_name }}</b>
-                                        . We received these additional details<br>
-                                    <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:
-                                        'Roboto', sans-serif;text-align: center">
-
-                                    <table style="border:solid 1px; margin: auto; text-align: center;width: 80%;
-                                border-radius:15px; background-color: #e0e3ee">
-
-                                        {% for i,j in additional_info.items %}
-
-                                            <tr>
-                                                <td style="padding:8px 10px;color:#153643; ">{{ i }}:</td>
-                                                <td style="padding:8px 10px;color:#153643;">{{ j }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </table>
-
-                                    </p>
-                                    </p>
-                                    <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family: 'Roboto', sans-serif;">
-                                        We will keep you informed with the updates. If you have any queries, please
-                                        feel to
-                                        write to
-                                        <nobr><u>cdc.support@iitdh.ac.in</u></nobr>
-                                    </p>
+                                        We regret to inform you that you have not been selected for <b>{{ designation }}</b> role at <b>{{ company_name }}</b>.
+                                        CDC will keep bringing more such opportunities for you in the future.
                                 </td>
                             </tr>
                             <tr>
@@ -78,8 +53,6 @@
                                            style="width:100%;border-collapse:collapse;border:0;border-spacing:0;">
                                         <tr>
                                             <td style="width:260px;padding:0;vertical-align:top;color:#334878;">
-
-
                                             </td>
                                         </tr>
                                     </table>
@@ -98,11 +71,9 @@
                                         &reg; CDC,IIT Dharwad,2021<br/>
                                     </p>
                                 </td>
-
-
-                                </td>
                             </tr>
                         </table>
+                    </td>
                     </td>
                 </tr>
             </table>

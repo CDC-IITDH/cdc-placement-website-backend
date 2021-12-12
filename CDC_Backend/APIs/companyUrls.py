@@ -3,5 +3,5 @@ from . import companyViews
 
 
 urlpatterns = [
-    path('addOpening/', companyViews.addOpening, name="Add Opening"),
+    path('addPlacement/', companyViews.addPlacement, name="Add Placement"),
 ]
