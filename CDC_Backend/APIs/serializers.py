@@ -160,3 +160,19 @@ class PlacementApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlacementApplication
         exclude = [STUDENT, 'resume']
+
+class PlacementApplicationSerializerForAdmin(serializers.ModelSerializer):
+    student_details = serializers.SerializerMethodField()
+    resume_link = serializers.SerializerMethodField()
+
+    def get_student_details(self, obj):
+        data = StudentSerializer(obj.student).data
+        return data
+
+    def get_resume_link(self, obj):
+        link = LINK_TO_STORAGE_RESUME + urllib.parse.quote_plus(obj.id + "/" + obj.resume)
+        return link
+
+    class Meta:
+        model = PlacementApplication
+        exclude = ['placement', 'resume']

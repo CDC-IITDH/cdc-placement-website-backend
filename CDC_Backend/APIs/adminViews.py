@@ -1,8 +1,9 @@
+import json
 from datetime import datetime
 
 from .utils import *
 from rest_framework.decorators import api_view
-
+import csv
 from .serializers import *
 
 
@@ -152,4 +153,147 @@ def updateAdditionalInfo(request, id, email, user_type):
     except:
         logger.warning("Update Additional Info: " + str(sys.exc_info()))
         return Response({'action': "Update Additional Info", 'message': "Something went wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@isAuthorized([ADMIN])
+@precheck([OPENING_ID])
+def getApplications(request, id, email, user_type):
+    try:
+        data = request.GET
+        opening = get_object_or_404(Placement, pk=data[OPENING_ID])
+        applications = PlacementApplication.objects.filter(placement=opening)
+        serializer = PlacementApplicationSerializerForAdmin(applications, many=True)
+        return Response({'action': "Get Applications", 'message': 'Data Found', 'applications':serializer.data},
+        status=status.HTTP_200_OK)
+    except Http404:
+        return Response({'action': "Get Applications", 'message': 'Opening Not Found'},
+                        status=status.HTTP_404_NOT_FOUND)
+    except:
+        logger.warning("Get Applications: " + str(sys.exc_info()))
+        return Response({'action': "Get Applications", 'message': "Something went wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['POST'])
+@isAuthorized(allowed_users=[ADMIN])
+@precheck(required_data=[OPENING_TYPE, OPENING_ID, RESUME_FILE_NAME,
+                         STUDENT_ID])
+def submitApplication(request, id, email, user_type):
+    try:
+        data = request.data
+        student = get_object_or_404(Student, roll_no=data[STUDENT_ID])
+        # Only Allowing Applications for Placements
+        if data[OPENING_TYPE] == PLACEMENT:
+            if not len(PlacementApplication.objects.filter(
+                    student_id=student.id, placement_id=data[OPENING_ID])):
+                application = PlacementApplication()
+                opening = get_object_or_404(Placement, id=data[OPENING_ID],
+                                            allowed_batch__contains=[student.batch],
+                                            allowed_branch__contains=[student.branch],
+                                            deadline_datetime__gte=datetime.now().date()
+                                            )
+                if not opening.offer_accepted or not opening.email_verified:
+                    raise PermissionError("Placement Not Approved")
+
+                cond_stat, cond_msg = PlacementApplicationConditions(student, opening)
+                if not cond_stat:
+                    raise PermissionError(cond_msg)
+                application.placement = opening
+            else:
+                raise PermissionError("Application is already Submitted")
+        else:
+            raise ValueError(OPENING_TYPE + " is Invalid")
+
+        if data[RESUME_FILE_NAME] in student.resumes:
+            application.resume = data[RESUME_FILE_NAME]
+        else:
+            raise FileNotFoundError(RESUME_FILE_NAME + " Not Found")
+
+        application.student = student
+        application.id = generateRandomString()
+        additional_info = {}
+        for i in opening.additional_info:
+            if i not in data[ADDITIONAL_INFO]:
+                raise AttributeError(i + " not found in Additional Info")
+            else:
+                additional_info[i] = data[ADDITIONAL_INFO][i]
+
+        application.additional_info = json.dumps(additional_info)
+        data = {
+            "name": student.name,
+            "company_name": opening.company_name,
+            "application_type": data[OPENING_TYPE],
+            "additional_info": dict(json.loads(application.additional_info)),
+        }
+        subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
+        student_email = str(student.roll_no)+"@iitdh.ac.in"
+        sendEmail(student_email, subject, data, STUDENT_APPLICATION_SUBMITTED_TEMPLATE)
+
+        application.save()
+        return Response({'action': "Submit Application", 'message': "Application Submitted"},
+                        status=status.HTTP_200_OK)
+    except Http404 as e:
+        return Response({'action': "Submit Application", 'message': str(e)},
+                        status=status.HTTP_404_NOT_FOUND)
+    except PermissionError as e:
+        return Response({'action': "Submit Application", 'message': str(e)},
+                        status=status.HTTP_403_FORBIDDEN)
+    except FileNotFoundError as e:
+        return Response({'action': "Submit Application", 'message': str(e)},
+                        status=status.HTTP_404_NOT_FOUND)
+    except:
+        logger.warning("Submit Application: " + str(sys.exc_info()))
+        return Response({'action': "Submit Application", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['POST'])
+@isAuthorized(allowed_users=[ADMIN])
+@precheck(required_data=[OPENING_ID])
+def generateCSV(request, id, email, user_type):
+    try:
+        data = request.data
+        placement = get_object_or_404(Placement, id=data[OPENING_ID])
+        applications = PlacementApplication.objects.filter(placement=placement)
+        filename = generateRandomString()
+        if not os.path.isdir(STORAGE_DESTINATION_APPLICATION_CSV):
+            os.mkdir(STORAGE_DESTINATION_APPLICATION_CSV)
+        destination_path = STORAGE_DESTINATION_APPLICATION_CSV + filename + ".csv"
+        f = open(destination_path, 'w')
+        writer = csv.writer(f)
+        header_row = APPLICATION_CSV_COL_NAMES.copy()
+
+        header_row.extend(placement.additional_info)
+        writer.writerow(header_row)
+        for apl in applications:
+            row_details=[]
+
+            row_details.append(apl.applied_at)
+            row_details.append(apl.student.roll_no)
+            row_details.append(apl.student.name)
+            row_details.append(str(apl.student.roll_no)+"@iitdh.ac.in")
+            row_details.append(apl.student.phone_number)
+            row_details.append(apl.student.branch)
+            row_details.append(apl.student.batch)
+            row_details.append(apl.student.cpi)
+            link = LINK_TO_STORAGE_RESUME + urllib.parse.quote_plus(apl.student.id + "/" + apl.resume)
+            row_details.append(link)
+            row_details.append(apl.selected)
+
+            for i in placement.additional_info:
+                row_details.append(json.loads(apl.additional_info)[i])
+
+            writer.writerow(row_details)
+        f.close()
+        file_path = LINK_TO_APPLICATIONS_CSV + urllib.parse.quote_plus(filename+".csv")
+        return Response({'action': "Create csv", 'message': "CSV created", 'file': file_path},
+                        status=status.HTTP_200_OK)
+    except:
+        logger.warning("Create csv: " + str(sys.exc_info()))
+        print(sys.exc_info())
+        return Response({'action': "Create csv", 'message': "Error Occurred"},
                         status=status.HTTP_400_BAD_REQUEST)

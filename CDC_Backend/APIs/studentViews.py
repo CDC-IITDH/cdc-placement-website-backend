@@ -178,7 +178,7 @@ def submitApplication(request, id, email, user_type):
         return Response({'action': "Submit Application", 'message': "Application Submitted"},
                         status=status.HTTP_200_OK)
     except Http404 as e:
-        return Response({'action': "Submit Application", 'message': "Student Not Found"},
+        return Response({'action': "Submit Application", 'message': str(e)},
                         status=status.HTTP_404_NOT_FOUND)
     except PermissionError as e:
         return Response({'action': "Submit Application", 'message': str(e)},

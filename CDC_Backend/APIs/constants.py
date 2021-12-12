@@ -42,6 +42,7 @@ CLIENT_ID = "956830229554-290mirc16pdhd5j7ph7v7ukibo4t1qcp.apps.googleuserconten
 PLACEMENT_OPENING_URL = "https://www.googleapis.com/auth/adwords/{id}"
 LINK_TO_STORAGE_COMPANY_ATTACHMENT = "https://storage.googleapis.com/cdc-backend-attachments/company_attachments/"
 LINK_TO_STORAGE_RESUME = "https://storage.googleapis.com/cdc-backend-attachments/resume/"
+LINK_TO_APPLICATIONS_CSV = "https://storage.googleapis.com/cdc-backend-attachments/applications-csv/"
 
 
 TOKEN = "token_id"
@@ -58,6 +59,8 @@ MAX_OFFERS_PER_STUDENT = 2
 
 STORAGE_DESTINATION_RESUMES = "./Storage/Resumes/"
 STORAGE_DESTINATION_COMPANY_ATTACHMENTS = './Storage/Company_Attachments/'
+STORAGE_DESTINATION_APPLICATION_CSV = './Storage/Application_CSV/'
+
 
 RESUME_FILE_NAME = 'resume_file_name'
 
@@ -120,8 +123,6 @@ STUDENT_ID = "student_id"
 STUDENT_SELECTED = "student_selected"
 
 
-
-
 COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT = "Notification Submitted - {id} - CDC IIT Dharwad"
 STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT = 'Application Status : {company_name} - {id}'
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT = 'CDC - Application Submitted - {company_name}'
@@ -131,3 +132,5 @@ COMPANY_OPENING_SUBMITTED_TEMPLATE = 'company_opening_submitted.html'
 STUDENT_APPLICATION_STATUS_SELECTED_TEMPLATE = 'student_application_status_selected.html'
 STUDENT_APPLICATION_STATUS_NOT_SELECTED_TEMPLATE = 'student_application_status_not_selected.html'
 
+APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'CPI',
+                             'Resume', 'Selected', ]
