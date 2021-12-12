@@ -48,7 +48,7 @@ def precheck(required_data=None):
 
                 return view_func(request, *args, **kwargs)
             except:
-                return Response({'action': "Pre check", 'message': "Error Occurred " + str(sys.exc_info())},
+                return Response({'action': "Pre check", 'message': "Something went wrong"},
                                 status=status.HTTP_400_BAD_REQUEST)
 
         return wrapper_func
@@ -79,15 +79,15 @@ def isAuthorized(allowed_users=None):
                 else:
                     raise PermissionError("Authorization Header Not Found")
 
-            except PermissionError as e:
-                return Response({'action': "Is Authorized?", 'message': str(e)},
+            except PermissionError:
+                return Response({'action': "Is Authorized?", 'message': 'Access Denied'},
                                 status=status.HTTP_401_UNAUTHORIZED)
             except Http404:
                 return Response({'action': "Is Authorized?", 'message': "User Not Found. Contact CDC for more details"},
                                 status=status.HTTP_404_NOT_FOUND)
             except ValueError as e:
-                logger.warning("Problem with Google Oauth2.0 " + str(e))
-                return Response({'action': "Is Authorized?", 'message': str(e)},
+                logger.error("Problem with Google Oauth2.0 " + str(e))
+                return Response({'action': "Is Authorized?", 'message': 'Problem with Google Sign In'},
                                 status=status.HTTP_401_UNAUTHORIZED)
             except:
                 logger.warning("Is Authorized? " + str(sys.exc_info()))

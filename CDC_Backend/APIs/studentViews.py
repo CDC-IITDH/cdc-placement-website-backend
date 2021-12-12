@@ -99,6 +99,10 @@ def deleteResume(request, id, email, user_type):
     try:
         student = get_object_or_404(Student, id=id)
         file_name = request.data[RESUME_FILE_NAME]
+        if file_name not in student.resumes:
+            return Response({'action': "Delete Resume", 'message': "Resume Not Found"},
+                            status=status.HTTP_404_NOT_FOUND)
+
         destination_path = STORAGE_DESTINATION_RESUMES + id + "/" + str(file_name)
         if path.exists(destination_path):
             remove(destination_path)
@@ -112,7 +116,7 @@ def deleteResume(request, id, email, user_type):
         return Response({'action': "Delete Resume", 'message': 'Student Not Found'},
                         status=status.HTTP_404_NOT_FOUND)
     except FileNotFoundError as e:
-        return Response({'action': "Delete Resume", 'message': str(e)},
+        return Response({'action': "Delete Resume", 'message': 'File Not Found'},
                         status=status.HTTP_404_NOT_FOUND)
     except:
         logger.warning("Delete Resume: " + str(sys.exc_info()))
