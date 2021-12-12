@@ -42,49 +42,21 @@
                             <tr>
                                 <td style="padding:0 0 36px 0;color:#153643;">
                                     <h1 style="font-size:24px;margin:0 0 20px 0;font-family: 'Roboto', sans-serif;
-">Hello there, {{ name }}</h1>
+">Thank You for filling the form</h1>
                                     <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family: 'Roboto', sans-serif;">
-                                        We have received your application for a <b>{{ application_type }}</b> offer at <b>
-                                        {{ company_name }}</b>
-                                        . We received these additional details<br>
-                                    <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:
-                                        'Roboto', sans-serif;text-align: center">
-
-                                    <table style="border:solid 1px; margin: auto; text-align: center;width: 80%;
-                                border-radius:15px; background-color: #e0e3ee">
-
-                                        {% for i,j in additional_info.items %}
-
-                                            <tr>
-                                                <td style="padding:8px 10px;color:#153643; ">{{ i }}:</td>
-                                                <td style="padding:8px 10px;color:#153643;">{{ j }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </table>
-
+                                        We have received your <b>{{ opening_type }}</b> notification for a <b>{{ designation }}</b> offer at <b>
+                                        {{ company_name }}</b>. Click <a href="{{ opening_link }}">here</a> to view your notification.
                                     </p>
-                                    </p>
+
                                     <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family: 'Roboto', sans-serif;">
                                         We will keep you informed with the updates. If you have any queries, please
                                         feel to
                                         write to
-                                        <nobr><u>cdc.support@iitdh.ac.in</u></nobr>
+                                        <nobr><u>cdc@iitdh.ac.in</u></nobr>
                                     </p>
                                 </td>
                             </tr>
-                            <tr>
-                                <td style="padding:0;">
-                                    <table role="presentation"
-                                           style="width:100%;border-collapse:collapse;border:0;border-spacing:0;">
-                                        <tr>
-                                            <td style="width:260px;padding:0;vertical-align:top;color:#334878;">
 
-
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
                         </table>
                     </td>
                 </tr>
@@ -100,7 +72,7 @@
                                 </td>
 
 
-                                </td>
+
                             </tr>
                         </table>
                     </td>
