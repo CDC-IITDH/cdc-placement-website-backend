@@ -22,6 +22,9 @@ class Student(models.Model):
     resumes = ArrayField(models.CharField(null=True, default=None, max_length=100), size=10, default=list, blank=True)
     cpi = models.DecimalField(decimal_places=2, max_digits=4)
 
+    def __str__(self):
+        return str(self.roll_no)
+
 
 class Admin(models.Model):
     id = models.CharField(blank=False, max_length=15, primary_key=True)
@@ -81,7 +84,7 @@ class Placement(models.Model):
         size=TOTAL_BRANCHES,
         default=list
     )
-    tentative_no_of_offers = models.IntegerField(blank=False, default=1)
+    tentative_no_of_offers = models.IntegerField(blank=False, default=None, null=True)
     other_requirements = models.CharField(blank=True, max_length=200, default="")
     additional_info = ArrayField(models.CharField(blank=True, max_length=200), size=15, default=list, blank=True)
     email_verified = models.BooleanField(blank=False, default=False)
@@ -95,6 +98,9 @@ class Placement(models.Model):
             self.created_at = timezone.now()
 
         return super(Placement, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.company_name + " - " + self.id
 
 class PlacementApplication(models.Model):
     id = models.CharField(blank=False, primary_key=True, max_length=15)
@@ -115,6 +121,9 @@ class PlacementApplication(models.Model):
     class Meta:
         verbose_name_plural = "Placement Applications"
         unique_together = ('placement_id', 'student_id')
+
+    def __str__(self):
+        return self.placement.company_name + " - " + self.student.name
 
 
 class PrePlacementOffer(models.Model):

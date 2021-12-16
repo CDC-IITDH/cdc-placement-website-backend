@@ -8,10 +8,7 @@ from django.utils.safestring import SafeText
 from .models import *
 
 admin.site.register(User)
-# admin.site.register(Student)
 admin.site.register(Admin)
-# admin.site.register(Placement)
-admin.site.register(PlacementApplication)
 admin.site.register(PrePlacementOffer)
 
 admin.site.site_header = "CDC Recruitment Portal"
@@ -37,5 +34,18 @@ class Placement(admin.ModelAdmin):
     ordering = (COMPANY_NAME, CONTACT_PERSON_NAME, 'tier', 'compensation_CTC')
     list_filter = ('tier',)
 
+
+@admin.register(PlacementApplication)
+class PlacementApplication(admin.ModelAdmin):
+    list_display = ('id', 'Placement', 'Student', 'selected')
+    search_fields = ('id',)
+    ordering = ('id',)
+    list_filter = ('selected',)
+
+    def Placement(self, obj):
+        return model_admin_url(obj.placement)
+
+    def Student(self, obj):
+        return model_admin_url(obj.student)
 
 

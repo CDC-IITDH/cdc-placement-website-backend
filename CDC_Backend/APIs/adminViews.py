@@ -53,13 +53,15 @@ def markStatus(request, id, email, user_type):
 def getDashboard(request, id, email, user_type):
     try:
         placements = Placement.objects.all().order_by('-created_at')
-        ongoing = placements.filter(deadline_datetime__gt=datetime.now())
-        previous = placements.exclude(deadline_datetime__gt=datetime.now())
+        ongoing = placements.filter(deadline_datetime__gt=datetime.now(), offer_accepted__isnull=False)
+        previous = placements.exclude(deadline_datetime__gt=datetime.now()).filter(offer_accepted__isnull=False)
+        new = placements.filter(offer_accepted__isnull=True)
         ongoing = PlacementSerializerForAdmin(ongoing, many=True).data
         previous = PlacementSerializerForAdmin(previous, many=True).data
+        new = PlacementSerializerForAdmin(new, many=True).data
 
         return Response(
-            {'action': "Get Dashboard - Admin", 'message': "Data Found", "ongoing": ongoing, "previous": previous},
+            {'action': "Get Dashboard - Admin", 'message': "Data Found", "ongoing": ongoing, "previous": previous, "new": new},
             status=status.HTTP_200_OK)
     except Http404:
         return Response({'action': "Get Dashboard - Admin", 'message': 'Student Not Found'},

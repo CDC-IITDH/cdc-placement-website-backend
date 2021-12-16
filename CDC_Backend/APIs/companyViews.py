@@ -193,6 +193,8 @@ def addPlacement(request):
         # Check if tentative_no_of_offers is integer
         if data[TENTATIVE_NO_OF_OFFERS].isdigit():
             opening.tentative_no_of_offers = int(data[TENTATIVE_NO_OF_OFFERS])
+        elif data[TENTATIVE_NO_OF_OFFERS] == 'null':
+            opening.tentative_no_of_offers = None
         else:
             raise ValueError('Tentative No Of Offers must be an integer')
 

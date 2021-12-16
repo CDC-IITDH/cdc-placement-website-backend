@@ -1,6 +1,7 @@
 import logging
 import os
 import random
+import re
 import string
 import sys
 from os import path, remove
@@ -113,8 +114,10 @@ def saveFile(file, location):
     prefix = generateRandomString()
     file_name = prefix + "_" + file.name
 
+    file_name = re.sub(r'[\\/:*?"<>|]', '_', file_name)
+
     if not path.isdir(location):
-        os.mkdir(location)
+        os.makedirs(location)
 
     destination_path = location + str(file_name)
     if path.exists(destination_path):
@@ -123,7 +126,6 @@ def saveFile(file, location):
     with open(destination_path, 'wb+') as destination:
         for chunk in file.chunks():
             destination.write(chunk)
-
     return file_name
 
 
