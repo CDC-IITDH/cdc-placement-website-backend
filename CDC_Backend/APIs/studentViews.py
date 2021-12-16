@@ -44,7 +44,7 @@ def addResume(request, id, email, user_type):
         files = request.FILES
 
         file = files['file']
-        destination_path = STORAGE_DESTINATION_RESUMES + id + "/"
+        destination_path = STORAGE_DESTINATION_RESUMES + str(student.roll_no) + "/"
         file_name = saveFile(file, destination_path)
         student.resumes.append(file_name)
 
