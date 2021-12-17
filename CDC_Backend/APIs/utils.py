@@ -5,10 +5,10 @@ import random
 import re
 import string
 import sys
-import jwt
 from os import path, remove
 
 import background_task
+import jwt
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.http import Http404
