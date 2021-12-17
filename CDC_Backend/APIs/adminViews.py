@@ -16,7 +16,7 @@ def markStatus(request, id, email, user_type):
         # Getting all application from db for this opening
         applications = PlacementApplication.objects.filter(placement_id=data[OPENING_ID])
         for i in data[STUDENT_LIST]:
-            application = applications.filter(student_id=i[STUDENT_ID])  # Filtering student's application
+            application = applications.filter(student__roll_no=i[STUDENT_ID])  # Filtering student's application
             if len(application) > 0:
                 application = application[0]
                 application.selected = True if i[STUDENT_SELECTED] == "true" else False
