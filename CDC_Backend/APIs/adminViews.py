@@ -303,3 +303,47 @@ def generateCSV(request, id, email, user_type):
         print(sys.exc_info())
         return Response({'action': "Create csv", 'message': "Error Occurred"},
                         status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@isAuthorized(allowed_users=[ADMIN])
+@precheck(required_data=[STUDENT_ID, COMPANY_NAME,COMPENSATION_GROSS, COMPENSATION_DETAILS, DESIGNATION, OFFER_ACCEPTED])
+def addPPO(request, id, email, user_type):
+    try:
+        data = request.data
+        if data[STUDENT_ID].isdigit():
+            student = get_object_or_404(Student, roll_no=int(data[STUDENT_ID]))
+        else:
+            raise ValueError("Student ID should be a number")
+        ppo = PrePlacementOffer()
+        ppo.student = student
+        ppo.company_name = data[COMPANY_NAME]
+        if data[COMPENSATION_GROSS].isdigit():
+            ppo.compensation_gross = int(data[COMPENSATION_GROSS])
+        else:
+            raise ValueError("Compensation Gross should be a number")
+        ppo.compensation_details = data[COMPENSATION_DETAILS]
+        ppo.designation = data[DESIGNATION]
+        print(data[OFFER_ACCEPTED], type(data[OFFER_ACCEPTED]))
+        if data[OFFER_ACCEPTED] == "true":
+            ppo.offer_accepted = True
+        elif data[OFFER_ACCEPTED] == "false":
+            ppo.offer_accepted = False
+        else:
+            ppo.offer_accepted = None
+        stat, tier = getTier(int(ppo.compensation_gross))
+        if stat:
+            ppo.tier = tier
+        else:
+            raise Exception("Invalid Compensation")
+        ppo.save()
+        return Response({'action': "Add PPO", 'message': "PPO added"},
+                        status=status.HTTP_200_OK)
+    except Http404:
+        return Response({'action': "Add PPO", 'message': "Student not found"},
+                        status=status.HTTP_404_NOT_FOUND)
+    except:
+        logger.warning("Add PPO: " + str(sys.exc_info()))
+        return Response({'action': "Add PPO", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+

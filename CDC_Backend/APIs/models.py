@@ -129,9 +129,9 @@ class PlacementApplication(models.Model):
 class PrePlacementOffer(models.Model):
     id = models.AutoField(primary_key=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE, blank=False)
-    company = models.CharField(max_length=50, blank=False, default="")
-    compensation = models.IntegerField(blank=False)  # Job - Per Year
+    company_name = models.CharField(max_length=50, blank=False, default="")
+    compensation_gross = models.IntegerField(blank=False)  # Job - Per Year
     compensation_details = models.CharField(blank=True, max_length=200)
     tier = models.CharField(blank=False, choices=TIERS, max_length=10)
     designation = models.CharField(blank=False, max_length=25, default=None, null=True)
-    accepted = models.BooleanField(default=None, null=True)
+    offer_accepted = models.BooleanField(default=None, null=True)
