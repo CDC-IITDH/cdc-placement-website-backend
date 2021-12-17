@@ -1,10 +1,10 @@
-import json
-from datetime import datetime
-
-from .utils import *
-from rest_framework.decorators import api_view
 import csv
+import json
+
+from rest_framework.decorators import api_view
+
 from .serializers import *
+from .utils import *
 
 
 @api_view(['POST'])
@@ -16,14 +16,15 @@ def markStatus(request, id, email, user_type):
         # Getting all application from db for this opening
         applications = PlacementApplication.objects.filter(placement_id=data[OPENING_ID])
         for i in data[STUDENT_LIST]:
-            application = applications.filter(student_id=i[STUDENT_ID])  # Filtering student's application
+            application = applications.filter(student__roll_no=i[STUDENT_ID])  # Filtering student's application
             if len(application) > 0:
                 application = application[0]
                 application.selected = True if i[STUDENT_SELECTED] == "true" else False
 
                 email = str(application.student.roll_no) + "@iitdh.ac.in"  # Only allowing for IITDh emails
-                subject = STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT.format(company_name=application.placement.company_name,
-                                                                             id=application.id)
+                subject = STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT.format(
+                    company_name=application.placement.company_name,
+                    id=application.id)
                 data = {
                     "company_name": application.placement.company_name,
                     "designation": application.placement.designation,
@@ -53,13 +54,17 @@ def markStatus(request, id, email, user_type):
 def getDashboard(request, id, email, user_type):
     try:
         placements = Placement.objects.all().order_by('-created_at')
-        ongoing = placements.filter(deadline_datetime__gt=datetime.now())
-        previous = placements.exclude(deadline_datetime__gt=datetime.now())
+        ongoing = placements.filter(deadline_datetime__gt=datetime.datetime.now(), offer_accepted__isnull=False)
+        previous = placements.exclude(deadline_datetime__gt=datetime.datetime.now()).filter(
+            offer_accepted__isnull=False)
+        new = placements.filter(offer_accepted__isnull=True)
         ongoing = PlacementSerializerForAdmin(ongoing, many=True).data
         previous = PlacementSerializerForAdmin(previous, many=True).data
+        new = PlacementSerializerForAdmin(new, many=True).data
 
         return Response(
-            {'action': "Get Dashboard - Admin", 'message': "Data Found", "ongoing": ongoing, "previous": previous},
+            {'action': "Get Dashboard - Admin", 'message': "Data Found", "ongoing": ongoing, "previous": previous,
+             "new": new},
             status=status.HTTP_200_OK)
     except Http404:
         return Response({'action': "Get Dashboard - Admin", 'message': 'Student Not Found'},
@@ -78,7 +83,7 @@ def updateDeadline(request, id, email, user_type):
         data = request.data
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         # Updating deadline date with correct format in datetime field
-        opening.deadline_datetime = datetime.strptime(data[DEADLINE_DATETIME], '%Y-%m-%d %H:%M:%S %z')
+        opening.deadline_datetime = datetime.datetime.strptime(data[DEADLINE_DATETIME], '%Y-%m-%d %H:%M:%S %z')
         opening.save()
         return Response({'action': "Update Deadline", 'message': "Deadline Updated"},
                         status=status.HTTP_200_OK)
@@ -89,6 +94,7 @@ def updateDeadline(request, id, email, user_type):
         logger.warning("Update Deadline: " + str(sys.exc_info()))
         return Response({'action': "Update Deadline", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 @isAuthorized([ADMIN])
@@ -109,6 +115,7 @@ def updateOfferAccepted(request, id, email, user_type):
         return Response({'action': "Update Offer Accepted", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['POST'])
 @isAuthorized([ADMIN])
 @precheck([OPENING_ID, EMAIL_VERIFIED])
@@ -127,6 +134,7 @@ def updateEmailVerified(request, id, email, user_type):
         logger.warning("Update Email Verified: " + str(sys.exc_info()))
         return Response({'action': "Update Email Verified", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 @isAuthorized([ADMIN])
@@ -165,8 +173,8 @@ def getApplications(request, id, email, user_type):
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         applications = PlacementApplication.objects.filter(placement=opening)
         serializer = PlacementApplicationSerializerForAdmin(applications, many=True)
-        return Response({'action': "Get Applications", 'message': 'Data Found', 'applications':serializer.data},
-        status=status.HTTP_200_OK)
+        return Response({'action': "Get Applications", 'message': 'Data Found', 'applications': serializer.data},
+                        status=status.HTTP_200_OK)
     except Http404:
         return Response({'action': "Get Applications", 'message': 'Opening Not Found'},
                         status=status.HTTP_404_NOT_FOUND)
@@ -174,7 +182,6 @@ def getApplications(request, id, email, user_type):
         logger.warning("Get Applications: " + str(sys.exc_info()))
         return Response({'action': "Get Applications", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
-
 
 
 @api_view(['POST'])
@@ -193,7 +200,7 @@ def submitApplication(request, id, email, user_type):
                 opening = get_object_or_404(Placement, id=data[OPENING_ID],
                                             allowed_batch__contains=[student.batch],
                                             allowed_branch__contains=[student.branch],
-                                            deadline_datetime__gte=datetime.now().date()
+                                            deadline_datetime__gte=datetime.datetime.now().date()
                                             )
                 if not opening.offer_accepted or not opening.email_verified:
                     raise PermissionError("Placement Not Approved")
@@ -229,7 +236,7 @@ def submitApplication(request, id, email, user_type):
             "additional_info": dict(json.loads(application.additional_info)),
         }
         subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
-        student_email = str(student.roll_no)+"@iitdh.ac.in"
+        student_email = str(student.roll_no) + "@iitdh.ac.in"
         sendEmail(student_email, subject, data, STUDENT_APPLICATION_SUBMITTED_TEMPLATE)
 
         application.save()
@@ -248,7 +255,6 @@ def submitApplication(request, id, email, user_type):
         logger.warning("Submit Application: " + str(sys.exc_info()))
         return Response({'action': "Submit Application", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
-
 
 
 @api_view(['POST'])
@@ -270,12 +276,12 @@ def generateCSV(request, id, email, user_type):
         header_row.extend(placement.additional_info)
         writer.writerow(header_row)
         for apl in applications:
-            row_details=[]
+            row_details = []
 
             row_details.append(apl.applied_at)
             row_details.append(apl.student.roll_no)
             row_details.append(apl.student.name)
-            row_details.append(str(apl.student.roll_no)+"@iitdh.ac.in")
+            row_details.append(str(apl.student.roll_no) + "@iitdh.ac.in")
             row_details.append(apl.student.phone_number)
             row_details.append(apl.student.branch)
             row_details.append(apl.student.batch)
@@ -289,7 +295,7 @@ def generateCSV(request, id, email, user_type):
 
             writer.writerow(row_details)
         f.close()
-        file_path = LINK_TO_APPLICATIONS_CSV + urllib.parse.quote_plus(filename+".csv")
+        file_path = LINK_TO_APPLICATIONS_CSV + urllib.parse.quote_plus(filename + ".csv")
         return Response({'action': "Create csv", 'message': "CSV created", 'file': file_path},
                         status=status.HTTP_200_OK)
     except:

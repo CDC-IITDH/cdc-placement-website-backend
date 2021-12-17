@@ -39,13 +39,12 @@ TOTAL_BATCHES = 4  # Total No of Batches
 CLIENT_ID = "956830229554-290mirc16pdhd5j7ph7v7ukibo4t1qcp.apps.googleusercontent.com"  # Google Login Client ID
 
 # To be Configured Properly
-PLACEMENT_OPENING_URL = "https://www.googleapis.com/auth/adwords/{id}"
+PLACEMENT_OPENING_URL = "https://www.googleapis.com/auth/adwords/{id}" # On frontend, this is the URL to be opened
 LINK_TO_STORAGE_COMPANY_ATTACHMENT = "https://storage.googleapis.com/cdc-backend-attachments/company_attachments/"
 LINK_TO_STORAGE_RESUME = "https://storage.googleapis.com/cdc-backend-attachments/resume/"
 LINK_TO_APPLICATIONS_CSV = "https://storage.googleapis.com/cdc-backend-attachments/applications-csv/"
+LINK_TO_EMAIl_VERIFICATION_API = "https://api.sendgrid.com/v3/mail/send?token={token}"
 
-
-TOKEN = "token_id"
 EMAIL = "email"
 
 STUDENT = 'student'
@@ -55,13 +54,14 @@ COMPANY = ''
 # To be Configured Properly
 FOURTH_YEAR = '2018'
 MAX_OFFERS_PER_STUDENT = 2
+EMAIL_VERIFICATION_TOKEN_TTL = 48 # in hours
 
 
 STORAGE_DESTINATION_RESUMES = "./Storage/Resumes/"
 STORAGE_DESTINATION_COMPANY_ATTACHMENTS = './Storage/Company_Attachments/'
 STORAGE_DESTINATION_APPLICATION_CSV = './Storage/Application_CSV/'
 
-
+TOKEN = 'token'
 RESUME_FILE_NAME = 'resume_file_name'
 
 APPLICATION_ID = "application_id"
@@ -123,14 +123,16 @@ STUDENT_ID = "student_id"
 STUDENT_SELECTED = "student_selected"
 
 
-COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT = "Notification Submitted - {id} - CDC IIT Dharwad"
+COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT = "Notification Submitted - {id} - Career Development Cell, IIT Dharwad"
 STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT = 'Application Status : {company_name} - {id}'
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT = 'CDC - Application Submitted - {company_name}'
+COMPANY_EMAIl_VERIFICATION_TEMPLATE_SUBJECT = 'Email Verification - Career Development Cell, IIT Dharwad'
 
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE = 'student_application_submitted.html'
 COMPANY_OPENING_SUBMITTED_TEMPLATE = 'company_opening_submitted.html'
 STUDENT_APPLICATION_STATUS_SELECTED_TEMPLATE = 'student_application_status_selected.html'
 STUDENT_APPLICATION_STATUS_NOT_SELECTED_TEMPLATE = 'student_application_status_not_selected.html'
+COMPANY_EMAIL_VERIFICATION_TEMPLATE = 'company_email_verification.html'
 
 APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'CPI',
                              'Resume', 'Selected', ]
