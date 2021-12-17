@@ -1,5 +1,4 @@
 import json
-import datetime
 
 from rest_framework.decorators import api_view
 
@@ -178,7 +177,8 @@ def addPlacement(request):
         else:
             raise ValueError('Invalid compensation gross')
         # Convert to date object
-        opening.tentative_date_of_joining = datetime.datetime.strptime(data[TENTATIVE_DATE_OF_JOINING], '%d-%m-%Y').date()
+        opening.tentative_date_of_joining = datetime.datetime.strptime(data[TENTATIVE_DATE_OF_JOINING],
+                                                                       '%d-%m-%Y').date()
 
         # Only Allowing Fourth Year for Placement
         opening.allowed_batch = [FOURTH_YEAR, ]
@@ -202,8 +202,6 @@ def addPlacement(request):
 
         opening.save()
 
-
-
         stat, link = generateOneTimeVerificationLink(opening.email, opening.id, "Placement")
         if not stat:
             raise RuntimeError("Error in generating one time verification link for placement")
@@ -225,6 +223,7 @@ def addPlacement(request):
         logger.warning("Add New Placement: " + str(sys.exc_info()))
         return Response({'action': "Add Placement", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 @precheck([TOKEN])
