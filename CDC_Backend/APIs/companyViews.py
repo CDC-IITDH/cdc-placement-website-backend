@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+import datetime
 
 from rest_framework.decorators import api_view
 
@@ -178,7 +178,7 @@ def addPlacement(request):
         else:
             raise ValueError('Invalid compensation gross')
         # Convert to date object
-        opening.tentative_date_of_joining = datetime.strptime(data[TENTATIVE_DATE_OF_JOINING], '%d-%m-%Y').date()
+        opening.tentative_date_of_joining = datetime.datetime.strptime(data[TENTATIVE_DATE_OF_JOINING], '%d-%m-%Y').date()
 
         # Only Allowing Fourth Year for Placement
         opening.allowed_batch = [FOURTH_YEAR, ]
@@ -202,15 +202,18 @@ def addPlacement(request):
 
         opening.save()
 
+
+
+        stat, link = generateOneTimeVerificationLink(opening.email, opening.id, "Placement")
+        if not stat:
+            raise RuntimeError("Error in generating one time verification link for placement")
         data = {
             "designation": opening.designation,
-            "opening_type": PLACEMENT,
-            "opening_link": PLACEMENT_OPENING_URL.format(id=opening.id),  # Some Changes here too
-            "company_name": opening.company_name
+            "one_time_link": link
         }
 
-        sendEmail(opening.email, COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
-                  COMPANY_OPENING_SUBMITTED_TEMPLATE)
+        sendEmail(opening.email, COMPANY_EMAIl_VERIFICATION_TEMPLATE_SUBJECT, data,
+                  COMPANY_EMAIL_VERIFICATION_TEMPLATE)
 
         return Response({'action': "Add Placement", 'message': "Placement Added Successfully"},
                         status=status.HTTP_200_OK)
@@ -221,4 +224,46 @@ def addPlacement(request):
     except:
         logger.warning("Add New Placement: " + str(sys.exc_info()))
         return Response({'action': "Add Placement", 'message': "Something went wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@precheck([TOKEN])
+def verifyEmail(request):
+    try:
+        data = request.data
+        token = data[TOKEN]
+        # decode token
+        decoded_token = jwt.decode(token, os.environ.get("EMAIL_VERIFICATION_SECRET_KEY"), algorithms=['HS256'])
+        # get email, opening_id, opening_type from token
+        email = decoded_token['email']
+        opening_id = decoded_token['opening_id']
+        opening_type = decoded_token['opening_type']
+        # get opening based on opening_type and opening_id
+        if opening_type == PLACEMENT:
+            opening = get_object_or_404(Placement, id=opening_id)
+            if email != opening.email:
+                raise ValueError("Invalid Email")
+            opening.email_verified = True
+            opening.save()
+            data = {
+                "designation": opening.designation,
+                "opening_type": PLACEMENT,
+                "opening_link": PLACEMENT_OPENING_URL.format(id=opening.id),  # Some Changes here too
+                "company_name": opening.company_name
+            }
+            sendEmail(opening.email, COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
+                      COMPANY_OPENING_SUBMITTED_TEMPLATE)
+        else:
+            raise ValueError('Invalid opening type')
+        return Response({'action': "Verify Email", 'message': "Email Verified Successfully"},
+                        status=status.HTTP_200_OK)
+    except Http404:
+        return Response({'action': "Verify Email", 'message': "Opening Not Found"},
+                        status=status.HTTP_404_NOT_FOUND)
+    except ValueError as e:
+        return Response({'action': "Verify Email", 'message': str(e)},
+                        status=status.HTTP_400_BAD_REQUEST)
+    except:
+        logger.warning("Verify Email: " + str(sys.exc_info()))
+        return Response({'action': "Verify Email", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
