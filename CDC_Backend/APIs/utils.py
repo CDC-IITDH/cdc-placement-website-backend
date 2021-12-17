@@ -1,11 +1,14 @@
+import datetime
 import logging
 import os
 import random
+import re
 import string
 import sys
 from os import path, remove
 
 import background_task
+import jwt
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.http import Http404
@@ -103,7 +106,7 @@ def isAuthorized(allowed_users=None):
 def generateRandomString():
     try:
         N = 15
-        res = ''.join(random.choices(string.ascii_uppercase +string.ascii_lowercase+ string.digits, k=N))
+        res = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=N))
         return res
     except:
         return False
@@ -113,8 +116,10 @@ def saveFile(file, location):
     prefix = generateRandomString()
     file_name = prefix + "_" + file.name
 
+    file_name = re.sub(r'[\\/:*?"<>|]', '_', file_name)
+
     if not path.isdir(location):
-        os.mkdir(location)
+        os.makedirs(location)
 
     destination_path = location + str(file_name)
     if path.exists(destination_path):
@@ -123,7 +128,6 @@ def saveFile(file, location):
     with open(destination_path, 'wb+') as destination:
         for chunk in file.chunks():
             destination.write(chunk)
-
     return file_name
 
 
@@ -211,4 +215,21 @@ def getTier(compensation_gross, is_psu=False):
     except:
         print(sys.exc_info())
         logger.warning("Utils - getTier: " + str(sys.exc_info()))
+        return False, "_"
+
+
+def generateOneTimeVerificationLink(email, opening_id, opening_type):
+    try:
+        token_payload = {
+            "email": email,
+            "opening_id": opening_id,
+            "opening_type": opening_type,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=EMAIL_VERIFICATION_TOKEN_TTL)
+        }
+        token = jwt.encode(token_payload, os.environ.get("EMAIL_VERIFICATION_SECRET_KEY"), algorithm="HS256")
+        link = LINK_TO_EMAIl_VERIFICATION_API.format(token=token)
+        return True, link
+    except:
+        print(sys.exc_info())
+        logger.warning("Utils - generateOneTimeVerificationLink: " + str(sys.exc_info()))
         return False, "_"
