@@ -1,6 +1,5 @@
 import json
-from datetime import datetime
-
+import datetime
 from rest_framework.decorators import api_view
 
 from .serializers import *
@@ -72,7 +71,7 @@ def getDashboard(request, id, email, user_type):
 
         placements = Placement.objects.filter(allowed_batch__contains=[studentDetails.batch],
                                               allowed_branch__contains=[studentDetails.branch],
-                                              deadline_datetime__gte=datetime.now(),
+                                              deadline_datetime__gte=datetime.datetime.now(),
                                               offer_accepted=True, email_verified=True).order_by('deadline_datetime')
         placementsdata = PlacementSerializerForStudent(placements, many=True).data
 
@@ -140,7 +139,7 @@ def submitApplication(request, id, email, user_type):
                 opening = get_object_or_404(Placement, id=data[OPENING_ID],
                                             allowed_batch__contains=[student.batch],
                                             allowed_branch__contains=[student.branch],
-                                            deadline_datetime__gte=datetime.now().date()
+                                            deadline_datetime__gte=datetime.datetime.now()
                                             )
                 if not opening.offer_accepted or not opening.email_verified:
                     raise PermissionError("Placement Not Approved")

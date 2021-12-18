@@ -200,7 +200,7 @@ def submitApplication(request, id, email, user_type):
                 opening = get_object_or_404(Placement, id=data[OPENING_ID],
                                             allowed_batch__contains=[student.batch],
                                             allowed_branch__contains=[student.branch],
-                                            deadline_datetime__gte=datetime.datetime.now().date()
+                                            deadline_datetime__gte=datetime.datetime.now()
                                             )
                 if not opening.offer_accepted or not opening.email_verified:
                     raise PermissionError("Placement Not Approved")

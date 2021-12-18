@@ -154,7 +154,7 @@ def PlacementApplicationConditions(student, placement):
     try:
         selected_companies = PlacementApplication.objects.filter(student=student, selected=True)
         selected_companies_PSU = [i for i in selected_companies if i.placement.tier == 'psu']
-        PPO = PrePlacementOffer.objects.filter(student=student, accepted=True)
+        PPO = PrePlacementOffer.objects.filter(student=student, offer_accepted=True)
 
         if len(selected_companies) + len(PPO) >= MAX_OFFERS_PER_STUDENT:
             raise PermissionError("Max Applications Reached for the Season")
