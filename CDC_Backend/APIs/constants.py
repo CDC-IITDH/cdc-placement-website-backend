@@ -117,6 +117,7 @@ OTHER_REQUIREMENTS = 'other_requirements'
 DEADLINE_DATETIME = 'deadline_datetime'
 OFFER_ACCEPTED = 'offer_accepted'
 EMAIL_VERIFIED = 'email_verified'
+RECAPTCHA_VALUE = 'recaptchakey'
 
 STUDENT_LIST = "student_list"
 STUDENT_ID = "student_id"
