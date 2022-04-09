@@ -19,7 +19,6 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 from rest_framework import status
 from rest_framework.response import Response
-import requests as rq
 
 from .constants import *
 from .models import User, PrePlacementOffer, PlacementApplication
@@ -233,19 +232,4 @@ def generateOneTimeVerificationLink(email, opening_id, opening_type):
     except:
         print(sys.exc_info())
         logger.warning("Utils - generateOneTimeVerificationLink: " + str(sys.exc_info()))
-        return False, "_"
-
-def verify_recaptcha(request):
-    try:
-        data = {
-            'secret': settings.RECAPTCHA_SECRET_KEY,
-            'response': request
-        }
-        r = rq.post('https://www.google.com/recaptcha/api/siteverify', data=data)
-        result = r.json()
-        # logger.info("Recaptcha Response: " + str(result)+"request: "+str(data))
-        return result['success']
-    except:
-        print(sys.exc_info())
-        logger.warning("Utils - verify_recaptcha: " + str(sys.exc_info()))
         return False, "_"
