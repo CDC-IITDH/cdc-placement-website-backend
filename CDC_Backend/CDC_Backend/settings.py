@@ -161,8 +161,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get("EMAIL")  # 'email here'
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")  # 'password here'
 
-RECAPTCHA_SECRET_KEY = os.environ.get("RECAPTCHA_SECRET_KEY")
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
