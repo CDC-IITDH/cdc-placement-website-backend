@@ -3,7 +3,7 @@ astroid==2.9.0
 cachetools==4.2.4
 certifi==2021.10.8
 chardet==4.0.0
-charset-normalizer==2.0.9
+charset-normalizer==2.0.12
 colorama==0.4.4
 dj-database-url==0.5.0
 Django==3.2.12
@@ -28,7 +28,7 @@ pyasn1-modules==0.2.8
 pylint==2.12.2
 python-dotenv==0.19.2
 pytz==2021.3
-PyJWT==2.0.1
+PyJWT==2.3.0
 requests==2.26.0
 rsa==4.8
 six==1.16.0
