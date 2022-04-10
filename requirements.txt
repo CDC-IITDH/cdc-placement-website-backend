@@ -3,14 +3,14 @@ astroid==2.9.0
 cachetools==4.2.4
 certifi==2021.10.8
 chardet==4.0.0
-charset-normalizer==2.0.12
+charset-normalizer==2.0.9
 colorama==0.4.4
 dj-database-url==0.5.0
 Django==3.2.12
 django-background-tasks==1.2.5
 django-compat==1.0.15
 django-cors-headers==3.11.0
-django-db-logger==0.1.12
+django-db-logger==0.1.11
 djangorestframework==3.13.1
 google-auth==2.6.3
 gunicorn==20.1.0
@@ -18,7 +18,7 @@ idna==3.3
 importlib-metadata==4.11.3
 isort==5.10.1
 jsonfield==3.1.0
-lazy-object-proxy==1.7.1
+lazy-object-proxy==1.6.0
 Markdown==3.3.6
 mccabe==0.6.1
 platformdirs==2.4.0
@@ -35,7 +35,7 @@ six==1.16.0
 sqlparse==0.4.2
 toml==0.10.2
 typing_extensions==4.1.1
-urllib3==1.26.7
+urllib3==1.26.9
 whitenoise==6.0.0
 wrapt==1.13.3
 zipp==3.6.0
