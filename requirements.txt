@@ -21,7 +21,7 @@ jsonfield==3.1.0
 lazy-object-proxy==1.6.0
 Markdown==3.3.6
 mccabe==0.6.1
-platformdirs==2.4.0
+platformdirs==2.5.1
 psycopg2-binary==2.9.3
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
