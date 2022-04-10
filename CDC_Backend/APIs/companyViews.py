@@ -16,14 +16,15 @@ logger = logging.getLogger('db')
            IS_COMPENSATION_DETAILS_PDF,
            ALLOWED_BRANCH, SELECTION_PROCEDURE_ROUNDS, SELECTION_PROCEDURE_DETAILS, IS_SELECTION_PROCEDURE_DETAILS_PDF,
            TENTATIVE_DATE_OF_JOINING,
-           TENTATIVE_NO_OF_OFFERS, OTHER_REQUIREMENTS
+           TENTATIVE_NO_OF_OFFERS, OTHER_REQUIREMENTS, RECAPTCHA_VALUE 
            ])
 def addPlacement(request):
     try:
         data = request.data
         files = request.FILES
         opening = Placement()
-
+        if not verify_recaptcha(data[RECAPTCHA_VALUE]):
+            raise Exception("Recaptcha Failed")
         opening.id = generateRandomString()
         # Add a company details in the opening
         opening.company_name = data[COMPANY_NAME]
