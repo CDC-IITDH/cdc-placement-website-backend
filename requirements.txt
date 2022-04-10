@@ -9,7 +9,7 @@ dj-database-url==0.5.0
 Django==3.2.12
 django-background-tasks==1.2.5
 django-compat==1.0.15
-django-cors-headers==3.10.1
+django-cors-headers==3.11.0
 django-db-logger==0.1.11
 djangorestframework==3.13.1
 google-auth==2.6.3
