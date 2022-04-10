@@ -36,6 +36,6 @@ sqlparse==0.4.2
 toml==0.10.2
 typing_extensions==4.0.1
 urllib3==1.26.7
-whitenoise==5.3.0
+whitenoise==6.0.0
 wrapt==1.13.3
 zipp==3.6.0
