@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import os
 import random
@@ -136,7 +137,9 @@ def saveFile(file, location):
 @background_task.background(schedule=10)
 def sendEmail(email_to, subject, data, template):
     try:
-        html_content = render_to_string(template, data)  # render with dynamic value
+        if not isinstance(data, dict):
+            data = json.loads(data)
+        html_content = render_to_string(template, ndata)  # render with dynamic value
         text_content = strip_tags(html_content)
 
         email_from = settings.EMAIL_HOST_USER

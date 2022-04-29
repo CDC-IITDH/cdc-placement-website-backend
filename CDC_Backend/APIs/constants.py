@@ -36,14 +36,14 @@ TOTAL_BRANCHES = 4  # Total No of Branches
 TOTAL_BATCHES = 4  # Total No of Batches
 
 # To be Configured Properly
-CLIENT_ID = "956830229554-290mirc16pdhd5j7ph7v7ukibo4t1qcp.apps.googleusercontent.com"  # Google Login Client ID
+CLIENT_ID = "628308091838-nvfn455vabbq7j0odd797sls8itpplmr.apps.googleusercontent.com"  # Google Login Client ID
 
 # To be Configured Properly
-PLACEMENT_OPENING_URL = "https://www.googleapis.com/auth/adwords/{id}" # On frontend, this is the URL to be opened
+PLACEMENT_OPENING_URL = "https://www.googleapis.com/auth/adwords/{id}" # On frontend, this is the URL to be opened TODO: Change this to the correct URL
 LINK_TO_STORAGE_COMPANY_ATTACHMENT = "https://storage.googleapis.com/cdc-backend-attachments/company_attachments/"
 LINK_TO_STORAGE_RESUME = "https://storage.googleapis.com/cdc-backend-attachments/resume/"
 LINK_TO_APPLICATIONS_CSV = "https://storage.googleapis.com/cdc-backend-attachments/applications-csv/"
-LINK_TO_EMAIl_VERIFICATION_API = "https://api.sendgrid.com/v3/mail/send?token={token}"
+LINK_TO_EMAIl_VERIFICATION_API = "https://localhost:3000/company/verifyemail?token={token}" # TODO: Change this to actual URL
 
 EMAIL = "email"
 
@@ -137,3 +137,5 @@ COMPANY_EMAIL_VERIFICATION_TEMPLATE = 'company_email_verification.html'
 
 APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'CPI',
                              'Resume', 'Selected', ]
+
+PDF_FILES_SERVING_ENDPOINT = 'http://localhost:5500/CDC_Backend/Storage/Company_Attachments/' # TODO: Change this to actual URL
