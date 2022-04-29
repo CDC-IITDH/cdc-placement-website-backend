@@ -52,6 +52,7 @@ def precheck(required_data=None):
 
                 return view_func(request, *args, **kwargs)
             except:
+                logger.warning("Precheck: " + str(sys.exc_info()))
                 return Response({'action': "Pre check", 'message': "Something went wrong"},
                                 status=status.HTTP_400_BAD_REQUEST)
 
