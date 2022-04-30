@@ -5,8 +5,9 @@ import random
 import re
 import string
 import sys
+import traceback
 from os import path, remove
-
+import json
 import background_task
 import jwt
 from django.conf import settings
@@ -135,6 +136,8 @@ def saveFile(file, location):
 @background_task.background(schedule=10)
 def sendEmail(email_to, subject, data, template):
     try:
+        if not isinstance(data, dict):
+            data = json.loads(data)
         html_content = render_to_string(template, data)  # render with dynamic value
         text_content = strip_tags(html_content)
 
@@ -156,7 +159,9 @@ def PlacementApplicationConditions(student, placement):
         selected_companies = PlacementApplication.objects.filter(student=student, selected=True)
         selected_companies_PSU = [i for i in selected_companies if i.placement.tier == 'psu']
         PPO = PrePlacementOffer.objects.filter(student=student, accepted=True)
-
+        # find lenght of PPO
+        print(PPO)
+        print(len(PPO), "ere")
         if len(selected_companies) + len(PPO) >= MAX_OFFERS_PER_STUDENT:
             raise PermissionError("Max Applications Reached for the Season")
 
@@ -177,6 +182,8 @@ def PlacementApplicationConditions(student, placement):
         return False, e
     except:
         print(sys.exc_info())
+        print(traceback.format_exc())
+
         logger.warning("Utils - PlacementApplicationConditions: " + str(sys.exc_info()))
         return False, "_"
 
@@ -237,15 +244,21 @@ def generateOneTimeVerificationLink(email, opening_id, opening_type):
 
 def verify_recaptcha(request):
     try:
+        print(settings.RECAPTCHA_SECRET_KEY)
         data = {
             'secret': settings.RECAPTCHA_SECRET_KEY,
             'response': request
         }
+        print(data)
         r = rq.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         result = r.json()
         # logger.info("Recaptcha Response: " + str(result)+"request: "+str(data))
+
+        print(result, "Result")
         return result['success']
     except:
+        # get exception line number
         print(sys.exc_info())
+        print(traceback.format_exc())
         logger.warning("Utils - verify_recaptcha: " + str(sys.exc_info()))
         return False, "_"

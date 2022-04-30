@@ -1,6 +1,5 @@
-import json
-
 from rest_framework.decorators import api_view
+from django.forms.models import model_to_dict
 
 from .models import *
 from .utils import *
@@ -231,6 +230,7 @@ def addPlacement(request):
 def verifyEmail(request):
     try:
         data = request.data
+        send_email_to_company = None
         token = data[TOKEN]
         # decode token
         decoded_token = jwt.decode(token, os.environ.get("EMAIL_VERIFICATION_SECRET_KEY"), algorithms=['HS256'])
@@ -243,18 +243,48 @@ def verifyEmail(request):
             opening = get_object_or_404(Placement, id=opening_id)
             if email != opening.email:
                 raise ValueError("Invalid Email")
-            opening.email_verified = True
+            if not opening.email_verified:
+                opening.email_verified = True
+                send_email_to_company = True
+            else:
+                send_email_to_company = False
             opening.save()
+        else:
+            raise ValueError('Invalid opening type')
+
+        if send_email_to_company:
+            # Email sending part.
+            details = model_to_dict(opening, fields=[field.name for field in Placement._meta.fields],
+                                    exclude=['id', 'is_company_details_pdf', 'offer_accepted', 'is_description_pdf',
+                                             'is_compensation_details_pdf', 'is_selection_procedure_details_pdf',
+                                             'email_verified'])
+            keys = list(details.keys())
+            newdetails = {}
+            for key in keys:
+                if isinstance(details[key], list):
+                    details[key] = {"details": details[key], "type": ["list"]}
+                if key in ['website', 'company_details_pdf_names', 'description_pdf_names',
+                           'compensation_details_pdf_names', 'selection_procedure_pdf_names']:
+                    if key == 'website':
+                        details[key] = {"details": details[key], "type": ["link"]}
+                    else:
+                        details[key] = {"details": details[key]["details"], "type": ["list", "link"],
+                                        "link": LINK_TO_STORAGE_COMPANY_ATTACHMENT + opening.id + "/"}
+                new_key = key.replace('_', ' ')
+                if key == 'company_details_pdf_names':
+                    new_key = 'company details pdf'
+                newdetails[new_key] = details[key]
             data = {
                 "designation": opening.designation,
                 "opening_type": PLACEMENT,
                 "opening_link": PLACEMENT_OPENING_URL.format(id=opening.id),  # Some Changes here too
-                "company_name": opening.company_name
+                "company_name": opening.company_name,
+                "data": newdetails
             }
-            sendEmail(opening.email, COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
+            json_data = json.dumps(data, default=str)
+            sendEmail(opening.email, COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), json_data,
                       COMPANY_OPENING_SUBMITTED_TEMPLATE)
-        else:
-            raise ValueError('Invalid opening type')
+
         return Response({'action': "Verify Email", 'message': "Email Verified Successfully"},
                         status=status.HTTP_200_OK)
     except Http404:

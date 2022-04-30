@@ -43,7 +43,7 @@ PLACEMENT_OPENING_URL = "https://www.googleapis.com/auth/adwords/{id}" # On fron
 LINK_TO_STORAGE_COMPANY_ATTACHMENT = "https://storage.googleapis.com/cdc-backend-attachments/company_attachments/"
 LINK_TO_STORAGE_RESUME = "https://storage.googleapis.com/cdc-backend-attachments/resume/"
 LINK_TO_APPLICATIONS_CSV = "https://storage.googleapis.com/cdc-backend-attachments/applications-csv/"
-LINK_TO_EMAIl_VERIFICATION_API = "https://api.sendgrid.com/v3/mail/send?token={token}"
+LINK_TO_EMAIl_VERIFICATION_API = "http://localhost:3000/company/verifyEmail?token={token}"
 
 EMAIL = "email"
 

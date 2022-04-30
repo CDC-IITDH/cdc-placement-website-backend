@@ -21,6 +21,14 @@
         table, td, div, h1, p {
             font-family: 'Roboto', sans-serif;
         }
+        #details_table tr:nth-child(even) {background: #FFF}
+        #details_table tr:nth-child(odd) {background: #f9f9f9}
+        #details_table td {padding: 10px}
+        #details_table{
+            border: #334878 1px solid;
+            border-collapse: collapse;
+        }
+
 
     </style>
 </head>
@@ -47,13 +55,44 @@
                                         We have received your <b>{{ opening_type }}</b> notification for a <b>{{ designation }}</b> offer at <b>
                                         {{ company_name }}</b>. Click <a href="{{ opening_link }}">here</a> to view your notification.
                                     </p>
-
                                     <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family: 'Roboto', sans-serif;">
                                         We will keep you informed with the updates. If you have any queries, please
                                         feel to
                                         write to
                                         <nobr><u>cdc@iitdh.ac.in</u></nobr>
                                     </p>
+                                    <table id="details_table">
+                                        {% for key, value in data.items %}
+                                            <tr>
+                                                <td >
+                                                        {{ key }}
+                                                </td>
+                                                <td>
+                                                    {% if 'list' in  value.type %}
+
+                                                            {% for item in value.details %}
+                                                            <li>
+                                                                {% if 'link' in value.type and value.link %}
+                                                                    <a href="{{value.link|add:item}}">{{ item }}</a>
+                                                                {% elif 'link' in value.type %}
+                                                                    <a href="{{item}}">{{ item }}</a>
+                                                                {% else %}
+                                                                {{ item }}
+                                                                {% endif %}
+                                                            </li>
+                                                            {% endfor %}
+                                                    {% else %}
+                                                        {% if 'link' in value.type %}
+                                                        <a href="{{ value.details }}">{{ value.details }}</a>
+                                                        {% else %}
+                                                        {{ value }}
+                                                        {% endif %}
+                                                {% endif %}
+
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
                                 </td>
                             </tr>
 

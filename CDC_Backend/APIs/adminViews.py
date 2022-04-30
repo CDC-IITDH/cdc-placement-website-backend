@@ -54,9 +54,9 @@ def markStatus(request, id, email, user_type):
 def getDashboard(request, id, email, user_type):
     try:
         placements = Placement.objects.all().order_by('-created_at')
-        ongoing = placements.filter(deadline_datetime__gt=datetime.datetime.now(), offer_accepted__isnull=False)
+        ongoing = placements.filter(deadline_datetime__gt=datetime.datetime.now(), offer_accepted=True)
         previous = placements.exclude(deadline_datetime__gt=datetime.datetime.now()).filter(
-            offer_accepted__isnull=False)
+            offer_accepted=True)
         new = placements.filter(offer_accepted__isnull=True)
         ongoing = PlacementSerializerForAdmin(ongoing, many=True).data
         previous = PlacementSerializerForAdmin(previous, many=True).data
@@ -102,8 +102,10 @@ def updateDeadline(request, id, email, user_type):
 def updateOfferAccepted(request, id, email, user_type):
     try:
         data = request.data
+        print(data)
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
-        opening.offer_accepted = True if data[OFFER_ACCEPTED] == "true" else False
+        opening.offer_accepted = True if data[OFFER_ACCEPTED] == True else False
+        print(opening.offer_accepted)
         opening.save()
         return Response({'action': "Update Offer Accepted", 'message': "Offer Accepted Updated"},
                         status=status.HTTP_200_OK)
