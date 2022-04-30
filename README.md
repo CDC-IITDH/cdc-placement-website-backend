@@ -1,4 +1,4 @@
-# CDC - Backend
+python# CDC - Backend
 
 ---
 
@@ -34,6 +34,9 @@
 1. Add the hosted domain name in `ALLOWED_HOSTS` in [settings.py](./CDC_Backend/CDC_Backend/settings.py)
 2. Update the `CORS_ORIGIN_WHITELIST` list and `CORS_ORIGIN_ALLOW_ALL` variable
 
+### Starting the Email Server
+Run the following command to start the email backend process <br>
+`python manage.py process_tasks`
 ### API Reference
 
 Check [here](./CDC_Backend/README.md) for Api Reference

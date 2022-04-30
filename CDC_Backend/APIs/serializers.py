@@ -34,15 +34,15 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         exclude = ['resumes']
 
+
 class PlacementSerializerForStudent(serializers.ModelSerializer):
     company_details_pdf_links = serializers.SerializerMethodField()
     description_pdf_links = serializers.SerializerMethodField()
     compensation_pdf_links = serializers.SerializerMethodField()
     selection_procedure_details_pdf_links = serializers.SerializerMethodField()
 
-
     def get_company_details_pdf_links(self, obj):
-        links =[]
+        links = []
         for pdf_name in obj.company_details_pdf_names:
             ele = {}
             link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
@@ -52,7 +52,7 @@ class PlacementSerializerForStudent(serializers.ModelSerializer):
         return links
 
     def get_description_pdf_links(self, obj):
-        links =[]
+        links = []
         for pdf_name in obj.description_pdf_names:
             ele = {}
             link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
@@ -62,7 +62,7 @@ class PlacementSerializerForStudent(serializers.ModelSerializer):
         return links
 
     def get_compensation_pdf_links(self, obj):
-        links =[]
+        links = []
         for pdf_name in obj.compensation_details_pdf_names:
             ele = {}
             link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
@@ -72,7 +72,7 @@ class PlacementSerializerForStudent(serializers.ModelSerializer):
         return links
 
     def get_selection_procedure_details_pdf_links(self, obj):
-        links =[]
+        links = []
         for pdf_name in obj.selection_procedure_details_pdf_names:
             ele = {}
             link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
@@ -81,13 +81,14 @@ class PlacementSerializerForStudent(serializers.ModelSerializer):
             links.append(ele)
         return links
 
-
-
     class Meta:
         model = Placement
         exclude = [CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, COMPANY_DETAILS_PDF_NAMES, DESCRIPTION_PDF_NAMES,
-                 COMPENSATION_DETAILS_PDF_NAMES, SELECTION_PROCEDURE_DETAILS_PDF_NAMES, OFFER_ACCEPTED, EMAIL_VERIFIED]
+                   COMPENSATION_DETAILS_PDF_NAMES, SELECTION_PROCEDURE_DETAILS_PDF_NAMES, OFFER_ACCEPTED,
+                   EMAIL_VERIFIED,
+                  ]
         depth = 1
+
 
 class PlacementSerializerForAdmin(serializers.ModelSerializer):
     company_details_pdf_links = serializers.SerializerMethodField()
@@ -95,9 +96,8 @@ class PlacementSerializerForAdmin(serializers.ModelSerializer):
     compensation_pdf_links = serializers.SerializerMethodField()
     selection_procedure_details_pdf_links = serializers.SerializerMethodField()
 
-
     def get_company_details_pdf_links(self, obj):
-        links =[]
+        links = []
         for pdf_name in obj.company_details_pdf_names:
             ele = {}
             link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
@@ -107,7 +107,7 @@ class PlacementSerializerForAdmin(serializers.ModelSerializer):
         return links
 
     def get_description_pdf_links(self, obj):
-        links =[]
+        links = []
         for pdf_name in obj.description_pdf_names:
             ele = {}
             link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
@@ -117,7 +117,7 @@ class PlacementSerializerForAdmin(serializers.ModelSerializer):
         return links
 
     def get_compensation_pdf_links(self, obj):
-        links =[]
+        links = []
         for pdf_name in obj.compensation_details_pdf_names:
             ele = {}
             link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
@@ -127,7 +127,7 @@ class PlacementSerializerForAdmin(serializers.ModelSerializer):
         return links
 
     def get_selection_procedure_details_pdf_links(self, obj):
-        links =[]
+        links = []
         for pdf_name in obj.selection_procedure_details_pdf_names:
             ele = {}
             link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
@@ -136,12 +136,10 @@ class PlacementSerializerForAdmin(serializers.ModelSerializer):
             links.append(ele)
         return links
 
-
-
     class Meta:
         model = Placement
         exclude = [COMPANY_DETAILS_PDF_NAMES, DESCRIPTION_PDF_NAMES,
-                 COMPENSATION_DETAILS_PDF_NAMES, SELECTION_PROCEDURE_DETAILS_PDF_NAMES]
+                   COMPENSATION_DETAILS_PDF_NAMES, SELECTION_PROCEDURE_DETAILS_PDF_NAMES]
         depth = 1
 
 
@@ -159,10 +157,10 @@ class PlacementApplicationSerializer(serializers.ModelSerializer):
         ele['name'] = obj.resume
         return ele
 
-
     class Meta:
         model = PlacementApplication
         exclude = [STUDENT, 'resume']
+
 
 class PlacementApplicationSerializerForAdmin(serializers.ModelSerializer):
     student_details = serializers.SerializerMethodField()
