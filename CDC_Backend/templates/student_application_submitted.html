@@ -42,11 +42,13 @@
                             <tr>
                                 <td style="padding:0 0 36px 0;color:#153643;">
                                     <h1 style="font-size:24px;margin:0 0 20px 0;font-family: 'Roboto', sans-serif;
-">Hello there, {{ name }}</h1>
+">Hello, {{ name }}</h1>
                                     <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family: 'Roboto', sans-serif;">
                                         We have received your application for a <b>{{ application_type }}</b> offer at <b>
-                                        {{ company_name }}</b>
-                                        . We received these additional details<br>
+                                        {{ company_name }}</b>.
+                                        {% if additional_info_items %}
+                                        We received these additional details
+                                      <br>
                                     <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:
                                         'Roboto', sans-serif;text-align: center">
 
@@ -61,6 +63,7 @@
                                             </tr>
                                         {% endfor %}
                                     </table>
+                                  {% endif %}
 
                                     </p>
                                     </p>
