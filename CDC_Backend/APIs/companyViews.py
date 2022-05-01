@@ -15,7 +15,7 @@ logger = logging.getLogger('db')
            IS_COMPENSATION_DETAILS_PDF,
            ALLOWED_BRANCH, SELECTION_PROCEDURE_ROUNDS, SELECTION_PROCEDURE_DETAILS, IS_SELECTION_PROCEDURE_DETAILS_PDF,
            TENTATIVE_DATE_OF_JOINING,
-           TENTATIVE_NO_OF_OFFERS, OTHER_REQUIREMENTS, RECAPTCHA_VALUE 
+           TENTATIVE_NO_OF_OFFERS, OTHER_REQUIREMENTS, RECAPTCHA_VALUE
            ])
 def addPlacement(request):
     try:
@@ -24,6 +24,7 @@ def addPlacement(request):
         opening = Placement()
         if not verify_recaptcha(data[RECAPTCHA_VALUE]):
             raise Exception("Recaptcha Failed")
+
         opening.id = generateRandomString()
         # Add a company details in the opening
         opening.company_name = data[COMPANY_NAME]
@@ -32,12 +33,6 @@ def addPlacement(request):
         opening.nature_of_business = data[NATURE_OF_BUSINESS]
         opening.website = data[WEBSITE]
         opening.company_details = data[COMPANY_DETAILS]
-        if data[IS_COMPANY_DETAILS_PDF] == "true":
-            opening.is_company_details_pdf = True
-        elif data[IS_COMPANY_DETAILS_PDF] == "false":
-            opening.is_company_details_pdf = False
-        else:
-            raise ValueError('Invalid value for is_company_details_pdf')
 
         if opening.is_company_details_pdf:
             company_details_pdf = []
@@ -46,6 +41,13 @@ def addPlacement(request):
                 company_details_pdf.append(saveFile(file, file_location))
 
             opening.company_details_pdf_names = company_details_pdf
+
+        if data[IS_COMPANY_DETAILS_PDF] == "true" and len(opening.company_details_pdf_names) > 0:
+            opening.is_company_details_pdf = True
+        elif data[IS_COMPANY_DETAILS_PDF] == "false" and len(opening.company_details_pdf_names) == 0:
+            opening.is_company_details_pdf = False
+        else:
+            raise ValueError('Invalid value for is_company_details_pdf')
 
         # Add a contact person details in the opening
         opening.contact_person_name = data[CONTACT_PERSON_NAME]
@@ -78,14 +80,6 @@ def addPlacement(request):
         opening.designation = data[DESIGNATION]
         opening.description = data[DESCRIPTION]
 
-        # Check if is_description_pdf is boolean
-        if data[IS_DESCRIPTION_PDF] == "true":
-            opening.is_description_pdf = True
-        elif data[IS_DESCRIPTION_PDF] == "false":
-            opening.is_description_pdf = False
-        else:
-            raise ValueError('Invalid value for is_description_pdf')
-
         if opening.is_description_pdf:
             description_pdf = []
             for file in files.getlist(DESCRIPTION_PDF):
@@ -93,6 +87,14 @@ def addPlacement(request):
                 description_pdf.append(saveFile(file, file_location))
 
             opening.description_pdf_names = description_pdf
+
+            # Check if is_description_pdf is boolean
+        if data[IS_DESCRIPTION_PDF] == "true" and len(opening.description_pdf_names) > 0:
+            opening.is_description_pdf = True
+        elif data[IS_DESCRIPTION_PDF] == "false" and len(opening.description_pdf_names) == 0:
+            opening.is_description_pdf = False
+        else:
+            raise ValueError('Invalid value for is_description_pdf')
 
         # Add a compensation details in the opening
         # Check if compensation_ctc is integer
@@ -128,13 +130,6 @@ def addPlacement(request):
             raise ValueError('Compensation Bonus must be an integer')
 
         opening.compensation_details = data[COMPENSATION_DETAILS]
-        # Check if is_compensation_details_pdf is boolean
-        if data[IS_COMPENSATION_DETAILS_PDF] == "true":
-            opening.is_compensation_details_pdf = True
-        elif data[IS_COMPENSATION_DETAILS_PDF] == "false":
-            opening.is_compensation_details_pdf = False
-        else:
-            raise ValueError('Invalid value for is_compensation_details_pdf')
 
         if opening.is_compensation_details_pdf:
             compensation_details_pdf = []
@@ -143,6 +138,14 @@ def addPlacement(request):
                 compensation_details_pdf.append(saveFile(file, file_location))
 
             opening.compensation_details_pdf_names = compensation_details_pdf
+
+        # Check if is_compensation_details_pdf is boolean
+        if data[IS_COMPENSATION_DETAILS_PDF] == "true" and len(opening.compensation_details_pdf_names) > 0:
+            opening.is_compensation_details_pdf = True
+        elif data[IS_COMPENSATION_DETAILS_PDF] == "false" and len(opening.compensation_details_pdf_names) == 0:
+            opening.is_compensation_details_pdf = False
+        else:
+            raise ValueError('Invalid value for is_compensation_details_pdf')
 
         opening.bond_details = data[BOND_DETAILS]
 
@@ -155,13 +158,6 @@ def addPlacement(request):
             except:
                 raise ValueError('Selection Procedure Rounds must be a list')
         opening.selection_procedure_details = data[SELECTION_PROCEDURE_DETAILS]
-        # Check if is_selection_procedure_details_pdf is boolean
-        if data[IS_SELECTION_PROCEDURE_DETAILS_PDF] == "true":
-            opening.is_selection_procedure_details_pdf = True
-        elif data[IS_SELECTION_PROCEDURE_DETAILS_PDF] == "false":
-            opening.is_selection_procedure_details_pdf = False
-        else:
-            raise ValueError('Invalid value for is_selection_procedure_pdf')
 
         if opening.is_selection_procedure_details_pdf:
             selection_procedure_details_pdf = []
@@ -170,6 +166,16 @@ def addPlacement(request):
                 selection_procedure_details_pdf.append(saveFile(file, file_location))
 
             opening.selection_procedure_details_pdf_names = selection_procedure_details_pdf
+
+        # Check if is_selection_procedure_details_pdf is boolean
+        if data[IS_SELECTION_PROCEDURE_DETAILS_PDF] == "true" and len(
+                opening.selection_procedure_details_pdf_names) > 0:
+            opening.is_selection_procedure_details_pdf = True
+        elif data[IS_SELECTION_PROCEDURE_DETAILS_PDF] == "false" and len(
+                opening.selection_procedure_details_pdf_names) == 0:
+            opening.is_selection_procedure_details_pdf = False
+        else:
+            raise ValueError('Invalid value for is_selection_procedure_pdf')
 
         stat, tier = getTier(opening.compensation_gross)
         if stat:

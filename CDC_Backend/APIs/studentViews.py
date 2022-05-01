@@ -134,6 +134,9 @@ def submitApplication(request, id, email, user_type):
     try:
         data = request.data
         student = get_object_or_404(Student, id=id)
+        if not student.can_apply:
+            return Response({'action': "Submit Application", 'message': "Student Can't Apply"},
+                            status=status.HTTP_400_BAD_REQUEST)
         # Only Allowing Applications for Placements
         if data[OPENING_TYPE] == PLACEMENT:
             if not len(PlacementApplication.objects.filter(

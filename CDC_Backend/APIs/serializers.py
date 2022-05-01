@@ -12,7 +12,7 @@ class StudentSerializer(serializers.ModelSerializer):
         links = []
         for i in obj.resumes:
             ele = {}
-            ele['link'] = LINK_TO_STORAGE_RESUME + urllib.parse.quote_plus(obj.id + "/" + i)
+            ele['link'] = LINK_TO_STORAGE_RESUME + urllib.parse.quote(obj.id + "/" + i)
             ele['name'] = i
             links.append(ele)
         return links
@@ -45,7 +45,7 @@ class PlacementSerializerForStudent(serializers.ModelSerializer):
         links = []
         for pdf_name in obj.company_details_pdf_names:
             ele = {}
-            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
+            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote(obj.id + "/" + pdf_name)
             ele['link'] = link
             ele['name'] = pdf_name
             links.append(ele)
@@ -55,7 +55,7 @@ class PlacementSerializerForStudent(serializers.ModelSerializer):
         links = []
         for pdf_name in obj.description_pdf_names:
             ele = {}
-            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
+            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote(obj.id + "/" + pdf_name)
             ele['link'] = link
             ele['name'] = pdf_name
             links.append(ele)
@@ -65,7 +65,7 @@ class PlacementSerializerForStudent(serializers.ModelSerializer):
         links = []
         for pdf_name in obj.compensation_details_pdf_names:
             ele = {}
-            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
+            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote(obj.id + "/" + pdf_name)
             ele['link'] = link
             ele['name'] = pdf_name
             links.append(ele)
@@ -75,7 +75,7 @@ class PlacementSerializerForStudent(serializers.ModelSerializer):
         links = []
         for pdf_name in obj.selection_procedure_details_pdf_names:
             ele = {}
-            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
+            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote(obj.id + "/" + pdf_name)
             ele['link'] = link
             ele['name'] = pdf_name
             links.append(ele)
@@ -100,7 +100,7 @@ class PlacementSerializerForAdmin(serializers.ModelSerializer):
         links = []
         for pdf_name in obj.company_details_pdf_names:
             ele = {}
-            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
+            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote(obj.id + "/" + pdf_name)
             ele['link'] = link
             ele['name'] = pdf_name
             links.append(ele)
@@ -110,7 +110,7 @@ class PlacementSerializerForAdmin(serializers.ModelSerializer):
         links = []
         for pdf_name in obj.description_pdf_names:
             ele = {}
-            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
+            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote(obj.id + "/" + pdf_name)
             ele['link'] = link
             ele['name'] = pdf_name
             links.append(ele)
@@ -120,7 +120,7 @@ class PlacementSerializerForAdmin(serializers.ModelSerializer):
         links = []
         for pdf_name in obj.compensation_details_pdf_names:
             ele = {}
-            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
+            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote(obj.id + "/" + pdf_name)
             ele['link'] = link
             ele['name'] = pdf_name
             links.append(ele)
@@ -130,7 +130,7 @@ class PlacementSerializerForAdmin(serializers.ModelSerializer):
         links = []
         for pdf_name in obj.selection_procedure_details_pdf_names:
             ele = {}
-            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote_plus(obj.id + "/" + pdf_name)
+            link = LINK_TO_STORAGE_COMPANY_ATTACHMENT + urllib.parse.quote(obj.id + "/" + pdf_name)
             ele['link'] = link
             ele['name'] = pdf_name
             links.append(ele)
@@ -153,7 +153,7 @@ class PlacementApplicationSerializer(serializers.ModelSerializer):
 
     def get_resume_link(self, obj):
         ele = {}
-        ele['link'] = LINK_TO_STORAGE_RESUME + urllib.parse.quote_plus(obj.id + "/" + obj.resume)
+        ele['link'] = LINK_TO_STORAGE_RESUME + urllib.parse.quote(obj.id + "/" + obj.resume)
         ele['name'] = obj.resume
         return ele
 
@@ -171,7 +171,7 @@ class PlacementApplicationSerializerForAdmin(serializers.ModelSerializer):
         return data
 
     def get_resume_link(self, obj):
-        link = LINK_TO_STORAGE_RESUME + urllib.parse.quote_plus(obj.id + "/" + obj.resume)
+        link = LINK_TO_STORAGE_RESUME + urllib.parse.quote(obj.id + "/" + obj.resume)
         return link
 
     class Meta:

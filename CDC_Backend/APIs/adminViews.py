@@ -288,7 +288,7 @@ def generateCSV(request, id, email, user_type):
             row_details.append(apl.student.branch)
             row_details.append(apl.student.batch)
             row_details.append(apl.student.cpi)
-            link = LINK_TO_STORAGE_RESUME + urllib.parse.quote_plus(apl.student.id + "/" + apl.resume)
+            link = LINK_TO_STORAGE_RESUME + urllib.parse.quote(apl.student.id) + "/" + urllib.parse.quote(apl.resume)
             row_details.append(link)
             row_details.append(apl.selected)
 
