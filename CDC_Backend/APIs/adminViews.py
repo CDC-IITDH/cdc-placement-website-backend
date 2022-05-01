@@ -305,3 +305,32 @@ def generateCSV(request, id, email, user_type):
         print(sys.exc_info())
         return Response({'action': "Create csv", 'message': "Error Occurred"},
                         status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@isAuthorized(allowed_users=[ADMIN])
+@precheck(required_data=[COMPANY_NAME, COMPENSATION_GROSS, OFFER_ACCEPTED, STUDENT_ID, DESIGNATION, TIER])
+def addPPO(request, id, email, user_type):
+    try:
+        data = request.data
+        PPO = PrePlacementOffer()
+        PPO.company = data[COMPANY_NAME]
+        PPO.compensation = data[COMPENSATION_GROSS]
+        if data[OFFER_ACCEPTED] == "true":
+            PPO.accepted = True
+        elif data[OFFER_ACCEPTED] == "false":
+            PPO.accepted = False
+        else:
+            PPO.accepted = None
+        PPO.student = get_object_or_404(Student, id=data[STUDENT_ID])
+        PPO.designation = data[DESIGNATION]
+        PPO.tier = data[TIER]
+        if COMPENSATION_DETAILS in data:
+            PPO.compensation_details = data[COMPENSATION_DETAILS]
+        PPO.save()
+        return Response({'action': "Add PPO", 'message': "PPO added"},
+                        status=status.HTTP_200_OK)
+    except:
+        logger.warning("Add PPO: " + str(sys.exc_info()))
+        print(sys.exc_info())
+        return Response({'action': "Add PPO", 'message': "Error Occurred"},
+                        status=status.HTTP_400_BAD_REQUEST)

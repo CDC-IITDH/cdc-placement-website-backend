@@ -9,7 +9,8 @@ from .models import *
 
 admin.site.register(User)
 admin.site.register(Admin)
-admin.site.register(PrePlacementOffer)
+
+
 
 admin.site.site_header = "CDC Recruitment Portal"
 
@@ -48,4 +49,14 @@ class PlacementApplication(admin.ModelAdmin):
     def Student(self, obj):
         return model_admin_url(obj.student)
 
+
+@admin.register(PrePlacementOffer)
+class PrePlacementOffer(admin.ModelAdmin):
+    list_display = ('company',  'Student', 'accepted')
+    search_fields = ('company',)
+    ordering = ('company',)
+    list_filter = ('accepted',)
+
+    def Student(self, obj):
+        return model_admin_url(obj.student)
 

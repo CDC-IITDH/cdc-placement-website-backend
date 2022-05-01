@@ -50,7 +50,7 @@ EMAIL = "email"
 STUDENT = 'student'
 ADMIN = 'admin'
 COMPANY = ''
-
+TIER = 'tier'
 # To be Configured Properly
 FOURTH_YEAR = '2018'
 MAX_OFFERS_PER_STUDENT = 2
