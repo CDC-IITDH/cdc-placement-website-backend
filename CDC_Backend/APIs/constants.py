@@ -40,9 +40,9 @@ CLIENT_ID = "956830229554-290mirc16pdhd5j7ph7v7ukibo4t1qcp.apps.googleuserconten
 
 # To be Configured Properly
 PLACEMENT_OPENING_URL = "https://www.googleapis.com/auth/adwords/{id}" # On frontend, this is the URL to be opened
-LINK_TO_STORAGE_COMPANY_ATTACHMENT = "https://storage.googleapis.com/cdc-backend-attachments/company_attachments/"
-LINK_TO_STORAGE_RESUME = "https://storage.googleapis.com/cdc-backend-attachments/resume/"
-LINK_TO_APPLICATIONS_CSV = "https://storage.googleapis.com/cdc-backend-attachments/applications-csv/"
+LINK_TO_STORAGE_COMPANY_ATTACHMENT = "http://localhost/storage/Company_Attachments/"
+LINK_TO_STORAGE_RESUME = "http://localhost/storage/Resumes/"
+LINK_TO_APPLICATIONS_CSV = "http://localhost/storage/Application_CSV/"
 LINK_TO_EMAIl_VERIFICATION_API = "http://localhost:3000/company/verifyEmail?token={token}"
 
 EMAIL = "email"
