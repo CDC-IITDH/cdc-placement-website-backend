@@ -134,6 +134,9 @@ COMPANY_OPENING_SUBMITTED_TEMPLATE = 'company_opening_submitted.html'
 STUDENT_APPLICATION_STATUS_SELECTED_TEMPLATE = 'student_application_status_selected.html'
 STUDENT_APPLICATION_STATUS_NOT_SELECTED_TEMPLATE = 'student_application_status_not_selected.html'
 COMPANY_EMAIL_VERIFICATION_TEMPLATE = 'company_email_verification.html'
+COMPANY_JNF_RESPONSE_TEMPLATE = 'company_jnf_response.html'
 
 APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'CPI',
                              'Resume', 'Selected', ]
+
+PDF_FILES_SERVING_ENDPOINT = 'http://localhost:5500/CDC_Backend/Storage/Company_Attachments/' # TODO: Change this to actual URL
