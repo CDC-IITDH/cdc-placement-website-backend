@@ -19,6 +19,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
     def get_offers(self, obj):
         selected_companies = PlacementApplication.objects.filter(student_id=obj.id, selected=True)
+        pre_placement_offers = PrePlacementOffer.objects.filter(student_id=obj.id)
         companies = []
 
         for i in selected_companies:
@@ -26,6 +27,14 @@ class StudentSerializer(serializers.ModelSerializer):
             ele['designation'] = i.placement.designation
             ele['company_name'] = i.placement.company_name
             ele['application_id'] = i.id
+            ele['placement_offer_type'] = 'Normal'
+            companies.append(ele)
+        for i in pre_placement_offers:
+            ele = {}
+            ele['designation'] = i.designation
+            ele['company_name'] = i.company
+            ele['application_id'] = i.id
+            ele['placement_offer_type'] = 'PPO'
             companies.append(ele)
 
         return companies
