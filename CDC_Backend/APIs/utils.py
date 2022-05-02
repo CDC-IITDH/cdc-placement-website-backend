@@ -12,6 +12,7 @@ import background_task
 import jwt
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
+from django.forms.models import model_to_dict
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -21,9 +22,10 @@ from google.oauth2 import id_token
 from rest_framework import status
 from rest_framework.response import Response
 import requests as rq
+import pdfkit
 
 from .constants import *
-from .models import User, PrePlacementOffer, PlacementApplication
+from .models import User, PrePlacementOffer, PlacementApplication, Placement
 
 logger = logging.getLogger('db')
 
@@ -134,7 +136,7 @@ def saveFile(file, location):
 
 
 @background_task.background(schedule=10)
-def sendEmail(email_to, subject, data, template):
+def sendEmail(email_to, subject, data, template, attachment_jnf_respone=None):
     try:
         if not isinstance(data, dict):
             data = json.loads(data)
@@ -146,6 +148,10 @@ def sendEmail(email_to, subject, data, template):
 
         msg = EmailMultiAlternatives(subject, text_content, email_from, recipient_list)
         msg.attach_alternative(html_content, "text/html")
+        if attachment_jnf_respone:
+            logger.info(attachment_jnf_respone)
+            pdf =  pdfkit.from_string(attachment_jnf_respone['html'], False,options={"--enable-local-file-access": "",'--dpi':'96'})
+            msg.attach(attachment_jnf_respone['name'], pdf, 'application/pdf')
         msg.send()
         return True
     except:
@@ -262,3 +268,28 @@ def verify_recaptcha(request):
         print(traceback.format_exc())
         logger.warning("Utils - verify_recaptcha: " + str(sys.exc_info()))
         return False, "_"
+
+def opening_description_table_html(opening):
+    details = model_to_dict(opening, fields = [field.name for field in Placement._meta.fields], exclude = ['id','is_company_details_pdf','offer_accepted','is_description_pdf','is_compensation_details_pdf','is_selection_procedure_details_pdf','email_verified'])
+    keys = list(details.keys())
+    newdetails = {}
+    for key in keys:
+        if isinstance(details[key], list):
+            details[key] = {"details": details[key], "type": ["list"]}
+        if key in ['website','company_details_pdf_names','description_pdf_names','compensation_details_pdf_names','selection_procedure_pdf_names']:
+            if key == 'website':
+                details[key] = {"details": details[key], "type": ["link"]}
+            else:
+                details[key] = {"details": details[key]["details"], "type": ["list","link"], "link": PDF_FILES_SERVING_ENDPOINT+opening.id+"/"}
+        new_key = key.replace('_',' ')
+        if key.endswith(' names'):
+            new_key = key[:-6]
+        new_key = new_key.capitalize()
+        newdetails[new_key] = details[key]
+    imagepath = os.path.abspath('./templates/image.png')
+    print(imagepath)
+    data = {
+    "data": newdetails,
+    "imgpath": imagepath
+    }
+    return render_to_string(COMPANY_JNF_RESPONSE_TEMPLATE, data)
