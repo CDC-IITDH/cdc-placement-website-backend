@@ -136,4 +136,4 @@ COMPANY_JNF_RESPONSE_TEMPLATE = 'company_jnf_response.html'
 APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'CPI',
                              'Resume', 'Selected', ]
 
-PDF_FILES_SERVING_ENDPOINT = 'http://localhost:5500/CDC_Backend/Storage/Company_Attachments/'  # TODO: Change this to actual URL
+PDF_FILES_SERVING_ENDPOINT = 'http://localhost/storage/Company_Attachments/'  # TODO: Change this to actual URL
