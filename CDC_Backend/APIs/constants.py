@@ -52,7 +52,7 @@ ADMIN = 'admin'
 COMPANY = ''
 TIER = 'tier'
 # To be Configured Properly
-FOURTH_YEAR = '2018'
+FOURTH_YEAR = '2019'
 MAX_OFFERS_PER_STUDENT = 2
 EMAIL_VERIFICATION_TOKEN_TTL = 48 # in hours
 
