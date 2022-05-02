@@ -1,8 +1,3 @@
-import json
-# from datetime import datetime
-import datetime
-import traceback
-
 from rest_framework.decorators import api_view
 
 from .serializers import *
@@ -75,7 +70,7 @@ def getDashboard(request, id, email, user_type):
         placements = Placement.objects.filter(allowed_batch__contains=[studentDetails.batch],
                                               allowed_branch__contains=[studentDetails.branch],
                                               deadline_datetime__gte=datetime.datetime.now(),
-                                             offer_accepted=True, email_verified=True).order_by('deadline_datetime')
+                                              offer_accepted=True, email_verified=True).order_by('deadline_datetime')
         placementsdata = PlacementSerializerForStudent(placements, many=True).data
         placementApplications = PlacementApplication.objects.filter(student_id=id)
         placementApplications = PlacementApplicationSerializer(placementApplications, many=True).data

@@ -158,7 +158,6 @@ Request_Body:
 
 > Only users with `student` role can access this Api.
 
-
 ### Response
 
 Response is a Json with these fields
@@ -565,8 +564,6 @@ Request_Body:
 }
 ```
 
-
-
 > Headers <br>
 > Authorization: "Bearer {tokenID}"
 
@@ -727,7 +724,6 @@ Response is a Json with these fields
 - message: Tells us what happened with our Request.
 - ongoing: Gives us the list of placements that are accepting applications.
 - previous: Gives us the list of placements that stopped accepting applications.
-
 
 ### Status Codes
 

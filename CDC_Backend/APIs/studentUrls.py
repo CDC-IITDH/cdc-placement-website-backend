@@ -1,6 +1,6 @@
-from django.urls import path, include
-from . import studentViews
+from django.urls import path
 
+from . import studentViews
 
 urlpatterns = [
     path('login/', studentViews.login, name="Login"),

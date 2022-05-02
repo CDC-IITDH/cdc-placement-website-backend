@@ -1,6 +1,7 @@
 import urllib
 
 from rest_framework import serializers
+
 from .models import *
 
 
@@ -95,7 +96,7 @@ class PlacementSerializerForStudent(serializers.ModelSerializer):
         exclude = [CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, COMPANY_DETAILS_PDF_NAMES, DESCRIPTION_PDF_NAMES,
                    COMPENSATION_DETAILS_PDF_NAMES, SELECTION_PROCEDURE_DETAILS_PDF_NAMES, OFFER_ACCEPTED,
                    EMAIL_VERIFIED,
-                  ]
+                   ]
         depth = 1
 
 

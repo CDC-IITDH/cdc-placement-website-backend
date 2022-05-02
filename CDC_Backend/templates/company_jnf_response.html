@@ -5,57 +5,69 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        #details_table tr:nth-child(even) {background: #FFF}
-        #details_table tr:nth-child(odd) {background: #bfe3f3}
-        #details_table td {padding: 10px; width: 50%;}
-        #details_table{
+        #details_table tr:nth-child(even) {
+            background: #FFF
+        }
+
+        #details_table tr:nth-child(odd) {
+            background: #bfe3f3
+        }
+
+        #details_table td {
+            padding: 10px;
+            width: 50%;
+        }
+
+        #details_table {
             border: #334878 1px solid;
             border-collapse: collapse;
             width: 80%;
-            margin:auto;
+            margin: auto;
         }
     </style>
     <title>Document</title>
 </head>
 <body style="margin: 0;">
-    
-        <header style="background-color: #334878;"><img style="height: 3cm; margin: auto; display: block; padding: 0.5cm;" src='{{imgpath}}' alt="cdc logo"></header>
-        <h1 style="text-align: center;"> Job Notification Form Response</h1>
-        <table id="details_table">
-            {% for key, value in data.items %}
-            <tr>
-                <td >
-                        {{ key }}
-                </td>
-                <td>
-                    {% if 'list' in  value.type %}
-                    
-                            {% for item in value.details %}
-                            <li>
-                                {% if 'link' in value.type and value.link %}
-                                    <a href="{{value.link|add:item}}">{{ item }}</a>
-                                {% elif 'link' in value.type %}
-                                    <a href="{{item}}">{{ item }}</a>
-                                {% else %}
-                                {{ item }}
-                                {% endif %}
-                            </li>
-                            {% endfor %}
-                    {% else %}
-                        {% if 'link' in value.type %}
-                        <a href="{{ value.details }}">{{ value.details }}</a>
-                        {% else %}
-                        {{ value }}
-                        {% endif %}
-                {% endif %}
-    
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
-    <p style="margin-left: 10%;">In case of any descripency regarding above details, please contact <a href="mailto:cdc@iitdh.ac.in">cdc@iitdh.ac.in</a>
 
-    </p>
+<header style="background-color: #334878;"><img style="height: 3cm; margin: auto; display: block; padding: 0.5cm;"
+                                                src='{{ imgpath }}' alt="cdc logo"></header>
+<h1 style="text-align: center;"> Job Notification Form Response</h1>
+<table id="details_table">
+    {% for key, value in data.items %}
+        <tr>
+            <td>
+                {{ key }}
+            </td>
+            <td>
+                {% if 'list' in  value.type %}
+
+                    {% for item in value.details %}
+                        <li>
+                            {% if 'link' in value.type and value.link %}
+                                <a href="{{ value.link|add:item}}">{{ item }}</a>
+                            {% elif 'link' in value.type %}
+                                <a href="{{ item }}">{{ item }}</a>
+                            {% else %}
+                                {{ item }}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    {% if 'link' in value.type %}
+                        <a href="{{ value.details }}">{{ value.details }}</a>
+                    {% else %}
+                        {{ value }}
+                    {% endif %}
+                {% endif %}
+
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+<p style="margin-left: 10%;">In case of any descripency regarding above details, please contact <a
+        href="mailto:cdc@iitdh.ac.in">cdc@iitdh.ac.in</a>
+
+</p>
 
 </body>
 </html>

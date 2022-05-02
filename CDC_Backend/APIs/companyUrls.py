@@ -1,6 +1,6 @@
 from django.urls import path
-from . import companyViews
 
+from . import companyViews
 
 urlpatterns = [
     path('addPlacement/', companyViews.addPlacement, name="Add Placement"),

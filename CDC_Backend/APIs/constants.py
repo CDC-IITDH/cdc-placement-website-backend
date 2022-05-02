@@ -39,7 +39,7 @@ TOTAL_BATCHES = 4  # Total No of Batches
 CLIENT_ID = "956830229554-290mirc16pdhd5j7ph7v7ukibo4t1qcp.apps.googleusercontent.com"  # Google Login Client ID
 
 # To be Configured Properly
-PLACEMENT_OPENING_URL = "https://www.googleapis.com/auth/adwords/{id}" # On frontend, this is the URL to be opened
+PLACEMENT_OPENING_URL = "https://www.googleapis.com/auth/adwords/{id}"  # On frontend, this is the URL to be opened
 LINK_TO_STORAGE_COMPANY_ATTACHMENT = "http://localhost/storage/Company_Attachments/"
 LINK_TO_STORAGE_RESUME = "http://localhost/storage/Resumes/"
 LINK_TO_APPLICATIONS_CSV = "http://localhost/storage/Application_CSV/"
@@ -54,8 +54,7 @@ TIER = 'tier'
 # To be Configured Properly
 FOURTH_YEAR = '2019'
 MAX_OFFERS_PER_STUDENT = 2
-EMAIL_VERIFICATION_TOKEN_TTL = 48 # in hours
-
+EMAIL_VERIFICATION_TOKEN_TTL = 48  # in hours
 
 STORAGE_DESTINATION_RESUMES = "./Storage/Resumes/"
 STORAGE_DESTINATION_COMPANY_ATTACHMENTS = './Storage/Company_Attachments/'
@@ -87,7 +86,6 @@ CITY = 'city'
 STATE = 'state'
 COUNTRY = 'country'
 PINCODE = 'pincode'
-
 
 DESIGNATION = 'designation'
 DESCRIPTION = 'description'
@@ -123,7 +121,6 @@ STUDENT_LIST = "student_list"
 STUDENT_ID = "student_id"
 STUDENT_SELECTED = "student_selected"
 
-
 COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT = "Notification Submitted - {id} - Career Development Cell, IIT Dharwad"
 STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT = 'Application Status : {company_name} - {id}'
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT = 'CDC - Application Submitted - {company_name}'
@@ -139,4 +136,4 @@ COMPANY_JNF_RESPONSE_TEMPLATE = 'company_jnf_response.html'
 APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'CPI',
                              'Resume', 'Selected', ]
 
-PDF_FILES_SERVING_ENDPOINT = 'http://localhost:5500/CDC_Backend/Storage/Company_Attachments/' # TODO: Change this to actual URL
+PDF_FILES_SERVING_ENDPOINT = 'http://localhost:5500/CDC_Backend/Storage/Company_Attachments/'  # TODO: Change this to actual URL
