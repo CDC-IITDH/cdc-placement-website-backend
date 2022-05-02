@@ -12,7 +12,7 @@ python# CDC - Backend
 4. Install the dependencies <br>
    `pip install -r requirements.txt `
 5. Ensure that you have the PostgreSQL installed on your machine and is running on PORT **5432** <br>
-6. Make sure to give the  correct database credentials in [settings.py](./CDC_Backend/CDC_Backend/settings.py)
+6. Make sure to give the correct database credentials in [settings.py](./CDC_Backend/CDC_Backend/settings.py)
 
 ### Running the Application
 
@@ -35,10 +35,13 @@ python# CDC - Backend
 2. Update the `CORS_ORIGIN_WHITELIST` list and `CORS_ORIGIN_ALLOW_ALL` variable
 
 ### Starting the Email Server
+
 Run the following command to start the email backend process <br>
 `python manage.py process_tasks`
+
 ### API Reference
 
 Check [here](./CDC_Backend/README.md) for Api Reference
 
-For Documentation with Postman Collection, click [here](https://documenter.getpostman.com/view/15531322/UVJfhuhQ#568ad036-ad0e-449a-a26f-4d86616b1393)
+For Documentation with Postman Collection,
+click [here](https://documenter.getpostman.com/view/15531322/UVJfhuhQ#568ad036-ad0e-449a-a26f-4d86616b1393)

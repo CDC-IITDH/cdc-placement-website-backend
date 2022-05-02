@@ -1,5 +1,4 @@
 import csv
-import json
 
 from rest_framework.decorators import api_view
 
@@ -305,6 +304,7 @@ def generateCSV(request, id, email, user_type):
         print(sys.exc_info())
         return Response({'action': "Create csv", 'message': "Error Occurred"},
                         status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 @isAuthorized(allowed_users=[ADMIN])

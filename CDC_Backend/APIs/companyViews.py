@@ -1,7 +1,5 @@
 from rest_framework.decorators import api_view
-from django.forms.models import model_to_dict
 
-from .models import *
 from .utils import *
 
 logger = logging.getLogger('db')

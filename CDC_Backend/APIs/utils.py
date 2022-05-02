@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import os
 import random
@@ -7,9 +8,11 @@ import string
 import sys
 import traceback
 from os import path, remove
-import json
+
 import background_task
 import jwt
+import pdfkit
+import requests as rq
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.forms.models import model_to_dict
@@ -21,8 +24,6 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 from rest_framework import status
 from rest_framework.response import Response
-import requests as rq
-import pdfkit
 
 from .constants import *
 from .models import User, PrePlacementOffer, PlacementApplication, Placement
@@ -78,7 +79,8 @@ def isAuthorized(allowed_users=None):
                     print(email)
                     user = get_object_or_404(User, email=email)
                     if user:
-
+                        user.last_login_time = datetime.datetime.now()
+                        user.save()
                         if len(set(user.user_type).intersection(set(allowed_users))) or allowed_users == '*':
                             return view_func(request, user.id, user.email, user.user_type, *args, **kwargs)
                         else:
@@ -150,7 +152,8 @@ def sendEmail(email_to, subject, data, template, attachment_jnf_respone=None):
         msg.attach_alternative(html_content, "text/html")
         if attachment_jnf_respone:
             logger.info(attachment_jnf_respone)
-            pdf =  pdfkit.from_string(attachment_jnf_respone['html'], False,options={"--enable-local-file-access": "",'--dpi':'96'})
+            pdf = pdfkit.from_string(attachment_jnf_respone['html'], False,
+                                     options={"--enable-local-file-access": "", '--dpi': '96'})
             msg.attach(attachment_jnf_respone['name'], pdf, 'application/pdf')
         msg.send()
         return True
@@ -248,6 +251,7 @@ def generateOneTimeVerificationLink(email, opening_id, opening_type):
         logger.warning("Utils - generateOneTimeVerificationLink: " + str(sys.exc_info()))
         return False, "_"
 
+
 def verify_recaptcha(request):
     try:
         print(settings.RECAPTCHA_SECRET_KEY)
@@ -269,19 +273,25 @@ def verify_recaptcha(request):
         logger.warning("Utils - verify_recaptcha: " + str(sys.exc_info()))
         return False, "_"
 
+
 def opening_description_table_html(opening):
-    details = model_to_dict(opening, fields = [field.name for field in Placement._meta.fields], exclude = ['id','is_company_details_pdf','offer_accepted','is_description_pdf','is_compensation_details_pdf','is_selection_procedure_details_pdf','email_verified'])
+    details = model_to_dict(opening, fields=[field.name for field in Placement._meta.fields],
+                            exclude=['id', 'is_company_details_pdf', 'offer_accepted', 'is_description_pdf',
+                                     'is_compensation_details_pdf', 'is_selection_procedure_details_pdf',
+                                     'email_verified'])
     keys = list(details.keys())
     newdetails = {}
     for key in keys:
         if isinstance(details[key], list):
             details[key] = {"details": details[key], "type": ["list"]}
-        if key in ['website','company_details_pdf_names','description_pdf_names','compensation_details_pdf_names','selection_procedure_pdf_names']:
+        if key in ['website', 'company_details_pdf_names', 'description_pdf_names', 'compensation_details_pdf_names',
+                   'selection_procedure_pdf_names']:
             if key == 'website':
                 details[key] = {"details": details[key], "type": ["link"]}
             else:
-                details[key] = {"details": details[key]["details"], "type": ["list","link"], "link": PDF_FILES_SERVING_ENDPOINT+opening.id+"/"}
-        new_key = key.replace('_',' ')
+                details[key] = {"details": details[key]["details"], "type": ["list", "link"],
+                                "link": PDF_FILES_SERVING_ENDPOINT + opening.id + "/"}
+        new_key = key.replace('_', ' ')
         if key.endswith(' names'):
             new_key = key[:-6]
         new_key = new_key.capitalize()
@@ -289,7 +299,7 @@ def opening_description_table_html(opening):
     imagepath = os.path.abspath('./templates/image.png')
     print(imagepath)
     data = {
-    "data": newdetails,
-    "imgpath": imagepath
+        "data": newdetails,
+        "imgpath": imagepath
     }
     return render_to_string(COMPANY_JNF_RESPONSE_TEMPLATE, data)

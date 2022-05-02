@@ -1,16 +1,13 @@
 from django.contrib import admin
-from .models import *
-from django.contrib import admin
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.shortcuts import resolve_url
 from django.utils.html import format_html
 from django.utils.safestring import SafeText
+
 from .models import *
 
 admin.site.register(User)
 admin.site.register(Admin)
-
-
 
 admin.site.site_header = "CDC Recruitment Portal"
 
@@ -22,10 +19,21 @@ def model_admin_url(obj, name=None) -> str:
 
 @admin.register(Student)
 class Student(admin.ModelAdmin):
-    list_display = ("roll_no", "name", "batch", "branch", "phone_number")
-    search_fields = ("roll_no", "name","phone_number")
+    list_display = ("roll_no", "name", "batch", "branch", "phone_number", 'can_apply')
+    search_fields = ("roll_no", "name", "phone_number")
     ordering = ("roll_no", "name", "batch", "branch", "phone_number")
     list_filter = ("batch", "branch")
+    actions = ['mark_can_apply_as_no', 'mark_can_apply_as_yes']
+
+    @admin.action(description="Deregister students")
+    def mark_can_apply_as_no(self, request, queryset):
+        queryset.update(can_apply=False)
+        self.message_user(request, "Deregistered the users")
+
+    @admin.action(description="Register students")
+    def mark_can_apply_as_yes(self, request, queryset):
+        queryset.update(can_apply=True)
+        self.message_user(request, "Registered the users")
 
 
 @admin.register(Placement)
@@ -52,11 +60,10 @@ class PlacementApplication(admin.ModelAdmin):
 
 @admin.register(PrePlacementOffer)
 class PrePlacementOffer(admin.ModelAdmin):
-    list_display = ('company',  'Student', 'accepted')
+    list_display = ('company', 'Student', 'accepted')
     search_fields = ('company',)
     ordering = ('company',)
     list_filter = ('accepted',)
 
     def Student(self, obj):
         return model_admin_url(obj.student)
-

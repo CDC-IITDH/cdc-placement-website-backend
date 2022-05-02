@@ -1,15 +1,18 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
-from .constants import *
-# from .utils import *
 
+from .constants import *
+
+
+# from .utils import *
 
 
 class User(models.Model):
     email = models.CharField(primary_key=True, blank=False, max_length=50)
     id = models.CharField(blank=False, max_length=25)
     user_type = ArrayField(models.CharField(blank=False, max_length=10), size=4, default=list, blank=False)
+    last_login_time = models.DateTimeField(default=timezone.now)
 
 
 class Student(models.Model):
@@ -21,7 +24,7 @@ class Student(models.Model):
     phone_number = models.PositiveBigIntegerField(blank=True, default=None, null=True)
     resumes = ArrayField(models.CharField(null=True, default=None, max_length=100), size=10, default=list, blank=True)
     cpi = models.DecimalField(decimal_places=2, max_digits=4)
-    can_apply = models.BooleanField(default=True)
+    can_apply = models.BooleanField(default=True, verbose_name='Registered')
 
     def __str__(self):
         return str(self.roll_no)
@@ -45,7 +48,8 @@ class Placement(models.Model):
     nature_of_business = models.CharField(blank=False, max_length=50, default="")
     website = models.CharField(blank=True, max_length=50)
     company_details = models.CharField(max_length=500, default=None, null=True)
-    company_details_pdf_names = ArrayField(models.CharField(null=True, default=None, max_length=100), size=5, default=list, blank=True)
+    company_details_pdf_names = ArrayField(models.CharField(null=True, default=None, max_length=100), size=5,
+                                           default=list, blank=True)
     is_company_details_pdf = models.BooleanField(blank=False, default=False)
     contact_person_name = models.CharField(blank=False, max_length=50)
     phone_number = models.PositiveBigIntegerField(blank=False)
@@ -53,24 +57,28 @@ class Placement(models.Model):
     city = models.CharField(blank=False, max_length=100, default="")
     state = models.CharField(blank=False, max_length=100, default="")
     country = models.CharField(blank=False, max_length=100, default="")
-    pin_code = models.IntegerField(blank=False, default=None,null=True)
+    pin_code = models.IntegerField(blank=False, default=None, null=True)
     city_type = models.CharField(blank=False, max_length=15, choices=OFFER_CITY_TYPE)
     # Job Details
     designation = models.CharField(blank=False, max_length=50, default=None, null=True)
     description = models.CharField(blank=False, max_length=500, default=None, null=True)
-    description_pdf_names = ArrayField(models.CharField(null=True, default=None, max_length=100), size=5, default=list, blank=True)
+    description_pdf_names = ArrayField(models.CharField(null=True, default=None, max_length=100), size=5, default=list,
+                                       blank=True)
     is_description_pdf = models.BooleanField(blank=False, default=False)
-    compensation_CTC = models.IntegerField(blank=False, default=None, null=True )  # Job - Per Year
+    compensation_CTC = models.IntegerField(blank=False, default=None, null=True)  # Job - Per Year
     compensation_gross = models.IntegerField(blank=False, default=None, null=True)
     compensation_take_home = models.IntegerField(blank=False, default=None, null=True)
     compensation_bonus = models.IntegerField(blank=True, default=None, null=True)
     compensation_details = models.CharField(blank=True, max_length=500, default=None, null=True)
-    compensation_details_pdf_names = ArrayField(models.CharField(null=True, default=None, max_length=100), size=5, default=list, blank=True)
+    compensation_details_pdf_names = ArrayField(models.CharField(null=True, default=None, max_length=100), size=5,
+                                                default=list, blank=True)
     is_compensation_details_pdf = models.BooleanField(blank=False, default=False)
     bond_details = models.CharField(blank=True, max_length=500)
-    selection_procedure_rounds = ArrayField(models.CharField(null=True, default=None, max_length=100), size=10, default=list, blank=True)
+    selection_procedure_rounds = ArrayField(models.CharField(null=True, default=None, max_length=100), size=10,
+                                            default=list, blank=True)
     selection_procedure_details = models.CharField(blank=True, max_length=500)
-    selection_procedure_details_pdf_names = ArrayField(models.CharField(null=True, default=None, max_length=100), size=5, default=list, blank=True)
+    selection_procedure_details_pdf_names = ArrayField(models.CharField(null=True, default=None, max_length=100),
+                                                       size=5, default=list, blank=True)
     is_selection_procedure_details_pdf = models.BooleanField(blank=False, default=False)
     tier = models.CharField(blank=False, choices=TIERS, max_length=10, default=None, null=True)
     tentative_date_of_joining = models.DateField(blank=False, verbose_name="Tentative Date", default=timezone.now)
@@ -102,6 +110,7 @@ class Placement(models.Model):
 
     def __str__(self):
         return self.company_name + " - " + self.id
+
 
 class PlacementApplication(models.Model):
     id = models.CharField(blank=False, primary_key=True, max_length=15)
