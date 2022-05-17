@@ -1,4 +1,5 @@
 import csv
+from email.mime import application
 
 from rest_framework.decorators import api_view
 
@@ -334,3 +335,58 @@ def addPPO(request, id, email, user_type):
         print(sys.exc_info())
         return Response({'action': "Add PPO", 'message': "Error Occurred"},
                         status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@isAuthorized(allowed_users=[ADMIN])
+@precheck(required_data=[STUDENT_ID, OPENING_ID])
+def getstudentapplication(request, id, email, user_type):
+    try:
+        data = request.data
+        student = get_object_or_404(Student, id=data[STUDENT_ID])
+        # search for the application if there or not
+        application = PlacementApplication.objects.filter(student=student, placement=get_object_or_404(Placement, id=data[OPENING_ID]))
+        logger.info("Get Student Application: " + str(application))
+        if application:
+            serializer = PlacementApplicationSerializer(application[0])
+            return Response({'action': "Get Student Application", 'found': "true",'application_id': serializer.data["id"] , 'application_additionalInfo': serializer.data[ADDITIONAL_INFO],"available_resumes":student.resumes},
+                        status=status.HTTP_200_OK)
+        else:
+            return Response({'action': "Get Student Application", 'found': "false", "available_resumes": student.resumes},
+                        status=status.HTTP_200_OK)
+    except:
+        logger.warning("Get Student Application: " + str(sys.exc_info()))
+        print(sys.exc_info())
+        return Response({'action': "Get Student Application", 'message': "Student with given roll number not found."}, status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@isAuthorized(allowed_users=[ADMIN])
+@precheck(required_data=[APPLICATION_ID,STUDENT_ID,OPENING_ID,ADDITIONAL_INFO,RESUME_FILE_NAME])
+def addstudentapplication(request, id, email, user_type):
+    try:
+        data = request.data
+        if data[APPLICATION_ID] == "":
+            application = PlacementApplication()
+            application.id = generateRandomString()
+            application.placement = get_object_or_404(Placement, id=data[OPENING_ID])
+            application.student = get_object_or_404(Student, id=data[STUDENT_ID])
+            application.resume = data[RESUME_FILE_NAME]
+            application.additional_info = json.dumps(data[ADDITIONAL_INFO])
+            application.save()
+            return Response({'action': "Add Student Application", 'message': "Application added"},
+                            status=status.HTTP_200_OK)
+        else:
+            application = get_object_or_404(PlacementApplication, id=data[APPLICATION_ID])
+            if application:
+                application.resume = data[RESUME_FILE_NAME]
+                application.additional_info = json.dumps(data[ADDITIONAL_INFO])
+                application.save()
+                return Response({'action': "Add Student Application", 'message': "Application updated"},
+                            status=status.HTTP_200_OK)
+            else:
+                return Response({'action': "Edit Student Application", 'message': "No Application Found"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    except:
+        logger.warning("Edit Student Application: " + str(sys.exc_info()))
+        print(sys.exc_info())
