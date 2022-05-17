@@ -1,5 +1,4 @@
 import csv
-from email.mime import application
 
 from rest_framework.decorators import api_view
 
@@ -348,10 +347,12 @@ def getstudentapplication(request, id, email, user_type):
         logger.info("Get Student Application: " + str(application))
         if application:
             serializer = PlacementApplicationSerializer(application[0])
-            return Response({'action': "Get Student Application", 'found': "true",'application_id': serializer.data["id"] , 'application_additionalInfo': serializer.data[ADDITIONAL_INFO],"available_resumes":student.resumes},
+            return Response({'action': "Get Student Application", 'found': "true",'application_id': serializer.data["id"] , 'application_additionalInfo': serializer.data[ADDITIONAL_INFO],"available_resumes":student.resumes,
+             "student_name":student.name, "student_branch":student.branch, "student_batch":student.batch },
                         status=status.HTTP_200_OK)
         else:
-            return Response({'action': "Get Student Application", 'found': "false", "available_resumes": student.resumes},
+            return Response({'action': "Get Student Application", 'found': "false", "available_resumes": student.resumes,
+             "student_name":student.name, "student_branch":student.branch, "student_batch":student.batch},
                         status=status.HTTP_200_OK)
     except:
         logger.warning("Get Student Application: " + str(sys.exc_info()))
