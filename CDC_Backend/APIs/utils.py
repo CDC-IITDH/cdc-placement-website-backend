@@ -276,24 +276,21 @@ def verify_recaptcha(request):
 
 def opening_description_table_html(opening):
     details = model_to_dict(opening, fields=[field.name for field in Placement._meta.fields],
-                            exclude=['id', 'is_company_details_pdf', 'offer_accepted', 'is_description_pdf',
-                                     'is_compensation_details_pdf', 'is_selection_procedure_details_pdf',
-                                     'email_verified'])
+                            exclude=EXCLUDE_IN_PDF)
     keys = list(details.keys())
     newdetails = {}
     for key in keys:
         if isinstance(details[key], list):
             details[key] = {"details": details[key], "type": ["list"]}
-        if key in ['website', 'company_details_pdf_names', 'description_pdf_names', 'compensation_details_pdf_names',
-                   'selection_procedure_pdf_names']:
+        if key in SPECIAL_FORMAT_IN_PDF:
             if key == 'website':
                 details[key] = {"details": details[key], "type": ["link"]}
             else:
                 details[key] = {"details": details[key]["details"], "type": ["list", "link"],
                                 "link": PDF_FILES_SERVING_ENDPOINT + opening.id + "/"}
         new_key = key.replace('_', ' ')
-        if key.endswith(' names'):
-            new_key = key[:-6]
+        if new_key.endswith(' names'):
+            new_key = new_key[:-6]
         new_key = new_key.capitalize()
         newdetails[new_key] = details[key]
     imagepath = os.path.abspath('./templates/image.png')
