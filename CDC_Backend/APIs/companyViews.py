@@ -31,6 +31,7 @@ def addPlacement(request):
         opening.nature_of_business = data[NATURE_OF_BUSINESS]
         opening.website = data[WEBSITE]
         opening.company_details = data[COMPANY_DETAILS]
+        opening.is_company_details_pdf = data[IS_COMPANY_DETAILS_PDF]
 
         if opening.is_company_details_pdf:
             company_details_pdf = []
@@ -77,6 +78,7 @@ def addPlacement(request):
         # Add a designation details in the opening
         opening.designation = data[DESIGNATION]
         opening.description = data[DESCRIPTION]
+        opening.is_description_pdf = data[IS_DESCRIPTION_PDF]
 
         if opening.is_description_pdf:
             description_pdf = []
@@ -128,6 +130,7 @@ def addPlacement(request):
             raise ValueError('Compensation Bonus must be an integer')
 
         opening.compensation_details = data[COMPENSATION_DETAILS]
+        opening.is_compensation_details_pdf = data[IS_COMPENSATION_DETAILS_PDF]
 
         if opening.is_compensation_details_pdf:
             compensation_details_pdf = []
@@ -156,6 +159,7 @@ def addPlacement(request):
             except:
                 raise ValueError('Selection Procedure Rounds must be a list')
         opening.selection_procedure_details = data[SELECTION_PROCEDURE_DETAILS]
+        opening.is_selection_procedure_details_pdf = data[IS_SELECTION_PROCEDURE_DETAILS_PDF]
 
         if opening.is_selection_procedure_details_pdf:
             selection_procedure_details_pdf = []

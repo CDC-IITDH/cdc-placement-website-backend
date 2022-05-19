@@ -121,6 +121,12 @@ STUDENT_LIST = "student_list"
 STUDENT_ID = "student_id"
 STUDENT_SELECTED = "student_selected"
 
+EXCLUDE_IN_PDF = ['id', 'is_company_details_pdf', 'offer_accepted', 'is_description_pdf',
+                                     'is_compensation_details_pdf', 'is_selection_procedure_details_pdf',
+                                     'email_verified', 'created_at']
+SPECIAL_FORMAT_IN_PDF = ['website', 'company_details_pdf_names', 'description_pdf_names', 'compensation_details_pdf_names',
+                   'selection_procedure_pdf_names']
+
 COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT = "Notification Submitted - {id} - Career Development Cell, IIT Dharwad"
 STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT = 'Application Status : {company_name} - {id}'
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT = 'CDC - Application Submitted - {company_name}'
