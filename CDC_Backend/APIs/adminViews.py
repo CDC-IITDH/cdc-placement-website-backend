@@ -18,7 +18,13 @@ def markStatus(request, id, email, user_type):
             application = applications.filter(student__roll_no=i[STUDENT_ID])  # Filtering student's application
             if len(application) > 0:
                 application = application[0]
-                application.selected = True if i[STUDENT_SELECTED] == "true" else False
+                if not application.selected:
+                    if i[STUDENT_SELECTED] == True:
+                        application.selected = True
+                    else:
+                        application.selected = False
+                else:
+                    raise ValueError("Student already selected")
 
                 email = str(application.student.roll_no) + "@iitdh.ac.in"  # Only allowing for IITDh emails
                 subject = STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT.format(
@@ -159,8 +165,8 @@ def updateAdditionalInfo(request, id, email, user_type):
     except ValueError:
         return Response({'action': "Update Additional Info", 'message': "Additional Info must be a list"},
                         status=status.HTTP_400_BAD_REQUEST)
-    except:
-        logger.warning("Update Additional Info: " + str(sys.exc_info()))
+    except Exception as e:
+        logger.warning("Update Additional Info: " + str(e))
         return Response({'action': "Update Additional Info", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -193,8 +199,10 @@ def submitApplication(request, id, email, user_type):
     try:
         data = request.data
         student = get_object_or_404(Student, roll_no=data[STUDENT_ID])
+        if data[OPENING_TYPE] != PLACEMENT:
+            raise ValueError(OPENING_TYPE + " is Invalid")
         # Only Allowing Applications for Placements
-        if data[OPENING_TYPE] == PLACEMENT:
+        else:
             if not len(PlacementApplication.objects.filter(
                     student_id=student.id, placement_id=data[OPENING_ID])):
                 application = PlacementApplication()
@@ -212,8 +220,6 @@ def submitApplication(request, id, email, user_type):
                 application.placement = opening
             else:
                 raise PermissionError("Application is already Submitted")
-        else:
-            raise ValueError(OPENING_TYPE + " is Invalid")
 
         if data[RESUME_FILE_NAME] in student.resumes:
             application.resume = data[RESUME_FILE_NAME]
