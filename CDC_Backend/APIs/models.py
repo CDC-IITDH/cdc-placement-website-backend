@@ -9,20 +9,25 @@ from .constants import *
 
 
 class User(models.Model):
-    email = models.CharField(primary_key=True, blank=False, max_length=50)
+    email = models.EmailField(primary_key=True, blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
     id = models.CharField(blank=False, max_length=25)
     user_type = ArrayField(models.CharField(blank=False, max_length=10), size=4, default=list, blank=False)
     last_login_time = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        verbose_name_plural = "User"
+        unique_together = ('email', 'id')
 
 
 class Student(models.Model):
     id = models.CharField(blank=False, max_length=15, primary_key=True)
     roll_no = models.IntegerField(blank=False)
-    name = models.CharField(blank=False, max_length=50)
+    name = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
     batch = models.CharField(max_length=10, choices=BATCH_CHOICES, blank=False)
     branch = models.CharField(choices=BRANCH_CHOICES, blank=False, max_length=10)
     phone_number = models.PositiveBigIntegerField(blank=True, default=None, null=True)
-    resumes = ArrayField(models.CharField(null=True, default=None, max_length=100), size=10, default=list, blank=True)
+    resumes = ArrayField(models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=10,
+                         default=list, blank=True)
     cpi = models.DecimalField(decimal_places=2, max_digits=4)
     can_apply = models.BooleanField(default=True, verbose_name='Registered')
 
@@ -32,7 +37,7 @@ class Student(models.Model):
 
 class Admin(models.Model):
     id = models.CharField(blank=False, max_length=15, primary_key=True)
-    name = models.CharField(blank=False, max_length=50)
+    name = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
 
 
 def two_day_after_today():
@@ -42,43 +47,49 @@ def two_day_after_today():
 class Placement(models.Model):
     id = models.CharField(blank=False, primary_key=True, max_length=15)
     # Company Details
-    company_name = models.CharField(blank=False, max_length=50)
-    address = models.CharField(blank=False, max_length=500)
-    company_type = models.CharField(blank=False, max_length=50)
-    nature_of_business = models.CharField(blank=False, max_length=50, default="")
-    website = models.CharField(blank=True, max_length=50)
-    company_details = models.CharField(max_length=500, default=None, null=True)
-    company_details_pdf_names = ArrayField(models.CharField(null=True, default=None, max_length=100), size=5,
-                                           default=list, blank=True)
+    company_name = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT)
+    address = models.CharField(blank=False, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT)
+    company_type = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT)
+    nature_of_business = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
+    website = models.CharField(blank=True, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
+    company_details = models.CharField(max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
+    company_details_pdf_names = ArrayField(
+        models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=5,
+        default=list, blank=True)
     is_company_details_pdf = models.BooleanField(blank=False, default=False)
-    contact_person_name = models.CharField(blank=False, max_length=50)
+    contact_person_name = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
     phone_number = models.PositiveBigIntegerField(blank=False)
-    email = models.CharField(blank=False, max_length=50, default="")
-    city = models.CharField(blank=False, max_length=100, default="")
-    state = models.CharField(blank=False, max_length=100, default="")
-    country = models.CharField(blank=False, max_length=100, default="")
+    email = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
+    city = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
+    state = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
+    country = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
     pin_code = models.IntegerField(blank=False, default=None, null=True)
     city_type = models.CharField(blank=False, max_length=15, choices=OFFER_CITY_TYPE)
     # Job Details
-    designation = models.CharField(blank=False, max_length=50, default=None, null=True)
-    description = models.CharField(blank=False, max_length=500, default=None, null=True)
-    description_pdf_names = ArrayField(models.CharField(null=True, default=None, max_length=100), size=5, default=list,
-                                       blank=True)
+    designation = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT, default=None, null=True)
+    description = models.CharField(blank=False, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
+    description_pdf_names = ArrayField(
+        models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=5, default=list,
+        blank=True)
     is_description_pdf = models.BooleanField(blank=False, default=False)
     compensation_CTC = models.IntegerField(blank=False, default=None, null=True)  # Job - Per Year
     compensation_gross = models.IntegerField(blank=False, default=None, null=True)
     compensation_take_home = models.IntegerField(blank=False, default=None, null=True)
     compensation_bonus = models.IntegerField(blank=True, default=None, null=True)
-    compensation_details = models.CharField(blank=True, max_length=500, default=None, null=True)
-    compensation_details_pdf_names = ArrayField(models.CharField(null=True, default=None, max_length=100), size=5,
-                                                default=list, blank=True)
+    compensation_details = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None,
+                                            null=True)
+    compensation_details_pdf_names = ArrayField(
+        models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=5,
+        default=list, blank=True)
     is_compensation_details_pdf = models.BooleanField(blank=False, default=False)
-    bond_details = models.CharField(blank=True, max_length=500)
-    selection_procedure_rounds = ArrayField(models.CharField(null=True, default=None, max_length=100), size=10,
-                                            default=list, blank=True)
-    selection_procedure_details = models.CharField(blank=True, max_length=500)
-    selection_procedure_details_pdf_names = ArrayField(models.CharField(null=True, default=None, max_length=100),
-                                                       size=5, default=list, blank=True)
+    bond_details = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT)
+    selection_procedure_rounds = ArrayField(
+        models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=10,
+        default=list, blank=True)
+    selection_procedure_details = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT)
+    selection_procedure_details_pdf_names = ArrayField(
+        models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT),
+        size=5, default=list, blank=True)
     is_selection_procedure_details_pdf = models.BooleanField(blank=False, default=False)
     tier = models.CharField(blank=False, choices=TIERS, max_length=10, default=None, null=True)
     tentative_date_of_joining = models.DateField(blank=False, verbose_name="Tentative Date", default=timezone.now)
@@ -94,18 +105,40 @@ class Placement(models.Model):
         default=list
     )
     tentative_no_of_offers = models.IntegerField(blank=False, default=None, null=True)
-    other_requirements = models.CharField(blank=True, max_length=200, default="")
-    additional_info = ArrayField(models.CharField(blank=True, max_length=200), size=15, default=list, blank=True)
+    rs_eligible = models.BooleanField(blank=False, default=False)
+    other_requirements = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default="")
+    additional_info = ArrayField(models.CharField(blank=True, max_length=JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT), size=15,
+                                 default=list, blank=True)
     email_verified = models.BooleanField(blank=False, default=False)
     offer_accepted = models.BooleanField(blank=False, default=None, null=True)
     deadline_datetime = models.DateTimeField(blank=False, verbose_name="Deadline Date", default=two_day_after_today)
     created_at = models.DateTimeField(blank=False, default=None, null=True)
 
+    def format(self):
+        self.company_name = self.company_name.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        self.company_type = self.company_type.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        self.nature_of_business = self.nature_of_business.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        self.website = self.website.strip()[:JNF_TEXT_MAX_CHARACTER_COUNT]
+        self.company_details = self.company_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        self.contact_person_name = self.contact_person_name.strip()[:JNF_TEXT_MAX_CHARACTER_COUNT]
+        self.email = self.email.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        self.city = self.city.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        self.state = self.state.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        self.country = self.country.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        self.city_type = self.city_type.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        self.designation = self.designation.strip()[:JNF_TEXT_MAX_CHARACTER_COUNT]
+        self.description = self.description.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        self.compensation_details = self.compensation_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        self.selection_procedure_details = self.selection_procedure_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        self.bond_details = self.bond_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        self.other_requirements = self.other_requirements.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        self.additinal_info = [info.strip()[:JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT] for info in self.additional_info]
+
     def save(self, *args, **kwargs):
         ''' On save, add timestamps '''
         if not self.created_at:
             self.created_at = timezone.now()
-
+        self.format()
         return super(Placement, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -116,7 +149,7 @@ class PlacementApplication(models.Model):
     id = models.CharField(blank=False, primary_key=True, max_length=15)
     placement = models.ForeignKey(Placement, blank=False, on_delete=models.RESTRICT, default=None, null=True)
     student = models.ForeignKey(Student, blank=False, on_delete=models.CASCADE)
-    resume = models.CharField(max_length=100, blank=False, null=True, default=None)
+    resume = models.CharField(max_length=JNF_TEXT_MAX_CHARACTER_COUNT, blank=False, null=True, default=None)
     additional_info = models.JSONField(blank=True, null=True, default=None)
     selected = models.BooleanField(null=True, default=None, blank=True)
     applied_at = models.DateTimeField(blank=False, default=None, null=True)
@@ -139,7 +172,8 @@ class PlacementApplication(models.Model):
 class PrePlacementOffer(models.Model):
     id = models.AutoField(primary_key=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE, blank=False)
-    company = models.CharField(max_length=50, blank=False, default="", verbose_name="Company Name")
+    company = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, blank=False, default="",
+                               verbose_name="Company Name")
     compensation = models.IntegerField(blank=False)  # Job - Per Year
     compensation_details = models.CharField(blank=True, max_length=200)
     tier = models.CharField(blank=False, choices=TIERS, max_length=10)

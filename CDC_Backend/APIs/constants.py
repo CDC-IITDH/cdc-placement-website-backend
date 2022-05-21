@@ -55,6 +55,10 @@ TIER = 'tier'
 FOURTH_YEAR = '2019'
 MAX_OFFERS_PER_STUDENT = 2
 EMAIL_VERIFICATION_TOKEN_TTL = 48  # in hours
+JNF_TEXT_MAX_CHARACTER_COUNT = 100
+JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT = 200
+JNF_TEXTAREA_MAX_CHARACTER_COUNT = 1000
+JNF_SMALLTEXT_MAX_CHARACTER_COUNT = 50
 
 STORAGE_DESTINATION_RESUMES = "./Storage/Resumes/"
 STORAGE_DESTINATION_COMPANY_ATTACHMENTS = './Storage/Company_Attachments/'
@@ -122,10 +126,11 @@ STUDENT_ID = "student_id"
 STUDENT_SELECTED = "student_selected"
 
 EXCLUDE_IN_PDF = ['id', 'is_company_details_pdf', 'offer_accepted', 'is_description_pdf',
-                                     'is_compensation_details_pdf', 'is_selection_procedure_details_pdf',
-                                     'email_verified', 'created_at']
-SPECIAL_FORMAT_IN_PDF = ['website', 'company_details_pdf_names', 'description_pdf_names', 'compensation_details_pdf_names',
-                   'selection_procedure_pdf_names']
+                  'is_compensation_details_pdf', 'is_selection_procedure_details_pdf',
+                  'email_verified', 'created_at']
+SPECIAL_FORMAT_IN_PDF = ['website', 'company_details_pdf_names', 'description_pdf_names',
+                         'compensation_details_pdf_names',
+                         'selection_procedure_pdf_names']
 
 COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT = "Notification Submitted - {id} - Career Development Cell, IIT Dharwad"
 STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT = 'Application Status : {company_name} - {id}'
