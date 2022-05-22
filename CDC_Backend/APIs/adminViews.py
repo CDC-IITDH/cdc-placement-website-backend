@@ -59,10 +59,10 @@ def markStatus(request, id, email, user_type):
 def getDashboard(request, id, email, user_type):
     try:
         placements = Placement.objects.all().order_by('-created_at')
-        ongoing = placements.filter(deadline_datetime__gt=datetime.datetime.now(), offer_accepted=True)
+        ongoing = placements.filter(deadline_datetime__gt=datetime.datetime.now(), offer_accepted=True, email_verified=True)
         previous = placements.exclude(deadline_datetime__gt=datetime.datetime.now()).filter(
-            offer_accepted=True)
-        new = placements.filter(offer_accepted__isnull=True)
+            offer_accepted=True, email_verified=True)
+        new = placements.filter(offer_accepted__isnull=True, email_verified=True)
         ongoing = PlacementSerializerForAdmin(ongoing, many=True).data
         previous = PlacementSerializerForAdmin(previous, many=True).data
         new = PlacementSerializerForAdmin(new, many=True).data
