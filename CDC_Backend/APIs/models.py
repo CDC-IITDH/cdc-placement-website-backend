@@ -120,11 +120,13 @@ class PlacementApplication(models.Model):
     additional_info = models.JSONField(blank=True, null=True, default=None)
     selected = models.BooleanField(null=True, default=None, blank=True)
     applied_at = models.DateTimeField(blank=False, default=None, null=True)
+    updated_at = models.DateTimeField(blank=False, default=None, null=True)
 
     def save(self, *args, **kwargs):
         ''' On save, add timestamps '''
         if not self.applied_at:
             self.applied_at = timezone.now()
+        self.updated_at = timezone.now()
 
         return super(PlacementApplication, self).save(*args, **kwargs)
 
