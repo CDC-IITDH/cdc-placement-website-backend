@@ -18,7 +18,13 @@ def markStatus(request, id, email, user_type):
             application = applications.filter(student__roll_no=i[STUDENT_ID])  # Filtering student's application
             if len(application) > 0:
                 application = application[0]
-                application.selected = True if i[STUDENT_SELECTED] == "true" else False
+                if not application.selected:
+                    if i[STUDENT_SELECTED] == True:
+                        application.selected = True
+                    else:
+                        application.selected = False
+                else:
+                    raise ValueError("Student already selected")
 
                 email = str(application.student.roll_no) + "@iitdh.ac.in"  # Only allowing for IITDh emails
                 subject = STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT.format(
@@ -53,10 +59,10 @@ def markStatus(request, id, email, user_type):
 def getDashboard(request, id, email, user_type):
     try:
         placements = Placement.objects.all().order_by('-created_at')
-        ongoing = placements.filter(deadline_datetime__gt=datetime.datetime.now(), offer_accepted=True)
+        ongoing = placements.filter(deadline_datetime__gt=datetime.datetime.now(), offer_accepted=True, email_verified=True)
         previous = placements.exclude(deadline_datetime__gt=datetime.datetime.now()).filter(
-            offer_accepted=True)
-        new = placements.filter(offer_accepted__isnull=True)
+            offer_accepted=True, email_verified=True)
+        new = placements.filter(offer_accepted__isnull=True, email_verified=True)
         ongoing = PlacementSerializerForAdmin(ongoing, many=True).data
         previous = PlacementSerializerForAdmin(previous, many=True).data
         new = PlacementSerializerForAdmin(new, many=True).data
@@ -159,8 +165,8 @@ def updateAdditionalInfo(request, id, email, user_type):
     except ValueError:
         return Response({'action': "Update Additional Info", 'message': "Additional Info must be a list"},
                         status=status.HTTP_400_BAD_REQUEST)
-    except:
-        logger.warning("Update Additional Info: " + str(sys.exc_info()))
+    except Exception as e:
+        logger.warning("Update Additional Info: " + str(e))
         return Response({'action': "Update Additional Info", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -209,7 +215,6 @@ def submitApplication(request, id, email, user_type):
                     raise AttributeError(i + " not found in Additional Info")
                 else:
                     additional_info[i] = data[ADDITIONAL_INFO][i]
-
             application.additional_info = json.dumps(additional_info)
             application.save()
             return Response({'action': "Add Student Application", 'message': "Application added"},

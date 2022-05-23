@@ -10,9 +10,9 @@ Django==3.2.12
 django-background-tasks==1.2.5
 django-compat==1.0.15
 django-cors-headers==3.11.0
-django-db-logger==0.1.11
+django-db-logger==0.1.12
 djangorestframework==3.13.1
-google-auth==2.6.3
+google-auth==2.6.6
 gunicorn==20.1.0
 idna==3.3
 importlib-metadata==4.11.3
