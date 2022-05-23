@@ -181,8 +181,10 @@ class PlacementApplicationSerializerForAdmin(serializers.ModelSerializer):
         return data
 
     def get_resume_link(self, obj):
-        link = LINK_TO_STORAGE_RESUME + urllib.parse.quote(obj.id + "/" + obj.resume)
-        return link
+        ele = {}
+        ele['link'] = LINK_TO_STORAGE_RESUME + urllib.parse.quote(obj.id + "/" + obj.resume)
+        ele['name'] = obj.resume
+        return ele
 
     class Meta:
         model = PlacementApplication
