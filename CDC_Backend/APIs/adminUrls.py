@@ -13,5 +13,5 @@ urlpatterns = [
     path("submitApplication/", adminViews.submitApplication, name="Submit Application"),
     path('generateCSV/', adminViews.generateCSV, name="Generate CSV"),
     path('addPPO/', adminViews.addPPO, name="Add PPO"),
-    path('getstudentapplication/', adminViews.getstudentapplication, name="Get student application"),
+    path('getStudentApplication/', adminViews.getStudentApplication, name="Get student application"),
 ]

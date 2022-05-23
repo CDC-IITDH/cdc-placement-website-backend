@@ -132,7 +132,7 @@ class Placement(models.Model):
         self.selection_procedure_details = self.selection_procedure_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
         self.bond_details = self.bond_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
         self.other_requirements = self.other_requirements.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
-        self.additinal_info = [info.strip()[:JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT] for info in self.additional_info]
+        self.additional_info = [info.strip()[:JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT] for info in self.additional_info]
 
     def save(self, *args, **kwargs):
         ''' On save, add timestamps '''
