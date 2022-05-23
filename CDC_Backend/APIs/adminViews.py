@@ -329,6 +329,7 @@ def addPPO(request, id, email, user_type):
         return Response({'action': "Add PPO", 'message': "Error Occurred"},
                         status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['POST'])
 @isAuthorized(allowed_users=[ADMIN])
 @precheck(required_data=[STUDENT_ID, OPENING_ID])
@@ -338,19 +339,26 @@ def getstudentapplication(request, id, email, user_type):
         student = get_object_or_404(Student, id=data[STUDENT_ID])
         student_serializer = StudentSerializer(student)
         # search for the application if there or not
-        application = PlacementApplication.objects.filter(student=student, placement=get_object_or_404(Placement, id=data[OPENING_ID]))
-        logger.info("Get Student Application: " + str(application))
+        application = PlacementApplication.objects.filter(student=student,
+                                                          placement=get_object_or_404(Placement, id=data[OPENING_ID]))
         if application:
             serializer = PlacementApplicationSerializer(application[0])
-            return Response({'action': "Get Student Application", 'found': "true",'application_id': serializer.data["id"] , 'application_additionalInfo': serializer.data[ADDITIONAL_INFO],"available_resumes": student_serializer.data["resume_list"],
-             "student_name":student.name, "student_branch":student.branch, "student_batch":student.batch, "resume":serializer.data["resume_link"]},
-                        status=status.HTTP_200_OK)
+            return Response(
+                {'action': "Get Student Application", 'found': "true", 'application_id': serializer.data["id"],
+                 'application_additionalInfo': serializer.data[ADDITIONAL_INFO], "available_resumes": student.resumes,
+                 "student_name": student.name, "student_branch": student.branch, "student_batch": student.batch},
+                status=status.HTTP_200_OK)
         else:
-            return Response({'action': "Get Student Application", 'found': "false", "available_resumes": student_serializer.data["resume_list"],
-             "student_name":student.name, "student_branch":student.branch, "student_batch":student.batch},
-                        status=status.HTTP_200_OK)
+            return Response(
+                {'action': "Get Student Application", 'found': "false", "available_resumes": student.resumes,
+                 "student_name": student.name, "student_branch": student.branch, "student_batch": student.batch},
+                status=status.HTTP_200_OK)
+    except Http404:
+        return Response(
+            {'action': "Get Student Application", 'message': "Not found"},
+        )
     except:
         logger.warning("Get Student Application: " + str(sys.exc_info()))
         print(sys.exc_info())
-        return Response({'action': "Get Student Application", 'message': "Student with given roll number not found."}, status.HTTP_400_BAD_REQUEST)
-      
+        return Response({'action': "Get Student Application", 'message': "Student with given roll number not found."},
+                        status.HTTP_400_BAD_REQUEST)

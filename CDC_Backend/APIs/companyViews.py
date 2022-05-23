@@ -70,7 +70,7 @@ def addPlacement(request):
             raise ValueError('Pincode should be integer')
 
         # If India then set city_type as Domestic else International
-        if opening.country == 'India':
+        if opening.country.upper() == 'INDIA':
             opening.city_type = 'Domestic'
         else:
             opening.city_type = 'International'
