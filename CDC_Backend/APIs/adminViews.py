@@ -59,8 +59,8 @@ def markStatus(request, id, email, user_type):
 def getDashboard(request, id, email, user_type):
     try:
         placements = Placement.objects.all().order_by('-created_at')
-        ongoing = placements.filter(deadline_datetime__gt=datetime.datetime.now(), offer_accepted=True, email_verified=True)
-        previous = placements.exclude(deadline_datetime__gt=datetime.datetime.now()).filter(
+        ongoing = placements.filter(deadline_datetime__gt=timezone.now(), offer_accepted=True, email_verified=True)
+        previous = placements.exclude(deadline_datetime__gt=timezone.now()).filter(
             offer_accepted=True, email_verified=True)
         new = placements.filter(offer_accepted__isnull=True, email_verified=True)
         ongoing = PlacementSerializerForAdmin(ongoing, many=True).data
@@ -193,62 +193,55 @@ def getApplications(request, id, email, user_type):
 
 @api_view(['POST'])
 @isAuthorized(allowed_users=[ADMIN])
-@precheck(required_data=[OPENING_TYPE, OPENING_ID, RESUME_FILE_NAME,
-                         STUDENT_ID])
+@precheck(required_data=[APPLICATION_ID, STUDENT_ID, OPENING_ID, ADDITIONAL_INFO, RESUME_FILE_NAME])
 def submitApplication(request, id, email, user_type):
     try:
         data = request.data
-        student = get_object_or_404(Student, roll_no=data[STUDENT_ID])
-        if data[OPENING_TYPE] != PLACEMENT:
-            raise ValueError(OPENING_TYPE + " is Invalid")
-        # Only Allowing Applications for Placements
-        else:
-            if not len(PlacementApplication.objects.filter(
-                    student_id=student.id, placement_id=data[OPENING_ID])):
-                application = PlacementApplication()
-                opening = get_object_or_404(Placement, id=data[OPENING_ID],
-                                            allowed_batch__contains=[student.batch],
-                                            allowed_branch__contains=[student.branch],
-                                            deadline_datetime__gte=datetime.datetime.now().date()
-                                            )
-                if not opening.offer_accepted or not opening.email_verified:
-                    raise PermissionError("Placement Not Approved")
+        student = get_object_or_404(Student, pk=data[STUDENT_ID])
+        opening = get_object_or_404(Placement, pk=data[OPENING_ID])
 
-                cond_stat, cond_msg = PlacementApplicationConditions(student, opening)
-                if not cond_stat:
-                    raise PermissionError(cond_msg)
-                application.placement = opening
+        if data[APPLICATION_ID] == "":
+            application = PlacementApplication()
+            application.id = generateRandomString()
+            application.placement = opening
+            application.student = student
+            if data[RESUME_FILE_NAME] in student.resumes:
+                application.resume = data[RESUME_FILE_NAME]
             else:
-                raise PermissionError("Application is already Submitted")
-
-        if data[RESUME_FILE_NAME] in student.resumes:
-            application.resume = data[RESUME_FILE_NAME]
+                raise FileNotFoundError(RESUME_FILE_NAME + " Not Found")
+            additional_info = {}
+            for i in opening.additional_info:
+                if i not in data[ADDITIONAL_INFO]:
+                    raise AttributeError(i + " not found in Additional Info")
+                else:
+                    additional_info[i] = data[ADDITIONAL_INFO][i]
+            application.additional_info = json.dumps(additional_info)
+            application.save()
+            return Response({'action': "Add Student Application", 'message': "Application added"},
+                            status=status.HTTP_200_OK)
         else:
-            raise FileNotFoundError(RESUME_FILE_NAME + " Not Found")
+            application = get_object_or_404(PlacementApplication, id=data[APPLICATION_ID])
+            if application:
+                if data[RESUME_FILE_NAME] in student.resumes:
+                    application.resume = data[RESUME_FILE_NAME]
+                else:
+                    raise FileNotFoundError(RESUME_FILE_NAME + " Not Found")
+                application.resume = data[RESUME_FILE_NAME]
+                additional_info = {}
+                for i in opening.additional_info:
+                    if i not in data[ADDITIONAL_INFO]:
+                        raise AttributeError(i + " not found in Additional Info")
+                    else:
+                        additional_info[i] = data[ADDITIONAL_INFO][i]
 
-        application.student = student
-        application.id = generateRandomString()
-        additional_info = {}
-        for i in opening.additional_info:
-            if i not in data[ADDITIONAL_INFO]:
-                raise AttributeError(i + " not found in Additional Info")
+                application.additional_info = json.dumps(additional_info)
+                application.save()
+                return Response({'action': "Add Student Application", 'message': "Application updated"},
+                                status=status.HTTP_200_OK)
             else:
-                additional_info[i] = data[ADDITIONAL_INFO][i]
+                return Response({'action': "Edit Student Application", 'message': "No Application Found"},
+                                status=status.HTTP_400_BAD_REQUEST)
 
-        application.additional_info = json.dumps(additional_info)
-        data = {
-            "name": student.name,
-            "company_name": opening.company_name,
-            "application_type": data[OPENING_TYPE],
-            "additional_info": dict(json.loads(application.additional_info)),
-        }
-        subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
-        student_email = str(student.roll_no) + "@iitdh.ac.in"
-        sendEmail(student_email, subject, data, STUDENT_APPLICATION_SUBMITTED_TEMPLATE)
-
-        application.save()
-        return Response({'action': "Submit Application", 'message': "Application Submitted"},
-                        status=status.HTTP_200_OK)
     except Http404 as e:
         return Response({'action': "Submit Application", 'message': str(e)},
                         status=status.HTTP_404_NOT_FOUND)
@@ -308,7 +301,7 @@ def generateCSV(request, id, email, user_type):
     except:
         logger.warning("Create csv: " + str(sys.exc_info()))
         print(sys.exc_info())
-        return Response({'action': "Create csv", 'message': "Error Occurred"},
+        return Response({'action': "Create csv", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -338,5 +331,45 @@ def addPPO(request, id, email, user_type):
     except:
         logger.warning("Add PPO: " + str(sys.exc_info()))
         print(sys.exc_info())
-        return Response({'action': "Add PPO", 'message': "Error Occurred"},
+        return Response({'action': "Add PPO", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@isAuthorized(allowed_users=[ADMIN])
+@precheck(required_data=[STUDENT_ID, OPENING_ID])
+def getStudentApplication(request, id, email, user_type):
+    try:
+        data = request.data
+        student = get_object_or_404(Student, id=data[STUDENT_ID])
+        student_serializer = StudentSerializer(student)
+        student_details = {
+            "name": student_serializer.data['name'],
+            "batch": student.batch,
+            "branch": student.branch,
+            "resume_list": student_serializer.data['resume_list'],
+        }
+        # search for the application if there or not
+        application = PlacementApplication.objects.filter(student=student,
+                                                          placement=get_object_or_404(Placement, id=data[OPENING_ID]))
+        if application:
+            serializer = PlacementApplicationSerializer(application[0])
+            application_info = {
+                "id": serializer.data['id'],
+                "additional_info": serializer.data['additional_info'],
+                "resume": serializer.data['resume_link'],
+            }
+            return Response(
+                {'action': "Get Student Application", 'application_found': "true", "application_info": application_info,
+                 "student_details": student_details}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {'action': "Get Student Application", 'application_found': "false", "student_details": student_details},
+                status=status.HTTP_404_NOT_FOUND)
+    except Http404:
+        return Response({'action': "Get Student Application", 'message': "Student not found."},
+                        status.HTTP_404_NOT_FOUND)
+    except:
+        logger.warning("Get Student Application: " + str(sys.exc_info()))
+        return Response({'action': "Get Student Application", 'message': "Something Went Wrong"},
+                        status.HTTP_400_BAD_REQUEST)
