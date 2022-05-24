@@ -20,6 +20,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils import timezone
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from rest_framework import status
@@ -79,7 +80,7 @@ def isAuthorized(allowed_users=None):
                     print(email)
                     user = get_object_or_404(User, email=email)
                     if user:
-                        user.last_login_time = datetime.datetime.now()
+                        user.last_login_time = timezone.now()
                         user.save()
                         if len(set(user.user_type).intersection(set(allowed_users))) or allowed_users == '*':
                             return view_func(request, user.id, user.email, user.user_type, *args, **kwargs)
@@ -120,7 +121,7 @@ def generateRandomString():
 
 def saveFile(file, location):
     prefix = generateRandomString()
-    file_name = prefix + "_" + file.name
+    file_name = prefix + "_" + file.name.strip()
 
     file_name = re.sub(r'[\\/:*?"<>|]', '_', file_name)
 
@@ -137,8 +138,8 @@ def saveFile(file, location):
     return file_name
 
 
-@background_task.background(schedule=10)
-def sendEmail(email_to, subject, data, template, attachment_jnf_respone=None):
+@background_task.background(schedule=5)
+def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
     try:
         if not isinstance(data, dict):
             data = json.loads(data)
@@ -150,11 +151,11 @@ def sendEmail(email_to, subject, data, template, attachment_jnf_respone=None):
 
         msg = EmailMultiAlternatives(subject, text_content, email_from, recipient_list)
         msg.attach_alternative(html_content, "text/html")
-        if attachment_jnf_respone:
-            logger.info(attachment_jnf_respone)
-            pdf = pdfkit.from_string(attachment_jnf_respone['html'], False,
+        if attachment_jnf_response:
+            logger.info(attachment_jnf_response)
+            pdf = pdfkit.from_string(attachment_jnf_response['html'], False,
                                      options={"--enable-local-file-access": "", '--dpi': '96'})
-            msg.attach(attachment_jnf_respone['name'], pdf, 'application/pdf')
+            msg.attach(attachment_jnf_response['name'], pdf, 'application/pdf')
         msg.send()
         return True
     except:

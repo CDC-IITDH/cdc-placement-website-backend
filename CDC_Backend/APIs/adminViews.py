@@ -59,8 +59,8 @@ def markStatus(request, id, email, user_type):
 def getDashboard(request, id, email, user_type):
     try:
         placements = Placement.objects.all().order_by('-created_at')
-        ongoing = placements.filter(deadline_datetime__gt=datetime.datetime.now(), offer_accepted=True, email_verified=True)
-        previous = placements.exclude(deadline_datetime__gt=datetime.datetime.now()).filter(
+        ongoing = placements.filter(deadline_datetime__gt=timezone.now(), offer_accepted=True, email_verified=True)
+        previous = placements.exclude(deadline_datetime__gt=timezone.now()).filter(
             offer_accepted=True, email_verified=True)
         new = placements.filter(offer_accepted__isnull=True, email_verified=True)
         ongoing = PlacementSerializerForAdmin(ongoing, many=True).data
@@ -193,13 +193,13 @@ def getApplications(request, id, email, user_type):
 
 @api_view(['POST'])
 @isAuthorized(allowed_users=[ADMIN])
-@precheck(required_data=[APPLICATION_ID,STUDENT_ID,OPENING_ID,ADDITIONAL_INFO,RESUME_FILE_NAME])
+@precheck(required_data=[APPLICATION_ID, STUDENT_ID, OPENING_ID, ADDITIONAL_INFO, RESUME_FILE_NAME])
 def submitApplication(request, id, email, user_type):
     try:
         data = request.data
         student = get_object_or_404(Student, pk=data[STUDENT_ID])
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
-        
+
         if data[APPLICATION_ID] == "":
             application = PlacementApplication()
             application.id = generateRandomString()
@@ -223,7 +223,7 @@ def submitApplication(request, id, email, user_type):
             application = get_object_or_404(PlacementApplication, id=data[APPLICATION_ID])
             if application:
                 if data[RESUME_FILE_NAME] in student.resumes:
-                 application.resume = data[RESUME_FILE_NAME]
+                    application.resume = data[RESUME_FILE_NAME]
                 else:
                     raise FileNotFoundError(RESUME_FILE_NAME + " Not Found")
                 application.resume = data[RESUME_FILE_NAME]
@@ -237,10 +237,10 @@ def submitApplication(request, id, email, user_type):
                 application.additional_info = json.dumps(additional_info)
                 application.save()
                 return Response({'action': "Add Student Application", 'message': "Application updated"},
-                            status=status.HTTP_200_OK)
+                                status=status.HTTP_200_OK)
             else:
                 return Response({'action': "Edit Student Application", 'message': "No Application Found"},
-                            status=status.HTTP_400_BAD_REQUEST)
+                                status=status.HTTP_400_BAD_REQUEST)
 
     except Http404 as e:
         return Response({'action': "Submit Application", 'message': str(e)},
@@ -301,7 +301,7 @@ def generateCSV(request, id, email, user_type):
     except:
         logger.warning("Create csv: " + str(sys.exc_info()))
         print(sys.exc_info())
-        return Response({'action': "Create csv", 'message': "Error Occurred"},
+        return Response({'action': "Create csv", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -331,7 +331,7 @@ def addPPO(request, id, email, user_type):
     except:
         logger.warning("Add PPO: " + str(sys.exc_info()))
         print(sys.exc_info())
-        return Response({'action': "Add PPO", 'message': "Error Occurred"},
+        return Response({'action': "Add PPO", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -350,7 +350,8 @@ def getStudentApplication(request, id, email, user_type):
             "resume_list": student_serializer.data['resume_list'],
         }
         # search for the application if there or not
-        application = PlacementApplication.objects.filter(student=student, placement=get_object_or_404(Placement, id=data[OPENING_ID]))
+        application = PlacementApplication.objects.filter(student=student,
+                                                          placement=get_object_or_404(Placement, id=data[OPENING_ID]))
         logger.info("Get Student Application: " + str(application))
         if application:
             serializer = PlacementApplicationSerializer(application[0])
@@ -359,16 +360,17 @@ def getStudentApplication(request, id, email, user_type):
                 "additional_info": serializer.data['additional_info'],
                 "resume": serializer.data['resume_link'],
             }
-            return Response({'action': "Get Student Application", 'application_found': "true", "application_info": application_info,
-             "student_details":student_details }, status=status.HTTP_200_OK)
+            return Response(
+                {'action': "Get Student Application", 'application_found': "true", "application_info": application_info,
+                 "student_details": student_details}, status=status.HTTP_200_OK)
         else:
-            return Response({'action': "Get Student Application", 'application_found': "false", "student_details": student_details},
-                        status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {'action': "Get Student Application", 'application_found': "false", "student_details": student_details},
+                status=status.HTTP_404_NOT_FOUND)
     except Http404:
-        logger.warning("Get Student Application: " + str(sys.exc_info()))
-        print(sys.exc_info())
-        return Response({'action': "Get Student Application", 'message': "Student with given roll number not found."}, status.HTTP_400_BAD_REQUEST)
+        return Response({'action': "Get Student Application", 'message': "Student not found."},
+                        status.HTTP_404_NOT_FOUND)
     except:
         logger.warning("Get Student Application: " + str(sys.exc_info()))
-        print(sys.exc_info())
-        return Response({'action': "Get Student Application", 'message': "Some error Occurred"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'action': "Get Student Application", 'message': "Something Went Wrong"},
+                        status.HTTP_400_BAD_REQUEST)

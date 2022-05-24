@@ -51,6 +51,7 @@ class Placement(models.Model):
     address = models.CharField(blank=False, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT)
     company_type = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT)
     nature_of_business = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
+    type_of_organisation = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="", blank=False)
     website = models.CharField(blank=True, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
     company_details = models.CharField(max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
     company_details_pdf_names = ArrayField(
@@ -68,6 +69,7 @@ class Placement(models.Model):
     # Job Details
     designation = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT, default=None, null=True)
     description = models.CharField(blank=False, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
+    job_location = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
     description_pdf_names = ArrayField(
         models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=5, default=list,
         blank=True)
@@ -105,38 +107,63 @@ class Placement(models.Model):
     tentative_no_of_offers = models.IntegerField(blank=False, default=None, null=True)
     rs_eligible = models.BooleanField(blank=False, default=False)
     other_requirements = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default="")
-    job_locations = models.CharField(blank=True, max_length=JNF_TEXT_MAX_CHARACTER_COUNT, default="")
     additional_info = ArrayField(models.CharField(blank=True, max_length=JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT), size=15,
                                  default=list, blank=True)
     email_verified = models.BooleanField(blank=False, default=False)
     offer_accepted = models.BooleanField(blank=False, default=None, null=True)
     deadline_datetime = models.DateTimeField(blank=False, verbose_name="Deadline Date", default=two_day_after_today)
     created_at = models.DateTimeField(blank=False, default=None, null=True)
+    updated_at = models.DateTimeField(blank=False, default=None, null=True)
 
     def format(self):
-        self.company_name = self.company_name.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
-        self.company_type = self.company_type.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
-        self.nature_of_business = self.nature_of_business.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
-        self.website = self.website.strip()[:JNF_TEXT_MAX_CHARACTER_COUNT]
-        self.company_details = self.company_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
-        self.contact_person_name = self.contact_person_name.strip()[:JNF_TEXT_MAX_CHARACTER_COUNT]
-        self.email = self.email.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
-        self.city = self.city.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
-        self.state = self.state.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
-        self.country = self.country.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
-        self.city_type = self.city_type.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
-        self.designation = self.designation.strip()[:JNF_TEXT_MAX_CHARACTER_COUNT]
-        self.description = self.description.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
-        self.selection_procedure_details = self.selection_procedure_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
-        self.bond_details = self.bond_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
-        self.other_requirements = self.other_requirements.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
-        self.additional_info = [info.strip()[:JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT] for info in self.additional_info]
+        if self.company_name is not None:
+            self.company_name = self.company_name.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        if self.company_type is not None:
+            self.company_type = self.company_type.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        if self.company_details is not None:
+            self.company_details = self.company_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.address is not None:
+            self.address = self.address.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.nature_of_business is not None:
+            self.nature_of_business = self.nature_of_business.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.type_of_organisation is not None:
+            self.type_of_organisation = self.type_of_organisation.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.website is not None:
+            self.website = self.website.strip()[:JNF_TEXT_MAX_CHARACTER_COUNT]
+        if self.contact_person_name is not None:
+            self.contact_person_name = self.contact_person_name.strip()[:JNF_TEXT_MAX_CHARACTER_COUNT]
+        if self.email is not None:
+            self.email = self.email.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        if self.city is not None:
+            self.city = self.city.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        if self.state is not None:
+            self.state = self.state.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        if self.country is not None:
+            self.country = self.country.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        if self.city_type is not None:
+            self.city_type = self.city_type.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        if self.designation is not None:
+            self.designation = self.designation.strip()[:JNF_TEXT_MAX_CHARACTER_COUNT]
+        if self.description is not None:
+            self.description = self.description.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.job_location is not None:
+            self.job_location = self.job_location.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.selection_procedure_details is not None:
+            self.selection_procedure_details = self.selection_procedure_details.strip()[
+                                               :JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.bond_details is not None:
+            self.bond_details = self.bond_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.other_requirements is not None:
+            self.other_requirements = self.other_requirements.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.additional_info is not None:
+            self.additional_info = [info.strip()[:JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT] for info in list(self.additional_info)]
 
     def save(self, *args, **kwargs):
         ''' On save, add timestamps '''
         if not self.created_at:
             self.created_at = timezone.now()
         self.format()
+        self.updated_at = timezone.now()
         return super(Placement, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -151,11 +178,13 @@ class PlacementApplication(models.Model):
     additional_info = models.JSONField(blank=True, null=True, default=None)
     selected = models.BooleanField(null=True, default=None, blank=True)
     applied_at = models.DateTimeField(blank=False, default=None, null=True)
+    updated_at = models.DateTimeField(blank=False, default=None, null=True)
 
     def save(self, *args, **kwargs):
         ''' On save, add timestamps '''
         if not self.applied_at:
             self.applied_at = timezone.now()
+        self.updated_at = timezone.now()
 
         return super(PlacementApplication, self).save(*args, **kwargs)
 
