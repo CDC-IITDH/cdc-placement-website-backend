@@ -352,7 +352,6 @@ def getStudentApplication(request, id, email, user_type):
         # search for the application if there or not
         application = PlacementApplication.objects.filter(student=student,
                                                           placement=get_object_or_404(Placement, id=data[OPENING_ID]))
-        logger.info("Get Student Application: " + str(application))
         if application:
             serializer = PlacementApplicationSerializer(application[0])
             application_info = {
