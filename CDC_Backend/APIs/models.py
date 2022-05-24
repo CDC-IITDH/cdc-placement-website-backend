@@ -76,8 +76,6 @@ class Placement(models.Model):
     compensation_gross = models.IntegerField(blank=False, default=None, null=True)
     compensation_take_home = models.IntegerField(blank=False, default=None, null=True)
     compensation_bonus = models.IntegerField(blank=True, default=None, null=True)
-    compensation_details = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None,
-                                            null=True)
     compensation_details_pdf_names = ArrayField(
         models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=5,
         default=list, blank=True)
@@ -107,6 +105,7 @@ class Placement(models.Model):
     tentative_no_of_offers = models.IntegerField(blank=False, default=None, null=True)
     rs_eligible = models.BooleanField(blank=False, default=False)
     other_requirements = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default="")
+    job_locations = models.CharField(blank=True, max_length=JNF_TEXT_MAX_CHARACTER_COUNT, default="")
     additional_info = ArrayField(models.CharField(blank=True, max_length=JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT), size=15,
                                  default=list, blank=True)
     email_verified = models.BooleanField(blank=False, default=False)
@@ -128,7 +127,6 @@ class Placement(models.Model):
         self.city_type = self.city_type.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
         self.designation = self.designation.strip()[:JNF_TEXT_MAX_CHARACTER_COUNT]
         self.description = self.description.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
-        self.compensation_details = self.compensation_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
         self.selection_procedure_details = self.selection_procedure_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
         self.bond_details = self.bond_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
         self.other_requirements = self.other_requirements.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]

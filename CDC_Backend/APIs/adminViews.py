@@ -357,7 +357,7 @@ def getStudentApplication(request, id, email, user_type):
             application_info = {
                 "id": serializer.data['id'],
                 "additional_info": serializer.data['additional_info'],
-                "resume": serializer.data['resume'],
+                "resume": serializer.data['resume_link'],
             }
             return Response({'action': "Get Student Application", 'application_found': "true", "application_info": application_info,
              "student_details":student_details }, status=status.HTTP_200_OK)

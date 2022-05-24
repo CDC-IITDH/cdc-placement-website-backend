@@ -9,9 +9,9 @@ logger = logging.getLogger('db')
 @precheck([COMPANY_NAME, ADDRESS, COMPANY_TYPE, NATURE_OF_BUSINESS, WEBSITE, COMPANY_DETAILS, IS_COMPANY_DETAILS_PDF,
            CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, CITY, STATE, COUNTRY, PINCODE, DESIGNATION, DESCRIPTION,
            IS_DESCRIPTION_PDF,
-           COMPENSATION_CTC, COMPENSATION_GROSS, COMPENSATION_TAKE_HOME, COMPENSATION_BONUS, COMPENSATION_DETAILS,
+           COMPENSATION_CTC, COMPENSATION_GROSS, COMPENSATION_TAKE_HOME, COMPENSATION_BONUS,
            IS_COMPENSATION_DETAILS_PDF,
-           ALLOWED_BRANCH, SELECTION_PROCEDURE_ROUNDS, SELECTION_PROCEDURE_DETAILS, IS_SELECTION_PROCEDURE_DETAILS_PDF,
+           ALLOWED_BRANCH, RS_ELIGIBLE, SELECTION_PROCEDURE_ROUNDS, SELECTION_PROCEDURE_DETAILS, IS_SELECTION_PROCEDURE_DETAILS_PDF,
            TENTATIVE_DATE_OF_JOINING,
            TENTATIVE_NO_OF_OFFERS, OTHER_REQUIREMENTS, RECAPTCHA_VALUE
            ])
@@ -32,6 +32,11 @@ def addPlacement(request):
         opening.website = data[WEBSITE]
         opening.company_details = data[COMPANY_DETAILS]
         opening.is_company_details_pdf = data[IS_COMPANY_DETAILS_PDF]
+        if data[RS_ELIGIBLE] == 'Yes':
+            opening.rs_eligible = True
+        else:
+            opening.rs_eligible = False
+        opening.job_locations = data[JOB_LOCATIONS]
 
         if opening.is_company_details_pdf:
             company_details_pdf = []
@@ -129,7 +134,6 @@ def addPlacement(request):
         else:
             raise ValueError('Compensation Bonus must be an integer')
 
-        opening.compensation_details = data[COMPENSATION_DETAILS]
         opening.is_compensation_details_pdf = data[IS_COMPENSATION_DETAILS_PDF]
 
         if opening.is_compensation_details_pdf:
