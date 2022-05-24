@@ -6,14 +6,14 @@ logger = logging.getLogger('db')
 
 
 @api_view(['POST'])
-@precheck([COMPANY_NAME, ADDRESS, COMPANY_TYPE, NATURE_OF_BUSINESS, WEBSITE, COMPANY_DETAILS, IS_COMPANY_DETAILS_PDF,
-           CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, CITY, STATE, COUNTRY, PINCODE, DESIGNATION, DESCRIPTION,
-           IS_DESCRIPTION_PDF,
-           COMPENSATION_CTC, COMPENSATION_GROSS, COMPENSATION_TAKE_HOME, COMPENSATION_BONUS, COMPENSATION_DETAILS,
-           IS_COMPENSATION_DETAILS_PDF,
-           ALLOWED_BRANCH, SELECTION_PROCEDURE_ROUNDS, SELECTION_PROCEDURE_DETAILS, IS_SELECTION_PROCEDURE_DETAILS_PDF,
-           TENTATIVE_DATE_OF_JOINING,
-           TENTATIVE_NO_OF_OFFERS, OTHER_REQUIREMENTS, RECAPTCHA_VALUE
+@precheck([COMPANY_NAME, ADDRESS, COMPANY_TYPE, NATURE_OF_BUSINESS, TYPE_OF_ORGANISATION, WEBSITE, COMPANY_DETAILS,
+           IS_COMPANY_DETAILS_PDF, CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, CITY, STATE, COUNTRY, PINCODE, DESIGNATION,
+           DESCRIPTION,
+           IS_DESCRIPTION_PDF, COMPENSATION_CTC, COMPENSATION_GROSS, COMPENSATION_TAKE_HOME, COMPENSATION_BONUS,
+           IS_COMPENSATION_DETAILS_PDF, ALLOWED_BRANCH, RS_ELIGIBLE, SELECTION_PROCEDURE_ROUNDS,
+           SELECTION_PROCEDURE_DETAILS,
+           IS_SELECTION_PROCEDURE_DETAILS_PDF, TENTATIVE_DATE_OF_JOINING, TENTATIVE_NO_OF_OFFERS, OTHER_REQUIREMENTS,
+           RECAPTCHA_VALUE, JOB_LOCATION
            ])
 def addPlacement(request):
     try:
@@ -29,9 +29,14 @@ def addPlacement(request):
         opening.address = data[ADDRESS]
         opening.company_type = data[COMPANY_TYPE]
         opening.nature_of_business = data[NATURE_OF_BUSINESS]
+        opening.type_of_organisation = data[TYPE_OF_ORGANISATION]
         opening.website = data[WEBSITE]
         opening.company_details = data[COMPANY_DETAILS]
         opening.is_company_details_pdf = data[IS_COMPANY_DETAILS_PDF]
+        if data[RS_ELIGIBLE] == 'Yes':
+            opening.rs_eligible = True
+        else:
+            opening.rs_eligible = False
 
         if opening.is_company_details_pdf:
             company_details_pdf = []
@@ -70,7 +75,7 @@ def addPlacement(request):
             raise ValueError('Pincode should be integer')
 
         # If India then set city_type as Domestic else International
-        if opening.country == 'India':
+        if opening.country.upper() == 'INDIA':
             opening.city_type = 'Domestic'
         else:
             opening.city_type = 'International'
@@ -78,6 +83,7 @@ def addPlacement(request):
         # Add a designation details in the opening
         opening.designation = data[DESIGNATION]
         opening.description = data[DESCRIPTION]
+        opening.job_location = data[JOB_LOCATION]
         opening.is_description_pdf = data[IS_DESCRIPTION_PDF]
 
         if opening.is_description_pdf:
@@ -129,7 +135,6 @@ def addPlacement(request):
         else:
             raise ValueError('Compensation Bonus must be an integer')
 
-        opening.compensation_details = data[COMPENSATION_DETAILS]
         opening.is_compensation_details_pdf = data[IS_COMPENSATION_DETAILS_PDF]
 
         if opening.is_compensation_details_pdf:
