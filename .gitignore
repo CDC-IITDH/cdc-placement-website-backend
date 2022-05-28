@@ -139,3 +139,4 @@ dmypy.json
 /CDC_Backend/Storage/
 .idea
 *.pyc
+dev.env
