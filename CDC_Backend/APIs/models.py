@@ -1,6 +1,7 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
+from simple_history.models import HistoricalRecords
 
 from .constants import *
 
@@ -13,6 +14,7 @@ class User(models.Model):
     id = models.CharField(blank=False, max_length=25)
     user_type = ArrayField(models.CharField(blank=False, max_length=10), size=4, default=list, blank=False)
     last_login_time = models.DateTimeField(default=timezone.now)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name_plural = "User"
@@ -30,6 +32,7 @@ class Student(models.Model):
                          default=list, blank=True)
     cpi = models.DecimalField(decimal_places=2, max_digits=4)
     can_apply = models.BooleanField(default=True, verbose_name='Registered')
+    history = HistoricalRecords()
 
     def __str__(self):
         return str(self.roll_no)
@@ -38,6 +41,7 @@ class Student(models.Model):
 class Admin(models.Model):
     id = models.CharField(blank=False, max_length=15, primary_key=True)
     name = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
+    history = HistoricalRecords()
 
 
 def two_day_after_today():
@@ -114,6 +118,7 @@ class Placement(models.Model):
     deadline_datetime = models.DateTimeField(blank=False, verbose_name="Deadline Date", default=two_day_after_today)
     created_at = models.DateTimeField(blank=False, default=None, null=True)
     updated_at = models.DateTimeField(blank=False, default=None, null=True)
+    history = HistoricalRecords()
 
     def format(self):
         if self.company_name is not None:
@@ -179,6 +184,7 @@ class PlacementApplication(models.Model):
     selected = models.BooleanField(null=True, default=None, blank=True)
     applied_at = models.DateTimeField(blank=False, default=None, null=True)
     updated_at = models.DateTimeField(blank=False, default=None, null=True)
+    history = HistoricalRecords()
 
     def save(self, *args, **kwargs):
         ''' On save, add timestamps '''
@@ -206,3 +212,4 @@ class PrePlacementOffer(models.Model):
     tier = models.CharField(blank=False, choices=TIERS, max_length=10)
     designation = models.CharField(blank=False, max_length=25, default=None, null=True)
     accepted = models.BooleanField(default=None, null=True)
+    history = HistoricalRecords()
