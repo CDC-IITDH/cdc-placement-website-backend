@@ -102,7 +102,7 @@ def deleteResume(request, id, email, user_type):
 
         destination_path = STORAGE_DESTINATION_RESUMES + id + "/" + str(file_name)
         if path.exists(destination_path):
-            remove(destination_path)
+            #remove(destination_path)
             student.resumes.remove(file_name)
             student.save()
             return Response({'action': "Delete Resume", 'message': "Resume Deleted"},
