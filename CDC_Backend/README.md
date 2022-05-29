@@ -951,8 +951,11 @@ Request_Body:
   "applications_id": "",
   "student_id": "",
   "opening_id": "Q54IRZZMC3RP8F6",
-  "additional_info": "",
-  "resume_file_name": ""
+  "additional_info": {
+    "School": "Lions International",
+    "City": "Banglore"
+  }
+  "resume_file_name": "8KIOT3PW1JIS718_CSE-V-SEM.pdf"
 }
 ```
 
