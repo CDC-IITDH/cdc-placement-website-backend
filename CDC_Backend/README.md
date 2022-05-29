@@ -17,6 +17,9 @@
    6. [**api/admin/updateAdditionalInfo**](#apiadminupdateadditionalinfo)
    7. [**api/admin/getApplications**](#apiadmingetApplications)
    8. [**api/admin/submitApplication**](#apiadminsubmitApplication)
+   9. [**api/admin/generateCSV**](#apiadmingeneratecsv)
+   10. [**api/admin/addPPO**](#apiadminaddppo)
+   11. [**api/admin/getStudentApplication**](#apiadmingetstudentapplication)
 4. [**Company APIs**](#company-portal-apis)
    1. [**api/company/addPlacement/**](#apicompanyaddplacement)
 5. [**Common Errors**](#common-errors)
@@ -977,6 +980,123 @@ The possible responses for this api request are as follows
 | Status Codes    | Possible Messages      |
 | --------------- | ---------------------- |
 | 200 OK          | `Application Added`    |
+| 400 BAD_REQUEST | `Something Went Wrong` |
+
+You may see some different errors which can be seen [here](#common-errors)
+
+---
+
+## `api/admin/generateCSV`
+
+This api is used to generate a CSV file that contains sequential details of all the applications
+
+Request_Body:
+
+```json
+{
+  "opening_id": "Q54IRZZMC3RP8F6"
+}
+```
+
+### Response
+
+Response is a Json with these fields
+
+```json
+{
+  "action": "Create CSV",
+  "message": "CSV Created",
+  "file": ""
+}
+```
+
+### Status Codes
+
+The possible responses for this api request are as follows
+
+| Status Codes    | Possible Messages      |
+| --------------- | ---------------------- |
+| 200 OK          | `CSV created`          |
+| 400 BAD_REQUEST | `Something Went Wrong` |
+
+You may see some different errors which can be seen [here](#common-errors)
+
+---
+
+## `api/admin/addPPO`
+
+This api is used to add a PPO for a student in the corresponding company
+
+Request_Body:
+
+```json
+{
+  "company_name": ,
+  "compensation_gross": ,
+  "offer_accepted": ,
+  "student_id": "200010022",
+  "designation": ,
+  "tier": ,
+}
+```
+
+### Response
+
+Response is a Json with these fields
+
+```json
+{
+  "action": "Add PPO",
+  "message": "PPO Added"
+}
+```
+
+### Status Codes
+
+The possible responses for this api request are as follows
+
+| Status Codes    | Possible Messages      |
+| --------------- | ---------------------- |
+| 200 OK          | `PPO Added`            |
+| 400 BAD_REQUEST | `Something Went Wrong` |
+
+You may see some different errors which can be seen [here](#common-errors)
+
+---
+
+## `api/admin/getStudentApplication`
+
+This api is used to fetch the application details of the required student
+
+Request_Body:
+
+```json
+{
+  "student_id": "200010022",
+  "opening_id": "Q54IRZZMC3RP8F6"
+}
+```
+
+### Response
+
+Response is a Json with these fields
+
+```json
+{
+  "action": "Get Student Application",
+  "application_found": "true",
+  "application_info": {},
+  "student_details": {}
+}
+```
+
+### Status Codes
+
+The possible responses for this api request are as follows
+
+| Status Codes    | Possible Messages      |
+| --------------- | ---------------------- |
+| 200 OK          | ``                     |
 | 400 BAD_REQUEST | `Something Went Wrong` |
 
 You may see some different errors which can be seen [here](#common-errors)
