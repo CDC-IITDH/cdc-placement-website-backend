@@ -897,19 +897,46 @@ You may see some different errors which can be seen [here](#common-errors)
 
 ## `api/admin/getApplications`
 
-This api is used to
+This api is used to fetch all the applications applied by students for all placements
 
 ### How to Use?
 
-Send a `POST` request to `api/admin/updateAdditionalInfo`<br>
+Send a `POST` request to `api/admin/getApplications`<br>
 Request_Body:
 
 ```json
 {
-  "opening_id": "Q54IRZZMC3RP8F6",
-  "additional_info": ["School", "Place of Living", "Research Interests"]
+  "opening_id": "Q54IRZZMC3RP8F6"
 }
 ```
+
+### Response
+
+Response is a Json with these fields
+
+```json
+{
+  "action": "Get Applications",
+  "message": "Data Found",
+  "applications": "[]"
+}
+```
+
+- action: Tells us about the message creator<Br>
+- message: Tells us what happened with our Request.
+
+### Status Codes
+
+The possible responses for this api request are as follows
+
+| Status Codes    | Possible Messages      |
+| --------------- | ---------------------- |
+| 200 OK          | `Data Found`           |
+| 400 BAD_REQUEST | `Something Went Wrong` |
+
+You may see some different errors which can be seen [here](#common-errors)
+
+---
 
 # Company Portal APIs
 
