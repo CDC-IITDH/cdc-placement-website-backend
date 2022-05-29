@@ -1015,7 +1015,7 @@ Response is a Json with these fields
 {
   "action": "Create CSV",
   "message": "CSV Created",
-  "file": ""
+  "file": "csv_file_link"
 }
 ```
 
@@ -1097,8 +1097,17 @@ Response is a Json with these fields
 {
   "action": "Get Student Application",
   "application_found": "true",
-  "application_info": {},
-  "student_details": {}
+  "application_info": {
+    "id": "F28IRGGMC3RP8Y8",
+    "additional_info": ,
+    "resume": "resume_link"
+  },
+  "student_details": {
+    "name": "John",
+    "batch": "2020",
+    "branch": "MMAE",
+    "resume_list":
+  }
 }
 ```
 
