@@ -942,19 +942,19 @@ You may see some different errors which can be seen [here](#common-errors)
 
 ## `api/admin/submitApplication`
 
-This api is used to
+This api is used to submit a students application
 
 Request_Body:
 
 ```json
 {
-  "applications_id": "",
-  "student_id": "",
+  "applications_id": "Q54IRZZMC3RP8F6",
+  "student_id": "200010022",
   "opening_id": "Q54IRZZMC3RP8F6",
   "additional_info": {
     "School": "Lions International",
     "City": "Banglore"
-  }
+  },
   "resume_file_name": "8KIOT3PW1JIS718_CSE-V-SEM.pdf"
 }
 ```
@@ -966,8 +966,7 @@ Response is a Json with these fields
 ```json
 {
   "action": "Add Student Application",
-  "message": "Application Added",
-  "applications": []
+  "message": "Application Added"
 }
 ```
 
