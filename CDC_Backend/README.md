@@ -16,6 +16,7 @@
    5. [**api/admin/updateEmailVerified**](#apiadminupdateemailverified)
    6. [**api/admin/updateAdditionalInfo**](#apiadminupdateadditionalinfo)
    7. [**api/admin/getApplications**](#apiadmingetApplications)
+   8. [**api/admin/submitApplication**](#apiadminsubmitApplication)
 4. [**Company APIs**](#company-portal-apis)
    1. [**api/company/addPlacement/**](#apicompanyaddplacement)
 5. [**Common Errors**](#common-errors)
@@ -919,7 +920,7 @@ Response is a Json with these fields
 {
   "action": "Get Applications",
   "message": "Data Found",
-  "applications": "[]"
+  "applications": []
 }
 ```
 
@@ -933,6 +934,47 @@ The possible responses for this api request are as follows
 | Status Codes    | Possible Messages      |
 | --------------- | ---------------------- |
 | 200 OK          | `Data Found`           |
+| 400 BAD_REQUEST | `Something Went Wrong` |
+
+You may see some different errors which can be seen [here](#common-errors)
+
+---
+
+## `api/admin/submitApplication`
+
+This api is used to
+
+Request_Body:
+
+```json
+{
+  "applications_id": "",
+  "student_id": "",
+  "opening_id": "Q54IRZZMC3RP8F6",
+  "additional_info": "",
+  "resume_file_name": ""
+}
+```
+
+### Response
+
+Response is a Json with these fields
+
+```json
+{
+  "action": "Add Student Application",
+  "message": "Application Added",
+  "applications": []
+}
+```
+
+### Status Codes
+
+The possible responses for this api request are as follows
+
+| Status Codes    | Possible Messages      |
+| --------------- | ---------------------- |
+| 200 OK          | `Application Added`    |
 | 400 BAD_REQUEST | `Something Went Wrong` |
 
 You may see some different errors which can be seen [here](#common-errors)
