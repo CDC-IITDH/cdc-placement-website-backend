@@ -15,6 +15,7 @@
    4. [**api/admin/updateOfferAccepted**](#apiadminupdateofferaccepted)
    5. [**api/admin/updateEmailVerified**](#apiadminupdateemailverified)
    6. [**api/admin/updateAdditionalInfo**](#apiadminupdateadditionalinfo)
+   7. [**api/admin/getApplications**](#apiadmingetApplications)
 4. [**Company APIs**](#company-portal-apis)
    1. [**api/company/addPlacement/**](#apicompanyaddplacement)
 5. [**Common Errors**](#common-errors)
