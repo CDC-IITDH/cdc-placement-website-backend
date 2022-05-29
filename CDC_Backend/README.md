@@ -915,6 +915,9 @@ Request_Body:
 }
 ```
 
+> Headers <br>
+> Authorization: "Bearer {tokenID}"
+
 ### Response
 
 Response is a Json with these fields
@@ -951,7 +954,7 @@ Request_Body:
 
 ```json
 {
-  "applications_id": "Q54IRZZMC3RP8F6",
+  "applications_id": "F28IRGGMC3RP8Y8",
   "student_id": "200010022",
   "opening_id": "Q54IRZZMC3RP8F6",
   "additional_info": {
@@ -961,6 +964,9 @@ Request_Body:
   "resume_file_name": "8KIOT3PW1JIS718_CSE-V-SEM.pdf"
 }
 ```
+
+> Headers <br>
+> Authorization: "Bearer {tokenID}"
 
 ### Response
 
@@ -998,6 +1004,9 @@ Request_Body:
 }
 ```
 
+> Headers <br>
+> Authorization: "Bearer {tokenID}"
+
 ### Response
 
 Response is a Json with these fields
@@ -1031,12 +1040,12 @@ Request_Body:
 
 ```json
 {
-  "company_name": ,
-  "compensation_gross": ,
-  "offer_accepted": ,
+  "company_name": "Geeks for Geeks",
+  "compensation_gross": "1000000",
+  "offer_accepted": "true",
   "student_id": "200010022",
-  "designation": ,
-  "tier": ,
+  "designation": "Technical Content Writer",
+  "tier": "4"
 }
 ```
 
@@ -1076,6 +1085,9 @@ Request_Body:
   "opening_id": "Q54IRZZMC3RP8F6"
 }
 ```
+
+> Headers <br>
+> Authorization: "Bearer {tokenID}"
 
 ### Response
 
