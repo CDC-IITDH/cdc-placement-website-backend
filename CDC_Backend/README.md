@@ -1102,7 +1102,44 @@ Response is a Json with these fields
 {
   "action": "Get Applications",
   "message": "Data Found",
-  "applications": []
+  "applications": [
+    {
+      "id": "200010021",
+      "student_details": {
+        "id": "200010021",
+        "resume_list": [
+          {
+            "link": "http://localhost/storage/Resumes/200010021/resume_link",
+            "name": "resume_link"
+          }
+        ],
+        "offers": [
+          {
+            "designation": "sde",
+            "company_name": "JP Morgan",
+            "application_id": "200010021",
+            "placement_offer_type": "Normal"
+          }
+        ],
+        "roll_no": 200010021,
+        "name": "John",
+        "batch": "2020",
+        "branch": "CSE",
+        "phone_number": 8105699450,
+        "cpi": "9.00",
+        "can_apply": true
+      },
+      "resume_link": {
+        "link": "http://localhost/storage/Resumes/200010021/resume_links",
+        "name": "resume_links"
+      },
+      "additional_info": null,
+      "selected": true,
+      "applied_at": "2022-05-30T19:15:33+05:30",
+      "updated_at": "2022-05-30T19:16:31.662929+05:30",
+      "student": "200010021"
+    }
+  ]
 }
 ```
 
@@ -1275,7 +1312,10 @@ Response is a Json with these fields when the application is found.
   "application_found": "true",
   "application_info": {
     "id": "F28IRGGMC3RP8Y8",
-    "additional_info": ,
+    "additional_info": {
+      "12th grade" : "9.1",
+      "current GPA": "9.6"
+    },
     "resume": "resume_link"
   },
   "student_details": {
@@ -1297,10 +1337,15 @@ Response is a Json with these fields when the applciation is not found.
     "name": "John",
     "batch": "2020",
     "branch": "MMAE",
-    "resume_list":
+    "resume_link": {
+      "link": "http://localhost/storage/Resumes/200010021/resume_links",
+      "name": "resume_links"
+    }
   }
 }
 ```
+
+"resume_link": {link: "http://localhost/storage/Resumes/200010021/resume_links", name: "resume_links"}
 
 ### Status Codes
 
