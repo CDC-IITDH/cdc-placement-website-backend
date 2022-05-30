@@ -604,6 +604,7 @@ Response is a Json with these fields
 {
   "action": "Get Dashboard - Admin",
   "message": "Data Found",
+  "new": [],
   "ongoing": [
     {
       "id": "Q54IRZZMC3RP8F6",
