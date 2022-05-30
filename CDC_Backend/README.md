@@ -1348,8 +1348,6 @@ Response is a Json with these fields when the applciation is not found.
 }
 ```
 
-"resume_link": {link: "http://localhost/storage/Resumes/200010021/resume_links", name: "resume_links"}
-
 ### Status Codes
 
 The possible responses for this api request are as follows
