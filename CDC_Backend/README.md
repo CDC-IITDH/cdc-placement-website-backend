@@ -701,6 +701,7 @@ Response is a Json with these fields
 - message: Tells us what happened with our Request.
 - ongoing: Gives us the list of placements that are accepting applications.
 - previous: Gives us the list of placements that stopped accepting applications.
+- new : Gives us the list of placements that is not yet accepeted by CDC.
 
 ### Status Codes
 
