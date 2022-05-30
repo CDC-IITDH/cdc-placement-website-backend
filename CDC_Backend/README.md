@@ -1313,7 +1313,7 @@ Response is a Json with these fields when the application is found.
   "application_info": {
     "id": "F28IRGGMC3RP8Y8",
     "additional_info": {
-      "12th grade" : "9.1",
+      "12th grade": "9.1",
       "current GPA": "9.6"
     },
     "resume": "resume_link"
@@ -1322,7 +1322,10 @@ Response is a Json with these fields when the application is found.
     "name": "John",
     "batch": "2020",
     "branch": "MMAE",
-    "resume_list":
+    "resume_list": {
+      "link": "http://localhost/storage/Resumes/200010021/resume_links",
+      "name": "resume_link"
+    }
   }
 }
 ```
@@ -1337,9 +1340,9 @@ Response is a Json with these fields when the applciation is not found.
     "name": "John",
     "batch": "2020",
     "branch": "MMAE",
-    "resume_link": {
+    "resume_list": {
       "link": "http://localhost/storage/Resumes/200010021/resume_links",
-      "name": "resume_links"
+      "name": "resume_link"
     }
   }
 }
