@@ -1267,7 +1267,7 @@ Request_Body:
 
 ### Response
 
-Response is a Json with these fields
+Response is a Json with these fields when the application is found.
 
 ```json
 {
@@ -1287,14 +1287,30 @@ Response is a Json with these fields
 }
 ```
 
+Response is a Json with these fields when the applciation is not found.
+
+```json
+{
+  "action": "Get Student Application",
+  "application_found": "false",
+  "student_details": {
+    "name": "John",
+    "batch": "2020",
+    "branch": "MMAE",
+    "resume_list":
+  }
+}
+```
+
 ### Status Codes
 
 The possible responses for this api request are as follows
 
-| Status Codes    | Possible Messages      |
-| --------------- | ---------------------- |
-| 200 OK          | ``                     |
-| 400 BAD_REQUEST | `Something Went Wrong` |
+| Status Codes    | Possible Messages       |
+| --------------- | ----------------------- |
+| 200 OK          | ``                      |
+| 400 BAD_REQUEST | `Something Went Wrong`  |
+| 404 NOT_FOUND   | `Application not found` |
 
 You may see some different errors which can be seen [here](#common-errors)
 
