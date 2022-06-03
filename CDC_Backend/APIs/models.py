@@ -32,16 +32,41 @@ class Student(models.Model):
                          default=list, blank=True)
     cpi = models.DecimalField(decimal_places=2, max_digits=4)
     can_apply = models.BooleanField(default=True, verbose_name='Registered')
-    history = HistoricalRecords()
+    changed_by = models.ForeignKey(User, blank=True, on_delete=models.RESTRICT, default=None, null=True)
+    history = HistoricalRecords(user_model=User)
 
     def __str__(self):
         return str(self.roll_no)
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+    
+    @_history_user.setter
+    def _history_user(self, value):
+        if isinstance(value, User):
+            self.changed_by = value
+        else:
+            self.changed_by = None
+
 
 
 class Admin(models.Model):
     id = models.CharField(blank=False, max_length=15, primary_key=True)
     name = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
-    history = HistoricalRecords()
+    changed_by = models.ForeignKey(User, blank=True, on_delete=models.RESTRICT, default=None, null=True)
+    history = HistoricalRecords(user_model=User)
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+    
+    @_history_user.setter
+    def _history_user(self, value):
+        if isinstance(value, User):
+            self.changed_by = value
+        else:
+            self.changed_by = None
 
 
 def two_day_after_today():
@@ -118,8 +143,8 @@ class Placement(models.Model):
     deadline_datetime = models.DateTimeField(blank=False, verbose_name="Deadline Date", default=two_day_after_today)
     created_at = models.DateTimeField(blank=False, default=None, null=True)
     updated_at = models.DateTimeField(blank=False, default=None, null=True)
-    history = HistoricalRecords()
-
+    changed_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    history = HistoricalRecords() 
     def format(self):
         if self.company_name is not None:
             self.company_name = self.company_name.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
@@ -163,6 +188,17 @@ class Placement(models.Model):
         if self.additional_info is not None:
             self.additional_info = [info.strip()[:JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT] for info in list(self.additional_info)]
 
+    @property
+    def _history_user(self):
+        return self.changed_by
+    
+    @_history_user.setter
+    def _history_user(self, value):
+        if isinstance(value, User):
+            self.changed_by = value
+        else:
+            self.changed_by = None
+
     def save(self, *args, **kwargs):
         ''' On save, add timestamps '''
         if not self.created_at:
@@ -184,7 +220,8 @@ class PlacementApplication(models.Model):
     selected = models.BooleanField(null=True, default=None, blank=True)
     applied_at = models.DateTimeField(blank=False, default=None, null=True)
     updated_at = models.DateTimeField(blank=False, default=None, null=True)
-    history = HistoricalRecords()
+    changed_by = models.ForeignKey(User, blank=False, on_delete=models.RESTRICT, default=None, null=True)
+    history = HistoricalRecords(user_model=User)
 
     def save(self, *args, **kwargs):
         ''' On save, add timestamps '''
@@ -194,6 +231,17 @@ class PlacementApplication(models.Model):
 
         return super(PlacementApplication, self).save(*args, **kwargs)
 
+    @property
+    def _history_user(self):
+        return self.changed_by
+    
+    @_history_user.setter
+    def _history_user(self, value):
+        if isinstance(value, User):
+            self.changed_by = value
+        else:
+            self.changed_by = None
+    
     class Meta:
         verbose_name_plural = "Placement Applications"
         unique_together = ('placement_id', 'student_id')
@@ -212,4 +260,16 @@ class PrePlacementOffer(models.Model):
     tier = models.CharField(blank=False, choices=TIERS, max_length=10)
     designation = models.CharField(blank=False, max_length=25, default=None, null=True)
     accepted = models.BooleanField(default=None, null=True)
-    history = HistoricalRecords()
+    changed_by = models.ForeignKey(User, blank=False, on_delete=models.RESTRICT, default=None, null=True)
+    history = HistoricalRecords(user_model=User)
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+    
+    @_history_user.setter
+    def _history_user(self, value):
+        if isinstance(value, User):
+            self.changed_by = value
+        else:
+            self.changed_by = None
