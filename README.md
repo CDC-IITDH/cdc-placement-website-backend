@@ -12,7 +12,7 @@ python# CDC - Backend
 4. Install the dependencies <br>
    `pip install -r requirements.txt `
 5. Ensure that you have the PostgreSQL installed on your machine and is running on PORT **5432** <br>
-6. Make sure to give the correct database credentials in [settings.py](./CDC_Backend/CDC_Backend/settings.py)
+6. Make sure to give the correct database credentials in [settings.py](./CDC_Backend/CDC_Backend/settings.py)(https://www.youtube.com/watch?v=bE9h6aAky4s&t=193s)
 
 ### Running the Application
 
@@ -28,7 +28,11 @@ python# CDC - Backend
 2. Run `python manage.py createsuperuser` to create a user to access the admin panel.
 3. Set up the Username and Password
 4. You can log in and change the database values anytime.
-
+ 
+ # Error
+ 1.make sure that your machine time and google time are same ,if not go to setting of date and time and sync this 
+ 2.make sure u have used  same id for both student and Admin that is your iitfh roll_no
+ 3. same client link in .env of frontend or constants.py of bakcend 
 ### Deploying
 
 1. Add the hosted domain name in `ALLOWED_HOSTS` in [settings.py](./CDC_Backend/CDC_Backend/settings.py)
