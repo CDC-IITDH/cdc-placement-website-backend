@@ -29,7 +29,7 @@ SECRET_KEY = 'e_i2g3z!y4+p3dwm%k9k=zmsot@aya-0$mmetgxz4mp#8_oy#*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['cdc-iitdh.herokuapp.com/', 'localhost', '192.168.29.199']
+ALLOWED_HOSTS = ['cdc-iitdh.herokuapp.com/', 'localhost', '192.168.29.199', '127.0.0.1']
 
 # Application definition
 
