@@ -64,6 +64,10 @@ db.sqlite3-journal
 instance/
 .webassets-cache
 
+# docker stuff:
+data/
+docker.env
+
 # Scrapy stuff:
 .scrapy
 
@@ -139,3 +143,4 @@ dmypy.json
 /CDC_Backend/Storage/
 .idea
 *.pyc
+
