@@ -1,6 +1,7 @@
 @echo off
 set /p create="do you want to create supruser ? (Y/N) "
 
+cd "CDC_Backend" &^
 
 if %create% equ Y  ( python manage.py createsuperuser  )
 if %create% equ y  ( python manage.py createsuperuser  )
