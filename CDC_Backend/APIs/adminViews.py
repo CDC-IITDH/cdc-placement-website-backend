@@ -158,15 +158,41 @@ def deleteAdditionalInfo(request, id, email, user_type):
         else:
             raise ValueError("Additional Info Not Found")
     except Http404:
-        return Response({'action': "Update Additional Info", 'message': 'Opening Not Found'},
+        return Response({'action': "Delete Additional Info", 'message': 'Opening Not Found'},
                         status=status.HTTP_404_NOT_FOUND)
     except ValueError:
-        return Response({'action': "Update Additional Info", 'message': "Additional Info must be a list"},
+        return Response({'action': "Delete Additional Info", 'message': "Additional Info not found"},
+                        status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        logger.warning("Delete Additional Info: " + str(e))
+        return Response({'action': "Delete Additional Info", 'message': "Something went wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@isAuthorized([ADMIN])
+@precheck([OPENING_ID, FIELD])
+def addAdditionalInfo(request, id, email, user_type):
+    try:
+        data = request.data
+        opening = get_object_or_404(Placement, pk=data[OPENING_ID])
+        if data[FIELD] not in opening.additional_info:
+            opening.additional_info.append(data[FIELD])
+            opening.save()
+            return Response({'action': "Add Additional Info", 'message': "Additional Info Added"},
+                            status=status.HTTP_200_OK)
+        else:
+            raise ValueError("Additional Info Found")
+    except Http404:
+        return Response({'action': "Add Additional Info", 'message': 'Opening Not Found'},
+                        status=status.HTTP_404_NOT_FOUND)
+    except ValueError:
+        return Response({'action': "Add Additional Info", 'message': "Additional Info already found"},
                         status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        logger.warning("Update Additional Info: " + str(e))
-        return Response({'action': "Update Additional Info", 'message': "Something went wrong"},
+        logger.warning("Add Additional Info: " + str(e))
+        return Response({'action': "Add Additional Info", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(['GET'])
