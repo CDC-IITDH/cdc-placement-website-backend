@@ -145,20 +145,18 @@ def updateEmailVerified(request, id, email, user_type):
 
 @api_view(['POST'])
 @isAuthorized([ADMIN])
-@precheck([OPENING_ID, ADDITIONAL_INFO])
-def updateAdditionalInfo(request, id, email, user_type):
+@precheck([OPENING_ID, FIELD])
+def deleteAdditionalInfo(request, id, email, user_type):
     try:
         data = request.data
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
-        if data[ADDITIONAL_INFO] == "":
-            opening.additional_info = []
-        elif isinstance(data[ADDITIONAL_INFO], list):
-            opening.additional_info = data[ADDITIONAL_INFO]
+        if data[FIELD] in opening.additional_info:
+            opening.additional_info.remove(data[FIELD])
+            opening.save()
+            return Response({'action': "Delete Additional Info", 'message': "Additional Info Deleted"},
+                            status=status.HTTP_200_OK)
         else:
-            raise ValueError("Additional Info must be a list")
-        opening.save()
-        return Response({'action': "Update Additional Info", 'message': "Additional Info Updated"},
-                        status=status.HTTP_200_OK)
+            raise ValueError("Additional Info Not Found")
     except Http404:
         return Response({'action': "Update Additional Info", 'message': 'Opening Not Found'},
                         status=status.HTTP_404_NOT_FOUND)
