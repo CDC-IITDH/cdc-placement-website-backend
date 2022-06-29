@@ -70,6 +70,7 @@ RESUME_FILE_NAME = 'resume_file_name'
 APPLICATION_ID = "application_id"
 OPENING_ID = "opening_id"
 ADDITIONAL_INFO = "additional_info"
+FIELD = "field"
 
 STATUS_ACCEPTING_APPLICATIONS = "Accepting Applications"
 
