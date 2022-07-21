@@ -144,7 +144,7 @@ class Placement(models.Model):
     created_at = models.DateTimeField(blank=False, default=None, null=True)
     updated_at = models.DateTimeField(blank=False, default=None, null=True)
     changed_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    history = HistoricalRecords() 
+    history = HistoricalRecords(user_model=User) 
     def format(self):
         if self.company_name is not None:
             self.company_name = self.company_name.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
