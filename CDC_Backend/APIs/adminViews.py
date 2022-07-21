@@ -39,6 +39,7 @@ def markStatus(request, id, email, user_type):
                     sendEmail(email, subject, data, STUDENT_APPLICATION_STATUS_SELECTED_TEMPLATE)
                 else:
                     sendEmail(email, subject, data, STUDENT_APPLICATION_STATUS_NOT_SELECTED_TEMPLATE)
+                application.chaged_by = get_object_or_404(User, id=id)
                 application.save()
             else:
                 raise ValueError("Student - " + i[STUDENT_ID] + " didn't apply for this opening")
@@ -89,6 +90,7 @@ def updateDeadline(request, id, email, user_type):
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         # Updating deadline date with correct format in datetime field
         opening.deadline_datetime = datetime.datetime.strptime(data[DEADLINE_DATETIME], '%Y-%m-%d %H:%M:%S %z')
+        opening.changed_by = get_object_or_404(User, id=id)
         opening.save()
         return Response({'action': "Update Deadline", 'message': "Deadline Updated"},
                         status=status.HTTP_200_OK)
@@ -111,6 +113,7 @@ def updateOfferAccepted(request, id, email, user_type):
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         opening.offer_accepted = True if data[OFFER_ACCEPTED] == True else False
         print(opening.offer_accepted)
+        opening.changed_by = get_object_or_404(User, id=id)
         opening.save()
         return Response({'action': "Update Offer Accepted", 'message': "Offer Accepted Updated"},
                         status=status.HTTP_200_OK)
@@ -131,6 +134,7 @@ def updateEmailVerified(request, id, email, user_type):
         data = request.data
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         opening.email_verified = True if data[EMAIL_VERIFIED] == "true" else False
+        opening.changed_by = get_object_or_404(User, id=id)
         opening.save()
         return Response({'action': "Update Email Verified", 'message': "Email Verified Updated"},
                         status=status.HTTP_200_OK)
@@ -152,6 +156,7 @@ def deleteAdditionalInfo(request, id, email, user_type):
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         if data[FIELD] in opening.additional_info:
             opening.additional_info.remove(data[FIELD])
+            opening.changed_by = get_object_or_404(User, id=id)
             opening.save()
             return Response({'action': "Delete Additional Info", 'message': "Additional Info Deleted"},
                             status=status.HTTP_200_OK)
@@ -182,6 +187,7 @@ def addAdditionalInfo(request, id, email, user_type):
                             status=status.HTTP_200_OK)
         else:
             raise ValueError("Additional Info Found")
+
     except Http404:
         return Response({'action': "Add Additional Info", 'message': 'Opening Not Found'},
                         status=status.HTTP_404_NOT_FOUND)
@@ -240,6 +246,7 @@ def submitApplication(request, id, email, user_type):
                 else:
                     additional_info[i] = data[ADDITIONAL_INFO][i]
             application.additional_info = json.dumps(additional_info)
+            application.changed_by = get_object_or_404(User, id=id)
             application.save()
             return Response({'action': "Add Student Application", 'message': "Application added"},
                             status=status.HTTP_200_OK)
@@ -259,6 +266,7 @@ def submitApplication(request, id, email, user_type):
                         additional_info[i] = data[ADDITIONAL_INFO][i]
 
                 application.additional_info = json.dumps(additional_info)
+                application.changed_by = get_object_or_404(User, id=id)
                 application.save()
                 return Response({'action': "Add Student Application", 'message': "Application updated"},
                                 status=status.HTTP_200_OK)
@@ -349,6 +357,7 @@ def addPPO(request, id, email, user_type):
         PPO.tier = data[TIER]
         if COMPENSATION_DETAILS in data:
             PPO.compensation_details = data[COMPENSATION_DETAILS]
+        PPO.changed_by = get_object_or_404(User, id=id)
         PPO.save()
         return Response({'action': "Add PPO", 'message': "PPO added"},
                         status=status.HTTP_200_OK)
