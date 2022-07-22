@@ -20,3 +20,11 @@ else
   echo "${DIR} Directory Created"
 fi
 
+echo Do you want ceate credentials for super user (Y/N) ?
+read create
+create=${create^^}
+
+if [ "$create" == "Y" ]; then
+	### Take action if user want to create ###
+	python3 manage.py createsuperuser
+fi
