@@ -138,12 +138,14 @@ SPECIAL_FORMAT_IN_PDF = ['website', 'company_details_pdf_names', 'description_pd
 COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT = "Notification Submitted - {id} - Career Development Cell, IIT Dharwad"
 STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT = 'Application Status : {company_name} - {id}'
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT = 'CDC - Application Submitted - {company_name}'
+STUDENT_APPLICATION_UPDATED_TEMPLATE_SUBJECT = 'CDC - Application Updated - {company_name}'
 COMPANY_EMAIl_VERIFICATION_TEMPLATE_SUBJECT = 'Email Verification - Career Development Cell, IIT Dharwad'
 
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE = 'student_application_submitted.html'
 COMPANY_OPENING_SUBMITTED_TEMPLATE = 'company_opening_submitted.html'
 STUDENT_APPLICATION_STATUS_SELECTED_TEMPLATE = 'student_application_status_selected.html'
 STUDENT_APPLICATION_STATUS_NOT_SELECTED_TEMPLATE = 'student_application_status_not_selected.html'
+STUDENT_APPLICATION_UPDATED_TEMPLATE = 'student_application_updated.html'
 COMPANY_EMAIL_VERIFICATION_TEMPLATE = 'company_email_verification.html'
 COMPANY_JNF_RESPONSE_TEMPLATE = 'company_jnf_response.html'
 
