@@ -44,7 +44,7 @@ def addResume(request, id, email, user_type):
         destination_path = STORAGE_DESTINATION_RESUMES + str(student.roll_no) + "/"
         file_name = saveFile(file, destination_path)
         student.resumes.append(file_name)
-
+        student.changed_by = get_object_or_404(User, id=id)
         student.save()
         return Response({'action': "Upload Resume", 'message': "Resume Added"},
                         status=status.HTTP_200_OK)
@@ -102,8 +102,9 @@ def deleteResume(request, id, email, user_type):
 
         destination_path = STORAGE_DESTINATION_RESUMES + id + "/" + str(file_name)
         if path.exists(destination_path):
-            remove(destination_path)
+            # remove(destination_path)
             student.resumes.remove(file_name)
+            student.changed_by = get_object_or_404(User, id=id)
             student.save()
             return Response({'action': "Delete Resume", 'message': "Resume Deleted"},
                             status=status.HTTP_200_OK)
@@ -177,7 +178,7 @@ def submitApplication(request, id, email, user_type):
         }
         subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
         sendEmail(email, subject, data, STUDENT_APPLICATION_SUBMITTED_TEMPLATE)
-
+        application.changed_by = get_object_or_404(User, id=id)
         application.save()
         return Response({'action': "Submit Application", 'message': "Application Submitted"},
                         status=status.HTTP_200_OK)
