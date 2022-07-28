@@ -10,7 +10,7 @@ from .constants import *
 
 
 class User(models.Model):
-    email = models.EmailField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT, unique=True, primary_key=True)
+    email = models.EmailField(primary_key=True, blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
     id = models.CharField(blank=False, max_length=25, db_index=True)
     user_type = ArrayField(models.CharField(blank=False, max_length=10), size=4, default=list, blank=False)
     last_login_time = models.DateTimeField(default=timezone.now)
