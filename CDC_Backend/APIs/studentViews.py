@@ -71,7 +71,12 @@ def getDashboard(request, id, email, user_type):
                                               allowed_branch__contains=[studentDetails.branch],
                                               deadline_datetime__gte=datetime.datetime.now(),
                                               offer_accepted=True, email_verified=True).order_by('deadline_datetime')
-        placementsdata = PlacementSerializerForStudent(placements, many=True).data
+        print(placements)
+        filtered_placements = placement_eligibility_filters(studentDetails, placements)
+        print(filtered_placements)
+
+        placementsdata = PlacementSerializerForStudent(filtered_placements, many=True).data
+
         placementApplications = PlacementApplication.objects.filter(student_id=id)
         placementApplications = PlacementApplicationSerializer(placementApplications, many=True).data
         return Response(

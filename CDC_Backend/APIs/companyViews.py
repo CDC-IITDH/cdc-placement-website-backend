@@ -276,11 +276,12 @@ def verifyEmail(request):
             data = {
                 "designation": opening.designation,
                 "opening_type": PLACEMENT,
-                "opening_link": PLACEMENT_OPENING_URL.format(id=opening.id),  # Some Changes here too
                 "company_name": opening.company_name,
             }
+            print(data)
+            print(attachment_jnf_respone)
             json_data = json.dumps(data, default=str)
-            sendEmail(opening.email, COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), json_data,
+            sendEmail(opening.email, COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
                       COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
 
         return Response({'action': "Verify Email", 'message': "Email Verified Successfully"},

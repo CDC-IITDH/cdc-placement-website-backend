@@ -27,7 +27,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from .constants import *
-from .models import User, PrePlacementOffer, PlacementApplication, Placement
+from .models import User, PrePlacementOffer, PlacementApplication, Placement, Student
 
 logger = logging.getLogger('db')
 
@@ -138,7 +138,7 @@ def saveFile(file, location):
     return file_name
 
 
-@background_task.background(schedule=5)
+@background_task.background(schedule=2)
 def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
     try:
         if not isinstance(data, dict):
@@ -169,15 +169,13 @@ def PlacementApplicationConditions(student, placement):
         selected_companies = PlacementApplication.objects.filter(student=student, selected=True)
         selected_companies_PSU = [i for i in selected_companies if i.placement.tier == 'psu']
         PPO = PrePlacementOffer.objects.filter(student=student, accepted=True)
-        # find lenght of PPO
-        print(PPO)
-        print(len(PPO), "ere")
+        # find length of PPO
         if len(selected_companies) + len(PPO) >= MAX_OFFERS_PER_STUDENT:
             raise PermissionError("Max Applications Reached for the Season")
 
         if len(selected_companies_PSU) > 0:
             raise PermissionError('Selected for PSU Can\'t apply anymore')
-
+        print(placement, 'placement')
         if placement.tier == 'psu':
             return True, "Conditions Satisfied"
 
@@ -287,7 +285,7 @@ def opening_description_table_html(opening):
             if key == 'website':
                 details[key] = {"details": details[key], "type": ["link"]}
             else:
-                details[key] = {"details": details[key]["details"], "type": ["list", "link"],
+                details[key] = {"details": [item[16:] for item in details[key]["details"]], "type": ["list", "link"],
                                 "link": PDF_FILES_SERVING_ENDPOINT + opening.id + "/"}
         new_key = key.replace('_', ' ')
         if new_key.endswith(' names'):
@@ -301,3 +299,47 @@ def opening_description_table_html(opening):
         "imgpath": imagepath
     }
     return render_to_string(COMPANY_JNF_RESPONSE_TEMPLATE, data)
+
+
+def placement_eligibility_filters(student, placements):
+    try:
+        filtered_placements = []
+        for placement in placements.iterator():
+
+            if PlacementApplicationConditions(student, placement)[0]:
+                filtered_placements.append(placement)
+
+        return filtered_placements
+    except:
+        logger.warning("Utils - placement_eligibility_filters: " + str(sys.exc_info()))
+        return placements
+
+
+@background_task.background(schedule=2)
+def send_opening_notifications(placement_id):
+    try:
+        placement = get_object_or_404(Placement, id=placement_id)
+        students = Student.objects.all()
+        for student in students.iterator():
+            if PlacementApplicationConditions(student, placement)[0]:
+                try:
+                    student_user = get_object_or_404(User, id=student.id)
+                    subject = NOTIFY_STUDENTS_OPENING_TEMPLATE_SUBJECT.format(company_name=placement.company_name)
+                    data = {
+                        "company_name": placement.company_name,
+                        "opening_type": 'Placement',
+                        "designation": placement.designation,
+                        "deadline": placement.deadline_datetime.strftime("%Y-%m-%d %H:%M:%S"),
+                        "link": PLACEMENT_OPENING_URL.format(id=placement.id)
+                    }
+                    sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
+                except Http404:
+                    logger.warning('Utils - send_opening_notifications: user not found : ' + student.id)
+                except Exception as e:
+                    logger.warning('Utils - send_opening_notifications: For Loop' + str(e))
+
+
+    except:
+        logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
+        return False
+

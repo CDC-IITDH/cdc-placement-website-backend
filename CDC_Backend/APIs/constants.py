@@ -39,7 +39,7 @@ TOTAL_BATCHES = 4  # Total No of Batches
 CLIENT_ID = "956830229554-290mirc16pdhd5j7ph7v7ukibo4t1qcp.apps.googleusercontent.com"  # Google Login Client ID
 
 # To be Configured Properly
-PLACEMENT_OPENING_URL = "https://www.googleapis.com/auth/adwords/{id}"  # On frontend, this is the URL to be opened
+PLACEMENT_OPENING_URL = "http://localhost:3000/student/dashboard/placements/{id}"  # On frontend, this is the URL to be opened
 LINK_TO_STORAGE_COMPANY_ATTACHMENT = "http://localhost/storage/Company_Attachments/"
 LINK_TO_STORAGE_RESUME = "http://localhost/storage/Resumes/"
 LINK_TO_APPLICATIONS_CSV = "http://localhost/storage/Application_CSV/"
@@ -134,13 +134,14 @@ EXCLUDE_IN_PDF = ['id', 'is_company_details_pdf', 'offer_accepted', 'is_descript
                   'email_verified', 'created_at']
 SPECIAL_FORMAT_IN_PDF = ['website', 'company_details_pdf_names', 'description_pdf_names',
                          'compensation_details_pdf_names',
-                         'selection_procedure_pdf_names']
+                         'selection_procedure_details_pdf_names']
 
 COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT = "Notification Submitted - {id} - Career Development Cell, IIT Dharwad"
-STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT = 'Application Status : {company_name} - {id}'
+STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT = 'Application Status - {company_name} - {id}'
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT = 'CDC - Application Submitted - {company_name}'
 STUDENT_APPLICATION_UPDATED_TEMPLATE_SUBJECT = 'CDC - Application Updated - {company_name}'
 COMPANY_EMAIl_VERIFICATION_TEMPLATE_SUBJECT = 'Email Verification - Career Development Cell, IIT Dharwad'
+NOTIFY_STUDENTS_OPENING_TEMPLATE_SUBJECT = 'Placement Opportunity at {company_name}'
 
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE = 'student_application_submitted.html'
 COMPANY_OPENING_SUBMITTED_TEMPLATE = 'company_opening_submitted.html'
@@ -149,6 +150,7 @@ STUDENT_APPLICATION_STATUS_NOT_SELECTED_TEMPLATE = 'student_application_status_n
 STUDENT_APPLICATION_UPDATED_TEMPLATE = 'student_application_updated.html'
 COMPANY_EMAIL_VERIFICATION_TEMPLATE = 'company_email_verification.html'
 COMPANY_JNF_RESPONSE_TEMPLATE = 'company_jnf_response.html'
+NOTIFY_STUDENTS_OPENING_TEMPLATE = 'notify_students_new_opening.html'
 
 APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'CPI',
                              'Resume', 'Selected', ]
