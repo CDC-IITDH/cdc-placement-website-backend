@@ -114,7 +114,6 @@ def updateOfferAccepted(request, id, email, user_type):
             opening.offer_accepted = True
             opening.changed_by = get_object_or_404(User, id=id)
             opening.save()
-            print('offer accepted sending email to students')
             send_opening_notifications(opening.id)
         return Response({'action': "Update Offer Accepted", 'message': "Offer Accepted Updated"},
                         status=status.HTTP_200_OK)
@@ -350,7 +349,6 @@ def generateCSV(request, id, email, user_type):
                         status=status.HTTP_200_OK)
     except:
         logger.warning("Create csv: " + str(sys.exc_info()))
-        print(sys.exc_info())
         return Response({'action': "Create csv", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -381,7 +379,6 @@ def addPPO(request, id, email, user_type):
                         status=status.HTTP_200_OK)
     except:
         logger.warning("Add PPO: " + str(sys.exc_info()))
-        print(sys.exc_info())
         return Response({'action': "Add PPO", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 

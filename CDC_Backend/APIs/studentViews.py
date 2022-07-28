@@ -71,9 +71,7 @@ def getDashboard(request, id, email, user_type):
                                               allowed_branch__contains=[studentDetails.branch],
                                               deadline_datetime__gte=datetime.datetime.now(),
                                               offer_accepted=True, email_verified=True).order_by('deadline_datetime')
-        print(placements)
         filtered_placements = placement_eligibility_filters(studentDetails, placements)
-        print(filtered_placements)
 
         placementsdata = PlacementSerializerForStudent(filtered_placements, many=True).data
 
@@ -88,7 +86,6 @@ def getDashboard(request, id, email, user_type):
                         status=status.HTTP_404_NOT_FOUND)
     except:
         logger.warning("Get Dashboard -Student: " + str(sys.exc_info()))
-        print(sys.exc_info())
 
         return Response({'action': "Get Dashboard - Student", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
@@ -198,8 +195,6 @@ def submitApplication(request, id, email, user_type):
                         status=status.HTTP_404_NOT_FOUND)
     except:
         logger.warning("Submit Application: " + str(sys.exc_info()))
-        print(traceback.format_exc())
 
-        print(sys.exc_info())
         return Response({'action': "Submit Application", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)

@@ -278,9 +278,6 @@ def verifyEmail(request):
                 "opening_type": PLACEMENT,
                 "company_name": opening.company_name,
             }
-            print(data)
-            print(attachment_jnf_respone)
-            json_data = json.dumps(data, default=str)
             sendEmail(opening.email, COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
                       COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
 

@@ -77,7 +77,6 @@ def isAuthorized(allowed_users=None):
                     token_id = headers['HTTP_AUTHORIZATION'][7:]
                     idinfo = id_token.verify_oauth2_token(token_id, requests.Request(), CLIENT_ID)
                     email = idinfo[EMAIL]
-                    print(email)
                     user = get_object_or_404(User, email=email)
                     if user:
                         user.last_login_time = timezone.now()
@@ -160,7 +159,6 @@ def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
         return True
     except:
         logger.error("Send Email: " + str(sys.exc_info()))
-        print(str(sys.exc_info()[1]))
         return False
 
 
@@ -175,12 +173,10 @@ def PlacementApplicationConditions(student, placement):
 
         if len(selected_companies_PSU) > 0:
             raise PermissionError('Selected for PSU Can\'t apply anymore')
-        print(placement, 'placement')
         if placement.tier == 'psu':
             return True, "Conditions Satisfied"
 
         for i in selected_companies:
-            print(int(i.placement.tier) < int(placement.tier), int(i.placement.tier), int(placement.tier))
             if int(i.placement.tier) < int(placement.tier):
                 return False, "Can't apply for this tier"
 
@@ -189,9 +185,6 @@ def PlacementApplicationConditions(student, placement):
     except PermissionError as e:
         return False, e
     except:
-        print(sys.exc_info())
-        print(traceback.format_exc())
-
         logger.warning("Utils - PlacementApplicationConditions: " + str(sys.exc_info()))
         return False, "_"
 
@@ -229,7 +222,6 @@ def getTier(compensation_gross, is_psu=False):
         logger.warning("Utils - getTier: " + str(sys.exc_info()))
         return False, e
     except:
-        print(sys.exc_info())
         logger.warning("Utils - getTier: " + str(sys.exc_info()))
         return False, "_"
 
@@ -246,29 +238,21 @@ def generateOneTimeVerificationLink(email, opening_id, opening_type):
         link = LINK_TO_EMAIl_VERIFICATION_API.format(token=token)
         return True, link
     except:
-        print(sys.exc_info())
         logger.warning("Utils - generateOneTimeVerificationLink: " + str(sys.exc_info()))
         return False, "_"
 
 
 def verify_recaptcha(request):
     try:
-        print(settings.RECAPTCHA_SECRET_KEY)
         data = {
             'secret': settings.RECAPTCHA_SECRET_KEY,
             'response': request
         }
-        print(data)
         r = rq.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         result = r.json()
-        # logger.info("Recaptcha Response: " + str(result)+"request: "+str(data))
-
-        print(result, "Result")
         return result['success']
     except:
         # get exception line number
-        print(sys.exc_info())
-        print(traceback.format_exc())
         logger.warning("Utils - verify_recaptcha: " + str(sys.exc_info()))
         return False, "_"
 
@@ -293,7 +277,6 @@ def opening_description_table_html(opening):
         new_key = new_key.capitalize()
         newdetails[new_key] = details[key]
     imagepath = os.path.abspath('./templates/image.png')
-    print(imagepath)
     data = {
         "data": newdetails,
         "imgpath": imagepath
