@@ -229,7 +229,7 @@ def submitApplication(request, id, email, user_type):
         data = request.data
         student = get_object_or_404(Student, pk=data[STUDENT_ID])
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
-
+        student_user = get_object_or_404(User, id = student.id)
         if data[APPLICATION_ID] == "":
             application = PlacementApplication()
             application.id = generateRandomString()
@@ -246,8 +246,16 @@ def submitApplication(request, id, email, user_type):
                 else:
                     additional_info[i] = data[ADDITIONAL_INFO][i]
             application.additional_info = json.dumps(additional_info)
+            data = {
+                "name": student.name,
+                "company_name": opening.company_name,
+                "application_type": "Placement",
+                "additional_info": dict(json.loads(application.additional_info)),
+            }
+            subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
             application.changed_by = get_object_or_404(User, id=id)
             application.save()
+            sendEmail(student_user.email, subject, data, STUDENT_APPLICATION_SUBMITTED_TEMPLATE)
             return Response({'action': "Add Student Application", 'message': "Application added"},
                             status=status.HTTP_200_OK)
         else:
@@ -266,8 +274,17 @@ def submitApplication(request, id, email, user_type):
                         additional_info[i] = data[ADDITIONAL_INFO][i]
 
                 application.additional_info = json.dumps(additional_info)
+                data = {
+                    "name": student.name,
+                    "company_name": opening.company_name,
+                    "application_type": "Placement",
+                    "resume": application.resume[16:],
+                    "additional_info_items": dict(json.loads(application.additional_info)),
+                }
+                subject = STUDENT_APPLICATION_UPDATED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
                 application.changed_by = get_object_or_404(User, id=id)
                 application.save()
+                sendEmail(student_user.email, subject, data, STUDENT_APPLICATION_UPDATED_TEMPLATE)
                 return Response({'action': "Add Student Application", 'message': "Application updated"},
                                 status=status.HTTP_200_OK)
             else:
