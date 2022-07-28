@@ -109,12 +109,12 @@ def updateDeadline(request, id, email, user_type):
 def updateOfferAccepted(request, id, email, user_type):
     try:
         data = request.data
-        print(data)
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
-        opening.offer_accepted = True if data[OFFER_ACCEPTED] == True else False
-        print(opening.offer_accepted)
-        opening.changed_by = get_object_or_404(User, id=id)
-        opening.save()
+        if not opening.offer_accepted:
+            opening.offer_accepted = True
+            opening.changed_by = get_object_or_404(User, id=id)
+            opening.save()
+            send_opening_notifications(opening.id)
         return Response({'action': "Update Offer Accepted", 'message': "Offer Accepted Updated"},
                         status=status.HTTP_200_OK)
     except Http404:
@@ -173,6 +173,7 @@ def deleteAdditionalInfo(request, id, email, user_type):
         return Response({'action': "Delete Additional Info", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['POST'])
 @isAuthorized([ADMIN])
 @precheck([OPENING_ID, FIELD])
@@ -198,7 +199,6 @@ def addAdditionalInfo(request, id, email, user_type):
         logger.warning("Add Additional Info: " + str(e))
         return Response({'action': "Add Additional Info", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
-
 
 
 @api_view(['GET'])
@@ -229,7 +229,7 @@ def submitApplication(request, id, email, user_type):
         data = request.data
         student = get_object_or_404(Student, pk=data[STUDENT_ID])
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
-        student_user = get_object_or_404(User, id = student.id)
+        student_user = get_object_or_404(User, id=student.id)
         if data[APPLICATION_ID] == "":
             application = PlacementApplication()
             application.id = generateRandomString()
@@ -349,7 +349,6 @@ def generateCSV(request, id, email, user_type):
                         status=status.HTTP_200_OK)
     except:
         logger.warning("Create csv: " + str(sys.exc_info()))
-        print(sys.exc_info())
         return Response({'action': "Create csv", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -380,7 +379,6 @@ def addPPO(request, id, email, user_type):
                         status=status.HTTP_200_OK)
     except:
         logger.warning("Add PPO: " + str(sys.exc_info()))
-        print(sys.exc_info())
         return Response({'action': "Add PPO", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
