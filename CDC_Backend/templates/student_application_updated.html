@@ -48,16 +48,22 @@
                                         We have received some update in your application for a <b>{{ application_type }}</b> offer at
                                         <b>
                                             {{ company_name }}</b>.
-                                        {% if additional_info_items %}
-                                            We received these additional details
-                                            <br>
-                                            <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:
-                                        'Roboto', sans-serif;text-align: center">
+                                            <table style="border:solid 1px; margin: auto; text-align: center;width: 80%;
+                                            border-radius:15px; background-color: #e0e3ee">
+                                                    <tr>
+                                                        <td style="padding:8px 10px;color:#153643; "> resume:</td>
+                                                        <td style="padding:8px 10px;color:#153643;">{{ resume }}</td>
+                                                    </tr>
+                                            </table>
 
+                                            {% if additional_info_items %}
+                                                We received these additional details
+                                                <br>
                                             <table style="border:solid 1px; margin: auto; text-align: center;width: 80%;
                                 border-radius:15px; background-color: #e0e3ee">
-
-                                                {% for i,j in additional_info.items %}
+                                            <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:
+                                        'Roboto', sans-serif;text-align: center">
+                                                {% for i,j in additional_info_items.items %}
 
                                                     <tr>
                                                         <td style="padding:8px 10px;color:#153643; ">{{ i }}:</td>
