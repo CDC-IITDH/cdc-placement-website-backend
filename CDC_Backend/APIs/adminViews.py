@@ -280,7 +280,7 @@ def submitApplication(request, id, email, user_type):
                     "resume": application.resume[16:],
                     "additional_info_items": dict(json.loads(application.additional_info)),
                 }
-                subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
+                subject = STUDENT_APPLICATION_UPDATED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
                 application.changed_by = get_object_or_404(User, id=id)
                 application.save()
                 sendEmail(student_user.email, subject, data, STUDENT_APPLICATION_UPDATED_TEMPLATE)
