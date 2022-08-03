@@ -44,7 +44,7 @@
                     {% for item in value.details %}
                         <li>
                             {% if 'link' in value.type and value.link %}
-                                <a href="{{ value.link|add:item}}">{{ item }}</a>
+                                <a href="{{ value.link|add:item}}">{{ item|slice:"16:"}}</a>
                             {% elif 'link' in value.type %}
                                 <a href="{{ item }}">{{ item }}</a>
                             {% else %}

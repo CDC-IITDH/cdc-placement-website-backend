@@ -8,7 +8,6 @@ from django.utils.safestring import SafeText
 from .models import *
 
 admin.site.register(User, SimpleHistoryAdmin)
-admin.site.register(Admin, SimpleHistoryAdmin)
 
 admin.site.site_header = "CDC Recruitment Portal"
 
