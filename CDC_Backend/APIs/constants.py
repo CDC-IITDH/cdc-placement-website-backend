@@ -1,3 +1,5 @@
+import os
+
 BRANCH_CHOICES = [
     ["CSE", "CSE"],
     ["EE", "EE"],
@@ -36,14 +38,15 @@ TOTAL_BRANCHES = 4  # Total No of Branches
 TOTAL_BATCHES = 4  # Total No of Batches
 
 # To be Configured Properly
-CLIENT_ID = "956830229554-290mirc16pdhd5j7ph7v7ukibo4t1qcp.apps.googleusercontent.com"  # Google Login Client ID
+CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID')  # Google Login Client ID
 
 # To be Configured Properly
-PLACEMENT_OPENING_URL = "http://localhost:3000/student/dashboard/placements/{id}"  # On frontend, this is the URL to be opened
-LINK_TO_STORAGE_COMPANY_ATTACHMENT = "http://localhost/storage/Company_Attachments/"
-LINK_TO_STORAGE_RESUME = "http://localhost/storage/Resumes/"
-LINK_TO_APPLICATIONS_CSV = "http://localhost/storage/Application_CSV/"
-LINK_TO_EMAIl_VERIFICATION_API = "http://localhost:3000/company/verifyEmail?token={token}"
+PLACEMENT_OPENING_URL = "https://cdc.iitdh.ac.in/portal/student/dashboard/placements/{id}"  # On frontend, this is the URL to be opened
+LINK_TO_STORAGE_COMPANY_ATTACHMENT = "https://cdc.iitdh.ac.in/storage/Company_Attachments/"
+LINK_TO_STORAGE_RESUME = "https://cdc.iitdh.ac.in/storage/Resumes/"
+LINK_TO_APPLICATIONS_CSV = "https://cdc.iitdh.ac.in/storage/Application_CSV/"
+LINK_TO_EMAIl_VERIFICATION_API = "https://cdc.iitdh.ac.in/portal/company/verifyEmail?token={token}"
+PDF_FILES_SERVING_ENDPOINT = 'https://cdc.iitdh.ac.in/storage/Company_Attachments/'  # TODO: Change this to actual URL
 
 EMAIL = "email"
 
@@ -54,6 +57,7 @@ TIER = 'tier'
 # To be Configured Properly
 FOURTH_YEAR = '2019'
 MAX_OFFERS_PER_STUDENT = 2
+MAX_RESUMES_PER_STUDENT = 3
 EMAIL_VERIFICATION_TOKEN_TTL = 48  # in hours
 JNF_TEXT_MAX_CHARACTER_COUNT = 100
 JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT = 200
@@ -155,4 +159,3 @@ NOTIFY_STUDENTS_OPENING_TEMPLATE = 'notify_students_new_opening.html'
 APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'CPI',
                              'Resume', 'Selected', ]
 
-PDF_FILES_SERVING_ENDPOINT = 'http://localhost/storage/Company_Attachments/'  # TODO: Change this to actual URL

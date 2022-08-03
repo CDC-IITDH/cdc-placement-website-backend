@@ -269,7 +269,7 @@ def opening_description_table_html(opening):
             if key == 'website':
                 details[key] = {"details": details[key], "type": ["link"]}
             else:
-                details[key] = {"details": [item[16:] for item in details[key]["details"]], "type": ["list", "link"],
+                details[key] = {"details": [item for item in details[key]["details"]], "type": ["list", "link"],
                                 "link": PDF_FILES_SERVING_ENDPOINT + opening.id + "/"}
         new_key = key.replace('_', ' ')
         if new_key.endswith(' names'):
