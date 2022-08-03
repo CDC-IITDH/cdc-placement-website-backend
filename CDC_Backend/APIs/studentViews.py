@@ -40,6 +40,9 @@ def addResume(request, id, email, user_type):
         student = get_object_or_404(Student, id=id)
         files = request.FILES
 
+        if len(student.resumes) >= MAX_RESUMES_PER_STUDENT:
+            raise PermissionError('Max Number of Resumes limit reached')
+
         file = files['file']
         destination_path = STORAGE_DESTINATION_RESUMES + str(student.roll_no) + "/"
         file_name = saveFile(file, destination_path)
@@ -51,6 +54,9 @@ def addResume(request, id, email, user_type):
     except Http404:
         return Response({'action': "Upload Resume", 'message': 'Student Not Found'},
                         status=status.HTTP_404_NOT_FOUND)
+    except PermissionError:
+        return Response({'action': "Upload Resume", 'message': 'Max Number of Resumes limit reached'},
+                        status=status.HTTP_400_BAD_REQUEST)
     except:
         if path.exists(destination_path):
             logger.error("Upload Resume: Error in Saving Resume")
