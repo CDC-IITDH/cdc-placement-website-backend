@@ -230,6 +230,7 @@ def addPlacement(request):
                         status=status.HTTP_200_OK)
 
     except ValueError as e:
+        logger.info("ValueError in addPlacement: " + str(e))
         return Response({'action': "Add Placement", 'message': str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
     except:

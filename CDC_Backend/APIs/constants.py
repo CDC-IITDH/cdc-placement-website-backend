@@ -4,19 +4,21 @@ BRANCH_CHOICES = [
     ["CSE", "CSE"],
     ["EE", "EE"],
     ["ME", "ME"],
+    ['MMAE', 'MMAE'],
     ['EP', 'EP'],
 ]
 BRANCHES = [
     "CSE",
     "EE",
-    "ME",
+    "MMAE",
     "EP"
 ]
 BATCH_CHOICES = [
     ["2021", "2021"],
     ["2020", "2020"],
     ["2019", "2019"],
-    ["2018", "2018"]
+    ["2018", "2018"],
+    ["2017", "2017"],
 ]
 
 OFFER_CITY_TYPE = [
@@ -31,7 +33,8 @@ TIERS = [
     ['3', 'Tier 3'],
     ['4', 'Tier 4'],
     ['5', 'Tier 5'],
-    ['6', 'Tier 6']
+    ['6', 'Tier 6'],
+    ['7', 'Tier 7'],
 ]
 
 DEGREE_CHOICES = [
@@ -40,7 +43,7 @@ DEGREE_CHOICES = [
 ]
 
 TOTAL_BRANCHES = 4  # Total No of Branches
-TOTAL_BATCHES = 4  # Total No of Batches
+TOTAL_BATCHES = 5  # Total No of Batches
 
 # To be Configured Properly
 CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID')  # Google Login Client ID
