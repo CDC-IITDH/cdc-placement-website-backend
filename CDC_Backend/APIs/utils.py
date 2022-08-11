@@ -180,6 +180,9 @@ def PlacementApplicationConditions(student, placement):
             if int(i.placement.tier) < int(placement.tier):
                 return False, "Can't apply for this tier"
 
+        if student.degree != 'bTech' and not placement.rs_eligible:
+            raise PermissionError("Can't apply for this placement")
+
         return True, "Conditions Satisfied"
 
     except PermissionError as e:
@@ -325,4 +328,3 @@ def send_opening_notifications(placement_id):
     except:
         logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
         return False
-

@@ -1,0 +1,1 @@
+gunicorn --certfile=/home/cdc/Desktop/1f9476e3959ebe60.crt --keyfile=/home/cdc/Desktop/star_iitdh_key.key --bind localhost:8000 CDC_Backend.wsgi --access-logfile access.log --error-logfile error.log &

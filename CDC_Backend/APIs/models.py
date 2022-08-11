@@ -6,6 +6,9 @@ from simple_history.models import HistoricalRecords
 from .constants import *
 
 
+# from .utils import *
+
+
 class User(models.Model):
     email = models.EmailField(primary_key=True, blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
     id = models.CharField(blank=False, max_length=25, db_index=True)
@@ -30,10 +33,30 @@ class Student(models.Model):
     cpi = models.DecimalField(decimal_places=2, max_digits=4)
     can_apply = models.BooleanField(default=True, verbose_name='Registered')
     changed_by = models.ForeignKey(User, blank=True, on_delete=models.RESTRICT, default=None, null=True)
+    degree = models.CharField(choices=DEGREE_CHOICES, blank=False, max_length=10, default=DEGREE_CHOICES[0][0])
     history = HistoricalRecords(user_model=User)
 
     def __str__(self):
         return str(self.roll_no)
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+    
+    @_history_user.setter
+    def _history_user(self, value):
+        if isinstance(value, User):
+            self.changed_by = value
+        else:
+            self.changed_by = None
+
+
+
+class Admin(models.Model):
+    id = models.CharField(blank=False, max_length=15, primary_key=True)
+    name = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
+    changed_by = models.ForeignKey(User, blank=True, on_delete=models.RESTRICT, default=None, null=True)
+    history = HistoricalRecords(user_model=User)
 
     @property
     def _history_user(self):

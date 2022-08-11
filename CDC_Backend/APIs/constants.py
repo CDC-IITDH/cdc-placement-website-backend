@@ -34,6 +34,11 @@ TIERS = [
     ['6', 'Tier 6']
 ]
 
+DEGREE_CHOICES = [
+    ['bTech', 'B.Tech'],
+    ['ms/phd', 'MS/ PhD'],
+]
+
 TOTAL_BRANCHES = 4  # Total No of Branches
 TOTAL_BATCHES = 4  # Total No of Batches
 
