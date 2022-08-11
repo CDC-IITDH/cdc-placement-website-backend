@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django_db_logger',
     'background_task',
     'simple_history',
+    'import_export',
 ]
 
 MIDDLEWARE = [

@@ -1,13 +1,19 @@
 from django.contrib import admin
-from simple_history.admin import SimpleHistoryAdmin
 from django.contrib.admin.templatetags.admin_urls import admin_urlname
 from django.shortcuts import resolve_url
 from django.utils.html import format_html
 from django.utils.safestring import SafeText
 
+from simple_history.admin import SimpleHistoryAdmin
+from import_export.admin import ImportExportMixin, ExportMixin
+from import_export import resources
+
 from .models import *
 
-admin.site.register(User, SimpleHistoryAdmin)
+class UserAdmin(ImportExportMixin, SimpleHistoryAdmin):
+    pass
+
+admin.site.register(User,UserAdmin)
 
 admin.site.site_header = "CDC Recruitment Portal"
 
@@ -17,8 +23,11 @@ def model_admin_url(obj, name=None) -> str:
     return format_html('<a href="{}">{}</a>', url, name or str(obj))
 
 
+class StudentAdmin(ImportExportMixin, SimpleHistoryAdmin):
+    pass
+
 @admin.register(Student)
-class Student(SimpleHistoryAdmin):
+class Student(StudentAdmin):
     list_display = ("roll_no", "name", "batch", "branch", "phone_number", 'can_apply')
     search_fields = ("roll_no", "name", "phone_number")
     ordering = ("roll_no", "name", "batch", "branch", "phone_number")
@@ -35,17 +44,33 @@ class Student(SimpleHistoryAdmin):
         queryset.update(can_apply=True)
         self.message_user(request, "Registered the users")
 
+class PlacementResources(resources.ModelResource):
+    class Meta:
+        model = Placement
+        exclude = ('id','changed_by', 'is_company_details_pdf', 'is_description_pdf',
+         'is_compensation_details_pdf', 'is_selection_procedure_details_pdf')
+class AdminAdmin(ExportMixin, SimpleHistoryAdmin):
+    resource_class = PlacementResources
+
 
 @admin.register(Placement)
-class Placement(SimpleHistoryAdmin):
+class Placement(AdminAdmin):
     list_display = (COMPANY_NAME, CONTACT_PERSON_NAME, PHONE_NUMBER, 'tier', 'compensation_CTC')
     search_fields = (COMPANY_NAME, CONTACT_PERSON_NAME)
     ordering = (COMPANY_NAME, CONTACT_PERSON_NAME, 'tier', 'compensation_CTC')
     list_filter = ('tier',)
 
 
+class PlacementApplicationResources(resources.ModelResource):
+    class Meta:
+        model = PlacementApplication
+        exclude = ('id', 'changed_by')
+
+class PlacementAdmin(ExportMixin, SimpleHistoryAdmin):
+    resource_class = PlacementApplicationResources
+
 @admin.register(PlacementApplication)
-class PlacementApplication(SimpleHistoryAdmin):
+class PlacementApplication(PlacementAdmin):
     list_display = ('id', 'Placement', 'Student', 'selected')
     search_fields = ('id',)
     ordering = ('id',)
@@ -58,8 +83,16 @@ class PlacementApplication(SimpleHistoryAdmin):
         return model_admin_url(obj.student)
 
 
+class PrePlacementResources(resources.ModelResource):
+    class Meta:
+        model = PrePlacementOffer
+        exclude = ('id', 'changed_by')
+
+class PrePlacementOfferAdmin(ExportMixin, SimpleHistoryAdmin):
+    resource_class = PrePlacementResources
+
 @admin.register(PrePlacementOffer)
-class PrePlacementOffer(SimpleHistoryAdmin):
+class PrePlacementOffer(PrePlacementOfferAdmin):
     list_display = ('company', 'Student', 'accepted')
     search_fields = ('company',)
     ordering = ('company',)
