@@ -146,7 +146,10 @@ def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
         text_content = strip_tags(html_content)
 
         email_from = settings.EMAIL_HOST_USER
-        recipient_list = [str(email_to), ]
+        if type(email_to) is list:
+            recipient_list = [str(email) for email in email_to]
+        else:
+            recipient_list = [str(email_to), ]
 
         msg = EmailMultiAlternatives(subject, text_content, email_from, recipient_list)
         msg.attach_alternative(html_content, "text/html")

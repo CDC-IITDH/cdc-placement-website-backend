@@ -279,7 +279,7 @@ def verifyEmail(request):
                 "opening_type": PLACEMENT,
                 "company_name": opening.company_name,
             }
-            sendEmail(opening.email, COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
+            sendEmail([opening.email, CDC_MAIl_ADDRESS], COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
                       COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
 
         return Response({'action': "Verify Email", 'message': "Email Verified Successfully"},
