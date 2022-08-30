@@ -331,3 +331,19 @@ def send_opening_notifications(placement_id):
     except:
         logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
         return False
+
+def exception_email(opening):
+    data = {
+                "designation": opening.designation,
+                "opening_type": PLACEMENT,
+                "company_name": opening.company_name,
+            }
+    pdfhtml = opening_description_table_html(opening)
+    name = opening.company_name + '_jnf_response.pdf'
+    attachment_jnf_respone = {
+        "name": name,
+        "html": pdfhtml,
+     }
+     
+    sendEmail(CDC_MAIl_ADDRESS, COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
+                      COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
