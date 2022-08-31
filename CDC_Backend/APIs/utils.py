@@ -57,6 +57,7 @@ def precheck(required_data=None):
 
                 return view_func(request, *args, **kwargs)
             except:
+                logger.warning("Pre check: " + str(sys.exc_info()))
                 return Response({'action': "Pre check", 'message': "Something went wrong"},
                                 status=status.HTTP_400_BAD_REQUEST)
 
@@ -264,8 +265,13 @@ def verify_recaptcha(request):
 
 
 def opening_description_table_html(opening):
-    details = model_to_dict(opening, fields=[field.name for field in Placement._meta.fields],
+    # check typing of opening
+    if isinstance(opening, Placement):
+        details = model_to_dict(opening, fields=[field.name for field in Placement._meta.fields],
                             exclude=EXCLUDE_IN_PDF)
+    # check typing of opening is query dict
+    else: #if isinstance(opening, QueryDict):
+        details = opening
     keys = list(details.keys())
     newdetails = {}
     for key in keys:
@@ -333,17 +339,40 @@ def send_opening_notifications(placement_id):
         return False
 
 def exception_email(opening):
+    opening = opening.dict()
     data = {
-                "designation": opening.designation,
+                "designation": opening["designation"],
                 "opening_type": PLACEMENT,
-                "company_name": opening.company_name,
+                "company_name": opening["company_name"],
             }
     pdfhtml = opening_description_table_html(opening)
-    name = opening.company_name + '_jnf_response.pdf'
+    name = opening["company_name"]+'_jnf_response.pdf'
     attachment_jnf_respone = {
         "name": name,
         "html": pdfhtml,
      }
      
-    sendEmail(CDC_MAIl_ADDRESS, COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
+    sendEmail(CDC_MAIl_ADDRESS, COMPANY_OPENING_ERROR_TEMPLATE.format(company_name=opening["company_name"]), data,
                       COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
+
+def store_all_files(request):
+    files = request.FILES
+    data = request.data
+    # save all the files
+    if files:
+        # company details pdf
+        for file in files.getlist(COMPANY_DETAILS_PDF):
+            file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + "temp" + '/'
+            saveFile(file, file_location)
+        # compensation details pdf
+        for file in files.getlist(COMPENSATION_DETAILS_PDF):
+            file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + "temp" + '/'
+            saveFile(file, file_location)
+        # selection procedure details pdf
+        for file in files.getlist(SELECTION_PROCEDURE_DETAILS_PDF):
+            file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + "temp" + '/'
+            saveFile(file, file_location)
+        # description pdf
+        for file in files.getlist(DESCRIPTION_PDF):
+            file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + "temp" + '/'
+            saveFile(file, file_location)
