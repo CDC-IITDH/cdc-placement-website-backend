@@ -62,7 +62,8 @@ EMAIL = "email"
 
 STUDENT = 'student'
 ADMIN = 'admin'
-COMPANY = ''
+SUPER_ADMIN = 'super_admin'
+COMPANY = 'company'
 TIER = 'tier'
 # To be Configured Properly
 FOURTH_YEAR = '2019'
