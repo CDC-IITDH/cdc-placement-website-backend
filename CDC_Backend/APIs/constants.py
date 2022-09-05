@@ -62,7 +62,7 @@ EMAIL = "email"
 
 STUDENT = 'student'
 ADMIN = 'admin'
-SUPER_ADMIN = 'super_admin'
+SUPER_ADMIN = 'su'
 COMPANY = 'company'
 TIER = 'tier'
 # To be Configured Properly
