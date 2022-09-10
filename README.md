@@ -8,7 +8,8 @@ python# CDC - Backend
 2. Create a Virtual Environment in the [CDC_Backend](./) folder with this command below <br>
    `python -m venv venv`
 3. Activate the environment with this command <br>
-   `.\venv\Scripts\activate`
+   `.\venv\Scripts\activate` (for WINDOWS) <br>
+   `source ./venv/bin/activate` (for LINUX)
 4. Install the dependencies <br>
    `pip install -r requirements.txt `
 5. Ensure that you have the PostgreSQL installed on your machine and is running on PORT **5432** <br>
@@ -17,7 +18,8 @@ python# CDC - Backend
 ### Running the Application
 
 1. Activate the environment with this command. <br>
-   `.\venv\Scripts\activate`
+   `.\venv\Scripts\activate` (for WINDOWS) <br>
+   `source ./venv/bin/activate` (for LINUX) 
 2. Start the application by running this command (_Run the command where [manage.py](./CDC_Backend/manage.py) is
    located_) <br>
    ` python manage.py runserver`
