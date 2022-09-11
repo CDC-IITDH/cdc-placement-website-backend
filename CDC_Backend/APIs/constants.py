@@ -1,3 +1,6 @@
+import os
+
+
 BRANCH_CHOICES = [
     ["CSE", "CSE"],
     ["EE", "EE"],
@@ -36,7 +39,7 @@ TOTAL_BRANCHES = 4  # Total No of Branches
 TOTAL_BATCHES = 4  # Total No of Batches
 
 # To be Configured Properly
-CLIENT_ID = "956830229554-290mirc16pdhd5j7ph7v7ukibo4t1qcp.apps.googleusercontent.com"  # Google Login Client ID
+CLIENT_ID =  os.environ.get("GOOGLE_OAUTH_CLIENT_ID") # "client_id"
 
 # To be Configured Properly
 PLACEMENT_OPENING_URL = "http://localhost:3000/student/dashboard/placements/{id}"  # On frontend, this is the URL to be opened
