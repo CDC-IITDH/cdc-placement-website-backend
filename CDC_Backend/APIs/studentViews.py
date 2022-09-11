@@ -204,3 +204,30 @@ def submitApplication(request, id, email, user_type):
 
         return Response({'action': "Submit Application", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@isAuthorized(allowed_users=[STUDENT])
+@precheck(required_data=[APPLICATION_ID])
+def deleteApplication(request, id, email, user_type):
+    try:
+        data = request.data
+        application = get_object_or_404(PlacementApplication, id=data[APPLICATION_ID],
+                                        student_id=id)
+        if application.placement.deadline_datetime < timezone.now():
+            raise PermissionError("Deadline Passed")
+
+        application.delete()
+        return Response({'action': "Delete Application", 'message': "Application Deleted"},
+                        status=status.HTTP_200_OK)
+    except Http404 as e:
+        return Response({'action': "Delete Application", 'message': str(e)},
+                        status=status.HTTP_404_NOT_FOUND)
+    except PermissionError as e:
+        return Response({'action': "Delete Application", 'message': str(e)},
+                        status=status.HTTP_403_FORBIDDEN)
+    except:
+        logger.warning("Delete Application: " + str(sys.exc_info()))
+
+        return Response({'action': "Delete Application", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)

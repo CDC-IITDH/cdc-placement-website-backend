@@ -9,4 +9,5 @@ urlpatterns = [
     path("addResume/", studentViews.addResume, name="Upload Resume"),
     path("deleteResume/", studentViews.deleteResume, name="Upload Resume"),
     path("submitApplication/", studentViews.submitApplication, name="Submit Application"),
+    path("deleteApplication/", studentViews.deleteApplication, name="Delete Application"),
 ]
