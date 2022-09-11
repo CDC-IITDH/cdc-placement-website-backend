@@ -60,7 +60,6 @@ def model_admin_url(obj, name=None) -> str:
 class StudentAdmin(ImportExportMixin, SimpleHistoryAdmin):
     pass
 
-
 @admin.register(Student)
 class Student(StudentAdmin):
     list_display = ("roll_no", "name", "batch", "branch", "phone_number", 'can_apply')
@@ -78,6 +77,14 @@ class Student(StudentAdmin):
     def mark_can_apply_as_yes(self, request, queryset):
         queryset.update(can_apply=True)
         self.message_user(request, "Registered the users")
+
+class PlacementResources(resources.ModelResource):
+    class Meta:
+        model = Placement
+        exclude = ('id','changed_by', 'is_company_details_pdf', 'is_description_pdf',
+         'is_compensation_details_pdf', 'is_selection_procedure_details_pdf')
+class AdminAdmin(ExportMixin, SimpleHistoryAdmin):
+    resource_class = PlacementResources
 
 
 class PlacementResources(resources.ModelResource):
@@ -104,7 +111,6 @@ class PlacementApplicationResources(resources.ModelResource):
         model = PlacementApplication
         exclude = ('id', 'changed_by')
 
-
 class PlacementAdmin(ExportMixin, SimpleHistoryAdmin):
     resource_class = PlacementApplicationResources
 
@@ -127,7 +133,6 @@ class PrePlacementResources(resources.ModelResource):
     class Meta:
         model = PrePlacementOffer
         exclude = ('id', 'changed_by')
-
 
 class PrePlacementOfferAdmin(ExportMixin, SimpleHistoryAdmin):
     resource_class = PrePlacementResources
