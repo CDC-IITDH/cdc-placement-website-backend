@@ -270,9 +270,9 @@ def opening_description_table_html(opening):
     # check typing of opening
     if isinstance(opening, Placement):
         details = model_to_dict(opening, fields=[field.name for field in Placement._meta.fields],
-                            exclude=EXCLUDE_IN_PDF)
+                                exclude=EXCLUDE_IN_PDF)
     # check typing of opening is query dict
-    else: #if isinstance(opening, QueryDict):
+    else:  # if isinstance(opening, QueryDict):
         details = opening
     keys = list(details.keys())
     newdetails = {}
@@ -318,44 +318,48 @@ def send_opening_notifications(placement_id):
         placement = get_object_or_404(Placement, id=placement_id)
         students = Student.objects.all()
         for student in students.iterator():
-            if PlacementApplicationConditions(student, placement)[0]:
-                try:
-                    student_user = get_object_or_404(User, id=student.id)
-                    subject = NOTIFY_STUDENTS_OPENING_TEMPLATE_SUBJECT.format(company_name=placement.company_name)
-                    data = {
-                        "company_name": placement.company_name,
-                        "opening_type": 'Placement',
-                        "designation": placement.designation,
-                        "deadline": placement.deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
-                        "link": PLACEMENT_OPENING_URL.format(id=placement.id)
-                    }
-                    sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
-                except Http404:
-                    logger.warning('Utils - send_opening_notifications: user not found : ' + student.id)
-                except Exception as e:
-                    logger.warning('Utils - send_opening_notifications: For Loop' + str(e))
-
+            if student.branch in placement.allowed_branch:
+                if student.degree == 'bTech' or placement.rs_eligible is True:
+                    if PlacementApplicationConditions(student, placement)[0]:
+                        try:
+                            student_user = get_object_or_404(User, id=student.id)
+                            subject = NOTIFY_STUDENTS_OPENING_TEMPLATE_SUBJECT.format(
+                                company_name=placement.company_name)
+                            data = {
+                                "company_name": placement.company_name,
+                                "opening_type": 'Placement',
+                                "designation": placement.designation,
+                                "deadline": placement.deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
+                                "link": PLACEMENT_OPENING_URL.format(id=placement.id)
+                            }
+                            sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
+                        except Http404:
+                            logger.warning('Utils - send_opening_notifications: user not found : ' + student.id)
+                        except Exception as e:
+                            logger.warning('Utils - send_opening_notifications: For Loop' + str(e))
 
     except:
         logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
         return False
 
+
 def exception_email(opening):
     opening = opening.dict()
     data = {
-                "designation": opening["designation"],
-                "opening_type": PLACEMENT,
-                "company_name": opening["company_name"],
-            }
+        "designation": opening["designation"],
+        "opening_type": PLACEMENT,
+        "company_name": opening["company_name"],
+    }
     pdfhtml = opening_description_table_html(opening)
-    name = opening["company_name"]+'_jnf_response.pdf'
+    name = opening["company_name"] + '_jnf_response.pdf'
     attachment_jnf_respone = {
         "name": name,
         "html": pdfhtml,
-     }
-     
+    }
+
     sendEmail(CDC_MAIl_ADDRESS, COMPANY_OPENING_ERROR_TEMPLATE.format(company_name=opening["company_name"]), data,
-                      COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
+              COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
+
 
 def store_all_files(request):
     files = request.FILES

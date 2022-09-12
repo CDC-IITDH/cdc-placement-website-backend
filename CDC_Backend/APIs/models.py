@@ -42,14 +42,13 @@ class Student(models.Model):
     @property
     def _history_user(self):
         return self.changed_by
-    
+
     @_history_user.setter
     def _history_user(self, value):
         if isinstance(value, User):
             self.changed_by = value
         else:
             self.changed_by = None
-
 
 
 class Admin(models.Model):
@@ -61,7 +60,7 @@ class Admin(models.Model):
     @property
     def _history_user(self):
         return self.changed_by
-    
+
     @_history_user.setter
     def _history_user(self, value):
         if isinstance(value, User):
@@ -71,7 +70,8 @@ class Admin(models.Model):
 
 
 def two_day_after_today():
-    return timezone.now() + timezone.timedelta(days=2)
+    # round off to nearest day
+    return timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timezone.timedelta(days=2)
 
 
 class Placement(models.Model):
@@ -145,7 +145,8 @@ class Placement(models.Model):
     created_at = models.DateTimeField(blank=False, default=None, null=True)
     updated_at = models.DateTimeField(blank=False, default=None, null=True)
     changed_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    history = HistoricalRecords(user_model=User) 
+    history = HistoricalRecords(user_model=User)
+
     def format(self):
         if self.company_name is not None:
             self.company_name = self.company_name.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
@@ -187,12 +188,13 @@ class Placement(models.Model):
         if self.other_requirements is not None:
             self.other_requirements = self.other_requirements.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
         if self.additional_info is not None:
-            self.additional_info = [info.strip()[:JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT] for info in list(self.additional_info)]
+            self.additional_info = [info.strip()[:JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT] for info in
+                                    list(self.additional_info)]
 
     @property
     def _history_user(self):
         return self.changed_by
-    
+
     @_history_user.setter
     def _history_user(self, value):
         if isinstance(value, User):
@@ -235,14 +237,14 @@ class PlacementApplication(models.Model):
     @property
     def _history_user(self):
         return self.changed_by
-    
+
     @_history_user.setter
     def _history_user(self, value):
         if isinstance(value, User):
             self.changed_by = value
         else:
             self.changed_by = None
-    
+
     class Meta:
         verbose_name_plural = "Placement Applications"
         unique_together = ('placement_id', 'student_id')
@@ -267,7 +269,7 @@ class PrePlacementOffer(models.Model):
     @property
     def _history_user(self):
         return self.changed_by
-    
+
     @_history_user.setter
     def _history_user(self, value):
         if isinstance(value, User):
