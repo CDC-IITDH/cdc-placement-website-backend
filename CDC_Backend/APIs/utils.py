@@ -326,7 +326,7 @@ def send_opening_notifications(placement_id):
                         "company_name": placement.company_name,
                         "opening_type": 'Placement',
                         "designation": placement.designation,
-                        "deadline": placement.deadline_datetime.strftime("%Y-%m-%d %H:%M:%S"),
+                        "deadline": placement.deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
                         "link": PLACEMENT_OPENING_URL.format(id=placement.id)
                     }
                     sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
