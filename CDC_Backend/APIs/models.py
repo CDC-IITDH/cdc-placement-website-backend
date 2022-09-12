@@ -33,6 +33,7 @@ class Student(models.Model):
     cpi = models.DecimalField(decimal_places=2, max_digits=4)
     can_apply = models.BooleanField(default=True, verbose_name='Registered')
     changed_by = models.ForeignKey(User, blank=True, on_delete=models.RESTRICT, default=None, null=True)
+    degree = models.CharField(choices=DEGREE_CHOICES, blank=False, max_length=10, default=DEGREE_CHOICES[0][0])
     history = HistoricalRecords(user_model=User)
 
     def __str__(self):
@@ -82,7 +83,7 @@ class Placement(models.Model):
     nature_of_business = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
     type_of_organisation = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="", blank=False)
     website = models.CharField(blank=True, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
-    company_details = models.CharField(max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
+    company_details = models.CharField(max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True, blank=True)
     company_details_pdf_names = ArrayField(
         models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=5,
         default=list, blank=True)

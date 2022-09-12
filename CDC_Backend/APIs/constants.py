@@ -1,23 +1,24 @@
 import os
 
-
 BRANCH_CHOICES = [
     ["CSE", "CSE"],
     ["EE", "EE"],
     ["ME", "ME"],
+    ['MMAE', 'MMAE'],
     ['EP', 'EP'],
 ]
 BRANCHES = [
     "CSE",
     "EE",
-    "ME",
+    "MMAE",
     "EP"
 ]
 BATCH_CHOICES = [
     ["2021", "2021"],
     ["2020", "2020"],
     ["2019", "2019"],
-    ["2018", "2018"]
+    ["2018", "2018"],
+    ["2017", "2017"],
 ]
 
 OFFER_CITY_TYPE = [
@@ -32,32 +33,42 @@ TIERS = [
     ['3', 'Tier 3'],
     ['4', 'Tier 4'],
     ['5', 'Tier 5'],
-    ['6', 'Tier 6']
+    ['6', 'Tier 6'],
+    ['7', 'Tier 7'],
+]
+
+DEGREE_CHOICES = [
+    ['bTech', 'B.Tech'],
+    ['ms/phd', 'MS/ PhD'],
 ]
 
 TOTAL_BRANCHES = 4  # Total No of Branches
-TOTAL_BATCHES = 4  # Total No of Batches
+TOTAL_BATCHES = 5  # Total No of Batches
+
+CDC_MAIl_ADDRESS = 'cdc@iitdh.ac.in'
 
 # To be Configured Properly
-CLIENT_ID =  os.environ.get("GOOGLE_OAUTH_CLIENT_ID") # "client_id"
+CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID')  # Google Login Client ID
 
 # To be Configured Properly
-PLACEMENT_OPENING_URL = "http://localhost:3000/student/dashboard/placements/{id}"  # On frontend, this is the URL to be opened
-LINK_TO_STORAGE_COMPANY_ATTACHMENT = "http://localhost/storage/Company_Attachments/"
-LINK_TO_STORAGE_RESUME = "http://localhost/storage/Resumes/"
-LINK_TO_APPLICATIONS_CSV = "http://localhost/storage/Application_CSV/"
-LINK_TO_EMAIl_VERIFICATION_API = "http://localhost:3000/company/verifyEmail?token={token}"
+PLACEMENT_OPENING_URL = "https://cdc.iitdh.ac.in/portal/student/dashboard/placements/{id}"  # On frontend, this is the URL to be opened
+LINK_TO_STORAGE_COMPANY_ATTACHMENT = "https://cdc.iitdh.ac.in/storage/Company_Attachments/"
+LINK_TO_STORAGE_RESUME = "https://cdc.iitdh.ac.in/storage/Resumes/"
+LINK_TO_APPLICATIONS_CSV = "https://cdc.iitdh.ac.in/storage/Application_CSV/"
+LINK_TO_EMAIl_VERIFICATION_API = "https://cdc.iitdh.ac.in/portal/company/verifyEmail?token={token}"
+PDF_FILES_SERVING_ENDPOINT = 'https://cdc.iitdh.ac.in/storage/Company_Attachments/'  # TODO: Change this to actual URL
 
 EMAIL = "email"
 
 STUDENT = 'student'
 ADMIN = 'admin'
-COMPANY = ''
+SUPER_ADMIN = 's_admin'
+COMPANY = 'company'
 TIER = 'tier'
 # To be Configured Properly
 FOURTH_YEAR = '2019'
 MAX_OFFERS_PER_STUDENT = 2
-MAX_RESUMES_PER_STUDENT =3
+MAX_RESUMES_PER_STUDENT = 3
 EMAIL_VERIFICATION_TOKEN_TTL = 48  # in hours
 JNF_TEXT_MAX_CHARACTER_COUNT = 100
 JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT = 200
@@ -140,6 +151,7 @@ SPECIAL_FORMAT_IN_PDF = ['website', 'company_details_pdf_names', 'description_pd
                          'compensation_details_pdf_names',
                          'selection_procedure_details_pdf_names']
 
+COMPANY_OPENING_ERROR_TEMPLATE = "Alert! Error submitting opening for {company_name}."
 COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT = "Notification Submitted - {id} - Career Development Cell, IIT Dharwad"
 STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT = 'Application Status - {company_name} - {id}'
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT = 'CDC - Application Submitted - {company_name}'
@@ -159,4 +171,3 @@ NOTIFY_STUDENTS_OPENING_TEMPLATE = 'notify_students_new_opening.html'
 APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'CPI',
                              'Resume', 'Selected', ]
 
-PDF_FILES_SERVING_ENDPOINT = 'http://localhost/storage/Company_Attachments/'  # TODO: Change this to actual URL

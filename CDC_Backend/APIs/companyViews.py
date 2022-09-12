@@ -194,7 +194,7 @@ def addPlacement(request):
                                                                        '%d-%m-%Y').date()
 
         # Only Allowing Fourth Year for Placement
-        opening.allowed_batch = [FOURTH_YEAR, ]
+        opening.allowed_batch = [2017, 2018, 2019, 2020, 2021]
         # Check if allowed_branch are valid
         if data[ALLOWED_BRANCH] is None:
             raise ValueError('Allowed Branch cannot be empty')
@@ -230,9 +230,14 @@ def addPlacement(request):
                         status=status.HTTP_200_OK)
 
     except ValueError as e:
+        store_all_files(request)
+        exception_email(data)
+        logger.info("ValueError in addPlacement: " + str(e))
         return Response({'action': "Add Placement", 'message': str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
     except:
+        store_all_files(request)
+        exception_email(data)
         logger.warning("Add New Placement: " + str(sys.exc_info()))
         return Response({'action': "Add Placement", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
@@ -278,7 +283,7 @@ def verifyEmail(request):
                 "opening_type": PLACEMENT,
                 "company_name": opening.company_name,
             }
-            sendEmail(opening.email, COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
+            sendEmail([opening.email, CDC_MAIl_ADDRESS], COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
                       COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
 
         return Response({'action': "Verify Email", 'message': "Email Verified Successfully"},

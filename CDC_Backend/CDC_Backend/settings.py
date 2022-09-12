@@ -15,7 +15,6 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv("../dev.env")
-# import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,12 +23,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("GOOGLE_OAUTH_SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG') == "True"
 
-ALLOWED_HOSTS = ['cdc-iitdh.herokuapp.com/', 'localhost', '192.168.29.199', '127.0.0.1']
+ALLOWED_HOSTS = ['cdc.iitdh.ac.in', 'localhost']
 
 # Application definition
 
@@ -56,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsPostCsrfMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -146,13 +146,14 @@ STATICFILES_DIR = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = [
+    "https://cdc.iitdh.ac.in",
     "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000"
+    "https://localhost:3000"
 ]
+CORS_REPLACE_HTTPS_REFERER = True
+CSRF_TRUSTED_ORIGINS = [ "https://cdc.iitdh.ac.in", "http://cdc.iitdh.ac.in"]
 
 # EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = './emails'

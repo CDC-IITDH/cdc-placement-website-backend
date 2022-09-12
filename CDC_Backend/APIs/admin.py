@@ -10,11 +10,44 @@ from import_export import resources
 
 from .models import *
 
-class UserAdmin(ImportExportMixin, SimpleHistoryAdmin):
-    pass
 
-admin.site.register(User,UserAdmin)
-admin.site.register(Admin, SimpleHistoryAdmin)
+class ArrayFieldListFilter(admin.SimpleListFilter):
+    """This is a list filter based on the values
+    from a model's `keywords` ArrayField. """
+
+    title = 'Roles'
+    parameter_name = 'user_type'
+
+    def lookups(self, request, model_admin):
+        # Very similar to our code above, but this method must return a
+        # list of tuples: (lookup_value, human-readable value). These
+        # appear in the admin's right sidebar
+
+        keywords = User.objects.values_list("user_type", flat=True)
+        keywords = [(kw, kw) for sublist in keywords for kw in sublist if kw]
+        keywords = sorted(set(keywords))
+        return keywords
+
+    def queryset(self, request, queryset):
+        # when a user clicks on a filter, this method gets called. The
+        # provided queryset with be a queryset of Items, so we need to
+        # filter that based on the clicked keyword.
+
+        lookup_value = self.value()  # The clicked keyword. It can be None!
+        if lookup_value:
+            # the __contains lookup expects a list, so...
+            queryset = queryset.filter(user_type__contains=[lookup_value])
+        return queryset
+
+
+class UserAdmin(ImportExportMixin, SimpleHistoryAdmin):
+    list_display = ('email', 'user_type', 'last_login_time')
+    list_filter = (ArrayFieldListFilter, 'last_login_time')
+    search_fields = ('email', 'user_type')
+    ordering = ('email', 'user_type')
+
+
+admin.site.register(User, UserAdmin)
 
 admin.site.site_header = "CDC Recruitment Portal"
 
@@ -54,6 +87,17 @@ class AdminAdmin(ExportMixin, SimpleHistoryAdmin):
     resource_class = PlacementResources
 
 
+class PlacementResources(resources.ModelResource):
+    class Meta:
+        model = Placement
+        exclude = ('id', 'changed_by', 'is_company_details_pdf', 'is_description_pdf',
+                   'is_compensation_details_pdf', 'is_selection_procedure_details_pdf')
+
+
+class AdminAdmin(ExportMixin, SimpleHistoryAdmin):
+    resource_class = PlacementResources
+
+
 @admin.register(Placement)
 class Placement(AdminAdmin):
     list_display = (COMPANY_NAME, CONTACT_PERSON_NAME, PHONE_NUMBER, 'tier', 'compensation_CTC')
@@ -69,6 +113,7 @@ class PlacementApplicationResources(resources.ModelResource):
 
 class PlacementAdmin(ExportMixin, SimpleHistoryAdmin):
     resource_class = PlacementApplicationResources
+
 
 @admin.register(PlacementApplication)
 class PlacementApplication(PlacementAdmin):
@@ -91,6 +136,7 @@ class PrePlacementResources(resources.ModelResource):
 
 class PrePlacementOfferAdmin(ExportMixin, SimpleHistoryAdmin):
     resource_class = PrePlacementResources
+
 
 @admin.register(PrePlacementOffer)
 class PrePlacementOffer(PrePlacementOfferAdmin):

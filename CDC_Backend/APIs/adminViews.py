@@ -104,22 +104,29 @@ def updateDeadline(request, id, email, user_type):
 
 
 @api_view(['POST'])
-@isAuthorized([ADMIN])
+@isAuthorized([SUPER_ADMIN])
 @precheck([OPENING_ID, OFFER_ACCEPTED])
 def updateOfferAccepted(request, id, email, user_type):
     try:
         data = request.data
+        offer_accepted = data[OFFER_ACCEPTED]
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
-        if not opening.offer_accepted:
-            opening.offer_accepted = True
+        if opening.offer_accepted is None:
+            opening.offer_accepted = offer_accepted == "true"
             opening.changed_by = get_object_or_404(User, id=id)
             opening.save()
             send_opening_notifications(opening.id)
+        else:
+            raise ValueError("Offer Status already updated")
+
         return Response({'action': "Update Offer Accepted", 'message': "Offer Accepted Updated"},
                         status=status.HTTP_200_OK)
     except Http404:
         return Response({'action': "Update Offer Accepted", 'message': 'Opening Not Found'},
                         status=status.HTTP_404_NOT_FOUND)
+    except ValueError as e:
+        return Response({'action': "Update Offer Accepted", 'message': str(e)},
+                        status=status.HTTP_400_BAD_REQUEST)
     except:
         logger.warning("Update Offer Accepted: " + str(sys.exc_info()))
         return Response({'action': "Update Offer Accepted", 'message': "Something went wrong"},
