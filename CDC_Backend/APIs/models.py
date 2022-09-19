@@ -261,7 +261,7 @@ class PrePlacementOffer(models.Model):
     compensation = models.IntegerField(blank=False)  # Job - Per Year
     compensation_details = models.CharField(blank=True, max_length=200)
     tier = models.CharField(blank=False, choices=TIERS, max_length=10)
-    designation = models.CharField(blank=False, max_length=25, default=None, null=True)
+    designation = models.CharField(blank=False, max_length=100, default=None, null=True)
     accepted = models.BooleanField(default=None, null=True)
     changed_by = models.ForeignKey(User, blank=False, on_delete=models.RESTRICT, default=None, null=True)
     history = HistoricalRecords(user_model=User)
