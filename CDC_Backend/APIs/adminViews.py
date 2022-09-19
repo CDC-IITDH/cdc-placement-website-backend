@@ -368,7 +368,7 @@ def addPPO(request, id, email, user_type):
         data = request.data
         PPO = PrePlacementOffer()
         PPO.company = data[COMPANY_NAME]
-        PPO.compensation = data[COMPENSATION_GROSS]
+        PPO.compensation = int(data[COMPENSATION_GROSS])
         if data[OFFER_ACCEPTED] == "true":
             PPO.accepted = True
         elif data[OFFER_ACCEPTED] == "false":
@@ -377,7 +377,7 @@ def addPPO(request, id, email, user_type):
             PPO.accepted = None
         PPO.student = get_object_or_404(Student, id=data[STUDENT_ID])
         PPO.designation = data[DESIGNATION]
-        PPO.tier = data[TIER]
+        PPO.tier = int(data[TIER])
         if COMPENSATION_DETAILS in data:
             PPO.compensation_details = data[COMPENSATION_DETAILS]
         PPO.changed_by = get_object_or_404(User, id=id)
