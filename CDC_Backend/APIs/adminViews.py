@@ -115,7 +115,8 @@ def updateOfferAccepted(request, id, email, user_type):
             opening.offer_accepted = offer_accepted == "true"
             opening.changed_by = get_object_or_404(User, id=id)
             opening.save()
-            send_opening_notifications(opening.id)
+            if opening.offer_accepted:
+                send_opening_notifications(opening.id)
         else:
             raise ValueError("Offer Status already updated")
 
