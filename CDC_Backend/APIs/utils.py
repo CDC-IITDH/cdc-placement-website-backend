@@ -155,7 +155,7 @@ def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
         msg = EmailMultiAlternatives(subject, text_content, email_from, recipient_list)
         msg.attach_alternative(html_content, "text/html")
         if attachment_jnf_response:
-            logger.info(attachment_jnf_response)
+            # logger.info(attachment_jnf_response)
             pdf = pdfkit.from_string(attachment_jnf_response['html'], False,
                                      options={"--enable-local-file-access": "", '--dpi': '96'})
             msg.attach(attachment_jnf_response['name'], pdf, 'application/pdf')
