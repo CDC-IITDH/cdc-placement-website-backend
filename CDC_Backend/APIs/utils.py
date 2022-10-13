@@ -12,6 +12,7 @@ from os import path, remove
 import background_task
 import jwt
 import pdfkit
+import pytz
 import requests as rq
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -329,11 +330,12 @@ def send_opening_notifications(placement_id):
                             student_user = get_object_or_404(User, id=student.id)
                             subject = NOTIFY_STUDENTS_OPENING_TEMPLATE_SUBJECT.format(
                                 company_name=placement.company_name)
+                            deadline_datetime = placement.deadline_datetime.astimezone(pytz.timezone('Asia/Kolkata'))
                             data = {
                                 "company_name": placement.company_name,
                                 "opening_type": 'Placement',
                                 "designation": placement.designation,
-                                "deadline": placement.deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
+                                "deadline": deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
                                 "link": PLACEMENT_OPENING_URL.format(id=placement.id)
                             }
                             sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
