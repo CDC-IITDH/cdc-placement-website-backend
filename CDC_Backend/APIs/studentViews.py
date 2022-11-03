@@ -231,3 +231,19 @@ def deleteApplication(request, id, email, user_type):
 
         return Response({'action': "Delete Application", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@isAuthorized(allowed_users='*')
+def getContributorStats(request, id, email, user_type):
+    try:
+        contributors = Contributor.objects.all()
+        serialized_data = ContributorSerializer(contributors, many=True).data
+        return Response({'action': "Get Contributor Stats", 'message': "Contributor Stats Fetched",
+                            'data': serialized_data},
+                        status=status.HTTP_200_OK)
+    except:
+        logger.warning("Get Contributor Stats: " + str(sys.exc_info()))
+
+        return Response({'action': "Get Contributor Stats", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)

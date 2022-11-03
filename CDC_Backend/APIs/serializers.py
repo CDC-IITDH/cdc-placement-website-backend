@@ -185,3 +185,7 @@ class PlacementApplicationSerializerForAdmin(serializers.ModelSerializer):
     class Meta:
         model = PlacementApplication
         exclude = ['placement', 'resume']
+
+class ContributorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contributor
