@@ -77,7 +77,7 @@ def isAuthorized(allowed_users=None):
                 headers = request.META
                 if 'HTTP_AUTHORIZATION' in headers:
                     token_id = headers['HTTP_AUTHORIZATION'][7:]
-                    idinfo = id_token.verify_oauth2_token(token_id, requests.Request(), CLIENT_ID)
+                    idinfo = id_token.verify_oauth2_token(token_id, requests.Request(), CLIENT_ID, clock_skew_in_seconds=60)
                     email = idinfo[EMAIL]
                     user = get_object_or_404(User, email=email)
                     if user:
