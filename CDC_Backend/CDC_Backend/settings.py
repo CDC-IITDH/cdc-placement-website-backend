@@ -30,6 +30,7 @@ DEBUG = os.environ.get('DEBUG') == "True"
 
 ALLOWED_HOSTS = ['cdc.iitdh.ac.in', 'localhost']
 
+ADMINS = [('Gowtham Sai', '190010036@iitdh.ac.in'), ('Karthik Mv', '200010030@iitdh.ac.in')]
 # Application definition
 
 INSTALLED_APPS = [
@@ -185,14 +186,13 @@ LOGGING = {
             'class': 'django_db_logger.db_log_handler.DatabaseLogHandler'
         },
         'mail_admins': {
-            'level': 'ERROR',
+            'level': 'WARNING',
             'class': 'django.utils.log.AdminEmailHandler',
-            'include_html': True,
         }
     },
     'loggers': {
         'db': {
-            'handlers': ['db_log'],
+            'handlers': ['db_log', 'mail_admins'],
             'level': 'DEBUG'
         }
     }
