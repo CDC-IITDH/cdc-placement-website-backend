@@ -172,12 +172,17 @@ def PlacementApplicationConditions(student, placement):
         selected_companies = PlacementApplication.objects.filter(student=student, selected=True)
         selected_companies_PSU = [i for i in selected_companies if i.placement.tier == 'psu']
         PPO = PrePlacementOffer.objects.filter(student=student, accepted=True)
+        PPO_PSU = [i for i in PPO if i.tier == 'psu']
         # find length of PPO
         if len(selected_companies) + len(PPO) >= MAX_OFFERS_PER_STUDENT:
             raise PermissionError("Max Applications Reached for the Season")
 
         if len(selected_companies_PSU) > 0:
             raise PermissionError('Selected for PSU Can\'t apply anymore')
+
+        if len(PPO_PSU) > 0:
+            raise PermissionError('Selected for PSU Can\'t apply anymore')
+
         if placement.tier == 'psu':
             return True, "Conditions Satisfied"
 
@@ -186,7 +191,7 @@ def PlacementApplicationConditions(student, placement):
                 return False, "Can't apply for this tier"
 
         for i in PPO:
-            if int(i.placement.tier) < int(placement.tier):
+            if int(i.tier) < int(placement.tier):
                 return False, "Can't apply for this tier"
 
         if student.degree != 'bTech' and not placement.rs_eligible:
