@@ -511,7 +511,7 @@ def getStats(request, id, email, user_type):
 
 
 
-        students = Student.objects.all()
+        students = Student.objects.all().order_by("roll_no")
         for student in students.iterator():
 
             applications = PlacementApplication.objects.filter(student=student, selected=True)
