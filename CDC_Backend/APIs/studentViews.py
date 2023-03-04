@@ -7,14 +7,41 @@ logger = logging.getLogger('db')
 
 
 @api_view(['POST'])
+@precheck(required_data=[AUTH_CODE])
+@get_token()
 @isAuthorized(allowed_users='*')
-def login(request, id, email, user_type):
+def login(request, id, email, user_type, token, refresh_token):
     try:
-        return Response({'action': "Login", 'message': "Verified", "user_type": user_type},
+        return Response({'action': "Login", 'message': "Verified", "user_type": user_type, "id_token": token, "refresh_token": refresh_token},
                         status=status.HTTP_200_OK)
     except:
         return Response({'action': "Login", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@precheck(required_data=[REFRESH_TOKEN])
+def refresh(request):
+    refresh_token = request.data[REFRESH_TOKEN]
+    data = {
+            'refresh_token': refresh_token,
+            'client_id': CLIENT_ID,
+            'client_secret': CLIENT_SECRET,
+            'redirect_uri': REDIRECT_URI,
+            'grant_type': 'refresh_token'
+        }
+    response = rq.post(OAUTH2_API_ENDPOINT, data=data)
+    if response.status_code == 200:
+        id_info = id_token.verify_oauth2_token(response.json()['id_token'], requests.Request(), CLIENT_ID)
+        if id_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+            raise ValueError('Wrong issuer.')
+        user_types = User.objects.filter(email=id_info['email']).values_list('user_type', flat=True)
+        return Response({'action': "Refresh Token", 'message': "Token Refreshed", "id_token": response.json()['id_token'], "user_type": user_types[0]},
+                        status=status.HTTP_200_OK)
+    else:
+        logger.error("refresh_token"+str(response))
+        return Response({'action': "Refresh Token", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(['GET'])
