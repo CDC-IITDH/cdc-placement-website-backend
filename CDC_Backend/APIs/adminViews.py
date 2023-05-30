@@ -39,6 +39,7 @@ def markStatus(request, id, email, user_type):
                     sendEmail(email, subject, data, STUDENT_APPLICATION_STATUS_SELECTED_TEMPLATE)
                 else:
                     sendEmail(email, subject, data, STUDENT_APPLICATION_STATUS_NOT_SELECTED_TEMPLATE)
+                application.chaged_by = get_object_or_404(User, id=id)
                 application.save()
             else:
                 raise ValueError("Student - " + i[STUDENT_ID] + " didn't apply for this opening")
@@ -89,6 +90,7 @@ def updateDeadline(request, id, email, user_type):
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         # Updating deadline date with correct format in datetime field
         opening.deadline_datetime = datetime.datetime.strptime(data[DEADLINE_DATETIME], '%Y-%m-%d %H:%M:%S %z')
+        opening.changed_by = get_object_or_404(User, id=id)
         opening.save()
         return Response({'action': "Update Deadline", 'message': "Deadline Updated"},
                         status=status.HTTP_200_OK)
@@ -102,21 +104,30 @@ def updateDeadline(request, id, email, user_type):
 
 
 @api_view(['POST'])
-@isAuthorized([ADMIN])
+@isAuthorized([SUPER_ADMIN])
 @precheck([OPENING_ID, OFFER_ACCEPTED])
 def updateOfferAccepted(request, id, email, user_type):
     try:
         data = request.data
-        print(data)
+        offer_accepted = data[OFFER_ACCEPTED]
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
-        opening.offer_accepted = True if data[OFFER_ACCEPTED] == True else False
-        print(opening.offer_accepted)
-        opening.save()
+        if opening.offer_accepted is None:
+            opening.offer_accepted = offer_accepted == "true"
+            opening.changed_by = get_object_or_404(User, id=id)
+            opening.save()
+            if opening.offer_accepted:
+                send_opening_notifications(opening.id)
+        else:
+            raise ValueError("Offer Status already updated")
+
         return Response({'action': "Update Offer Accepted", 'message': "Offer Accepted Updated"},
                         status=status.HTTP_200_OK)
     except Http404:
         return Response({'action': "Update Offer Accepted", 'message': 'Opening Not Found'},
                         status=status.HTTP_404_NOT_FOUND)
+    except ValueError as e:
+        return Response({'action': "Update Offer Accepted", 'message': str(e)},
+                        status=status.HTTP_400_BAD_REQUEST)
     except:
         logger.warning("Update Offer Accepted: " + str(sys.exc_info()))
         return Response({'action': "Update Offer Accepted", 'message': "Something went wrong"},
@@ -131,6 +142,7 @@ def updateEmailVerified(request, id, email, user_type):
         data = request.data
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         opening.email_verified = True if data[EMAIL_VERIFIED] == "true" else False
+        opening.changed_by = get_object_or_404(User, id=id)
         opening.save()
         return Response({'action': "Update Email Verified", 'message': "Email Verified Updated"},
                         status=status.HTTP_200_OK)
@@ -145,29 +157,55 @@ def updateEmailVerified(request, id, email, user_type):
 
 @api_view(['POST'])
 @isAuthorized([ADMIN])
-@precheck([OPENING_ID, ADDITIONAL_INFO])
-def updateAdditionalInfo(request, id, email, user_type):
+@precheck([OPENING_ID, FIELD])
+def deleteAdditionalInfo(request, id, email, user_type):
     try:
         data = request.data
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
-        if data[ADDITIONAL_INFO] == "":
-            opening.additional_info = []
-        elif isinstance(data[ADDITIONAL_INFO], list):
-            opening.additional_info = data[ADDITIONAL_INFO]
+        if data[FIELD] in opening.additional_info:
+            opening.additional_info.remove(data[FIELD])
+            opening.changed_by = get_object_or_404(User, id=id)
+            opening.save()
+            return Response({'action': "Delete Additional Info", 'message': "Additional Info Deleted"},
+                            status=status.HTTP_200_OK)
         else:
-            raise ValueError("Additional Info must be a list")
-        opening.save()
-        return Response({'action': "Update Additional Info", 'message': "Additional Info Updated"},
-                        status=status.HTTP_200_OK)
+            raise ValueError("Additional Info Not Found")
     except Http404:
-        return Response({'action': "Update Additional Info", 'message': 'Opening Not Found'},
+        return Response({'action': "Delete Additional Info", 'message': 'Opening Not Found'},
                         status=status.HTTP_404_NOT_FOUND)
     except ValueError:
-        return Response({'action': "Update Additional Info", 'message': "Additional Info must be a list"},
+        return Response({'action': "Delete Additional Info", 'message': "Additional Info not found"},
+                        status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        logger.warning("Delete Additional Info: " + str(e))
+        return Response({'action': "Delete Additional Info", 'message': "Something went wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@isAuthorized([ADMIN])
+@precheck([OPENING_ID, FIELD])
+def addAdditionalInfo(request, id, email, user_type):
+    try:
+        data = request.data
+        opening = get_object_or_404(Placement, pk=data[OPENING_ID])
+        if data[FIELD] not in opening.additional_info:
+            opening.additional_info.append(data[FIELD])
+            opening.save()
+            return Response({'action': "Add Additional Info", 'message': "Additional Info Added"},
+                            status=status.HTTP_200_OK)
+        else:
+            raise ValueError("Additional Info Found")
+
+    except Http404:
+        return Response({'action': "Add Additional Info", 'message': 'Opening Not Found'},
+                        status=status.HTTP_404_NOT_FOUND)
+    except ValueError:
+        return Response({'action': "Add Additional Info", 'message': "Additional Info already found"},
                         status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        logger.warning("Update Additional Info: " + str(e))
-        return Response({'action': "Update Additional Info", 'message': "Something went wrong"},
+        logger.warning("Add Additional Info: " + str(e))
+        return Response({'action': "Add Additional Info", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -199,7 +237,7 @@ def submitApplication(request, id, email, user_type):
         data = request.data
         student = get_object_or_404(Student, pk=data[STUDENT_ID])
         opening = get_object_or_404(Placement, pk=data[OPENING_ID])
-
+        student_user = get_object_or_404(User, id=student.id)
         if data[APPLICATION_ID] == "":
             application = PlacementApplication()
             application.id = generateRandomString()
@@ -216,7 +254,16 @@ def submitApplication(request, id, email, user_type):
                 else:
                     additional_info[i] = data[ADDITIONAL_INFO][i]
             application.additional_info = json.dumps(additional_info)
+            data = {
+                "name": student.name,
+                "company_name": opening.company_name,
+                "application_type": "Placement",
+                "additional_info": dict(json.loads(application.additional_info)),
+            }
+            subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
+            application.changed_by = get_object_or_404(User, id=id)
             application.save()
+            sendEmail(student_user.email, subject, data, STUDENT_APPLICATION_SUBMITTED_TEMPLATE)
             return Response({'action': "Add Student Application", 'message': "Application added"},
                             status=status.HTTP_200_OK)
         else:
@@ -235,7 +282,17 @@ def submitApplication(request, id, email, user_type):
                         additional_info[i] = data[ADDITIONAL_INFO][i]
 
                 application.additional_info = json.dumps(additional_info)
+                data = {
+                    "name": student.name,
+                    "company_name": opening.company_name,
+                    "application_type": "Placement",
+                    "resume": application.resume[16:],
+                    "additional_info_items": dict(json.loads(application.additional_info)),
+                }
+                subject = STUDENT_APPLICATION_UPDATED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
+                application.changed_by = get_object_or_404(User, id=id)
                 application.save()
+                sendEmail(student_user.email, subject, data, STUDENT_APPLICATION_UPDATED_TEMPLATE)
                 return Response({'action': "Add Student Application", 'message': "Application updated"},
                                 status=status.HTTP_200_OK)
             else:
@@ -300,7 +357,6 @@ def generateCSV(request, id, email, user_type):
                         status=status.HTTP_200_OK)
     except:
         logger.warning("Create csv: " + str(sys.exc_info()))
-        print(sys.exc_info())
         return Response({'action': "Create csv", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -313,7 +369,7 @@ def addPPO(request, id, email, user_type):
         data = request.data
         PPO = PrePlacementOffer()
         PPO.company = data[COMPANY_NAME]
-        PPO.compensation = data[COMPENSATION_GROSS]
+        PPO.compensation = int(data[COMPENSATION_GROSS])
         if data[OFFER_ACCEPTED] == "true":
             PPO.accepted = True
         elif data[OFFER_ACCEPTED] == "false":
@@ -322,15 +378,15 @@ def addPPO(request, id, email, user_type):
             PPO.accepted = None
         PPO.student = get_object_or_404(Student, id=data[STUDENT_ID])
         PPO.designation = data[DESIGNATION]
-        PPO.tier = data[TIER]
+        PPO.tier = int(data[TIER])
         if COMPENSATION_DETAILS in data:
             PPO.compensation_details = data[COMPENSATION_DETAILS]
+        PPO.changed_by = get_object_or_404(User, id=id)
         PPO.save()
         return Response({'action': "Add PPO", 'message': "PPO added"},
                         status=status.HTTP_200_OK)
     except:
         logger.warning("Add PPO: " + str(sys.exc_info()))
-        print(sys.exc_info())
         return Response({'action': "Add PPO", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -373,3 +429,205 @@ def getStudentApplication(request, id, email, user_type):
         logger.warning("Get Student Application: " + str(sys.exc_info()))
         return Response({'action': "Get Student Application", 'message': "Something Went Wrong"},
                         status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@isAuthorized(allowed_users=[ADMIN])
+def getStats(request, id, email, user_type):
+    try:
+        stats = []
+        placement_ids = {}
+
+        tier_count = {
+            "CSE": {
+                "1":0,
+                "2":0,
+                "3":0,
+                "4":0,
+                "5":0,
+                "6":0,
+                "7":0,
+                "psu":0,
+            },
+            "EE": {
+                "1":0,
+                "2":0,
+                "3":0,
+                "4":0,
+                "5":0,
+                "6":0,
+                "7":0,
+                "psu":0,
+            },
+            "MMAE": {
+                "1":0,
+                "2":0,
+                "3":0,
+                "4":0,
+                "5":0,
+                "6":0,
+                "7":0,
+                "psu":0,
+
+            },
+            "Total": {
+                "1":0,
+                "2":0,
+                "3":0,
+                "4":0,
+                "5":0,
+                "6":0,
+                "7":0,
+                "psu":0,
+            },
+        }
+        number_of_students_placed = {
+            "CSE": 0,
+            "EE": 0,
+            "MMAE": 0,
+            "Total": 0,
+        }
+        number_of_students_with_multiple_offers = 0
+        number_of_students_with_no_offers = {
+            "CSE": 0,
+            "EE": 0,
+            "MMAE": 0,
+            "Total": 0,
+        }
+        max_CTC = {
+            "CSE": 0,
+            "EE": 0,
+            "MMAE": 0
+        }
+        average_CTC = {
+            "CSE": 0,
+            "EE": 0,
+            "MMAE": 0
+        }
+        count = {
+            "CSE": 0,
+            "EE": 0,
+            "MMAE": 0
+        }
+
+
+
+        students = Student.objects.all().order_by("roll_no")
+        for student in students.iterator():
+
+            applications = PlacementApplication.objects.filter(student=student, selected=True)
+            ppos = PrePlacementOffer.objects.filter(student=student, accepted=True)
+
+            first_offer_data = None
+
+            second_offer_data = None
+
+            # get the first and second offer
+            offers = []
+            offers.extend(applications)
+            offers.extend(ppos)
+
+            if len(offers) == 0:
+                number_of_students_with_no_offers[student.branch] += 1
+                number_of_students_with_no_offers["Total"] += 1
+            else:
+                number_of_students_placed[student.branch] += 1
+                number_of_students_placed["Total"] += 1
+                if len(offers) > 1:
+                    number_of_students_with_multiple_offers += 1
+
+
+
+            for offer in offers:
+                if type(offer) == PrePlacementOffer:
+                    if first_offer_data is None:
+                        first_offer_data = {
+                            "id": offer.id,
+                            "company": offer.company,
+                            "compensation": offer.compensation,
+                            "tier": offer.tier,
+                            "type": "PPO",
+                        }
+                    elif second_offer_data is None:
+                        second_offer_data = {
+                            "id": offer.id,
+                            "company": offer.company,
+                            "compensation": offer.compensation,
+                            "tier": offer.tier,
+                            "type": "PPO",
+                        }
+                elif type(offer) == PlacementApplication:
+                    if first_offer_data is None:
+                        first_offer_data = {
+                            "id": offer.placement.id,
+                            "company": offer.placement.company_name,
+                            "compensation": offer.placement.compensation_CTC,
+                            "tier": offer.placement.tier,
+                            "type": "Placement",
+                        }
+                    elif second_offer_data is None:
+                        second_offer_data = {
+                            "id": offer.placement.id,
+                            "company": offer.placement.company_name,
+                            "compensation": offer.placement.compensation_CTC,
+                            "tier": offer.placement.tier,
+                            "type": "Placement",
+                        }
+
+            data = {
+                "id": student.id,
+                "name": student.name,
+                "roll_no": student.roll_no,
+                "batch": student.batch,
+                "branch": student.branch,
+                "cpi": student.cpi,
+                "first_offer": first_offer_data['company'] if first_offer_data is not None else None,
+                "first_offer_tier": first_offer_data['tier'] if first_offer_data is not None else None,
+                "first_offer_compensation": first_offer_data['compensation'] if first_offer_data is not None else None,
+
+                "second_offer": second_offer_data['company'] if second_offer_data is not None else None,
+                "second_offer_tier": second_offer_data['tier'] if second_offer_data is not None else None,
+                "second_offer_compensation": second_offer_data['compensation'] if second_offer_data is not None else None,
+            }
+            if first_offer_data is not None:
+                tier_count[student.branch][first_offer_data['tier']] += 1
+                tier_count['Total'][first_offer_data['tier']] += 1
+                max_CTC[student.branch] = max(max_CTC[student.branch], first_offer_data['compensation'])
+                average_CTC[student.branch] += first_offer_data['compensation']
+                count[student.branch] += 1
+
+                if first_offer_data['type'] == "Placement":
+                    placement_ids[first_offer_data['company']] = first_offer_data['id']
+
+            if second_offer_data is not None:
+                tier_count[student.branch][second_offer_data['tier']] += 1
+                tier_count['Total'][second_offer_data['tier']] += 1
+                max_CTC[student.branch] = max(max_CTC[student.branch], second_offer_data['compensation'])
+                average_CTC[student.branch] += second_offer_data['compensation']
+                count[student.branch] += 1
+
+                if second_offer_data['type'] == "Placement":
+                    placement_ids[second_offer_data['company']] = second_offer_data['id']
+
+            stats.append(data)
+
+        for branch in average_CTC:
+            if count[branch] > 0:
+                average_CTC[branch] /= count[branch]
+                # round off to 2 decimal places
+                average_CTC[branch] = round(average_CTC[branch], 2)
+            else:
+                average_CTC[branch] = 0
+        return Response({'action': "Get Stats", 'message': "Stats fetched", 'stats': stats, 'placement_ids': placement_ids,
+                         "tier_count": {br: tier_count[br].values() for br in tier_count},
+                         "number_of_students_placed": number_of_students_placed,
+                         "number_of_students_with_multiple_offers": number_of_students_with_multiple_offers,
+                         "number_of_students_with_no_offers": number_of_students_with_no_offers,
+                         "max_CTC": max_CTC,
+                         "average_CTC": average_CTC,
+                         },
+                        status=status.HTTP_200_OK)
+    except:
+        logger.warning("Get Stats: " + str(sys.exc_info()))
+        print(sys.exc_info())
+        return Response({'action': "Get Stats", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)

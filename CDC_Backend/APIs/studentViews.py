@@ -40,17 +40,23 @@ def addResume(request, id, email, user_type):
         student = get_object_or_404(Student, id=id)
         files = request.FILES
 
+        if len(student.resumes) >= MAX_RESUMES_PER_STUDENT:
+            raise PermissionError('Max Number of Resumes limit reached')
+
         file = files['file']
         destination_path = STORAGE_DESTINATION_RESUMES + str(student.roll_no) + "/"
         file_name = saveFile(file, destination_path)
         student.resumes.append(file_name)
-
+        student.changed_by = get_object_or_404(User, id=id)
         student.save()
         return Response({'action': "Upload Resume", 'message': "Resume Added"},
                         status=status.HTTP_200_OK)
     except Http404:
         return Response({'action': "Upload Resume", 'message': 'Student Not Found'},
                         status=status.HTTP_404_NOT_FOUND)
+    except PermissionError:
+        return Response({'action': "Upload Resume", 'message': 'Max Number of Resumes limit reached'},
+                        status=status.HTTP_400_BAD_REQUEST)
     except:
         if path.exists(destination_path):
             logger.error("Upload Resume: Error in Saving Resume")
@@ -71,7 +77,10 @@ def getDashboard(request, id, email, user_type):
                                               allowed_branch__contains=[studentDetails.branch],
                                               deadline_datetime__gte=datetime.datetime.now(),
                                               offer_accepted=True, email_verified=True).order_by('deadline_datetime')
-        placementsdata = PlacementSerializerForStudent(placements, many=True).data
+        filtered_placements = placement_eligibility_filters(studentDetails, placements)
+
+        placementsdata = PlacementSerializerForStudent(filtered_placements, many=True).data
+
         placementApplications = PlacementApplication.objects.filter(student_id=id)
         placementApplications = PlacementApplicationSerializer(placementApplications, many=True).data
         return Response(
@@ -83,7 +92,6 @@ def getDashboard(request, id, email, user_type):
                         status=status.HTTP_404_NOT_FOUND)
     except:
         logger.warning("Get Dashboard -Student: " + str(sys.exc_info()))
-        print(sys.exc_info())
 
         return Response({'action': "Get Dashboard - Student", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
@@ -104,6 +112,7 @@ def deleteResume(request, id, email, user_type):
         if path.exists(destination_path):
             # remove(destination_path)
             student.resumes.remove(file_name)
+            student.changed_by = get_object_or_404(User, id=id)
             student.save()
             return Response({'action': "Delete Resume", 'message': "Resume Deleted"},
                             status=status.HTTP_200_OK)
@@ -177,7 +186,7 @@ def submitApplication(request, id, email, user_type):
         }
         subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
         sendEmail(email, subject, data, STUDENT_APPLICATION_SUBMITTED_TEMPLATE)
-
+        application.changed_by = get_object_or_404(User, id=id)
         application.save()
         return Response({'action': "Submit Application", 'message': "Application Submitted"},
                         status=status.HTTP_200_OK)
@@ -192,8 +201,49 @@ def submitApplication(request, id, email, user_type):
                         status=status.HTTP_404_NOT_FOUND)
     except:
         logger.warning("Submit Application: " + str(sys.exc_info()))
-        print(traceback.format_exc())
 
-        print(sys.exc_info())
         return Response({'action': "Submit Application", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@isAuthorized(allowed_users=[STUDENT])
+@precheck(required_data=[APPLICATION_ID])
+def deleteApplication(request, id, email, user_type):
+    try:
+        data = request.data
+        application = get_object_or_404(PlacementApplication, id=data[APPLICATION_ID],
+                                        student_id=id)
+        if application.placement.deadline_datetime < timezone.now():
+            raise PermissionError("Deadline Passed")
+
+        application.delete()
+        return Response({'action': "Delete Application", 'message': "Application Deleted"},
+                        status=status.HTTP_200_OK)
+    except Http404 as e:
+        return Response({'action': "Delete Application", 'message': str(e)},
+                        status=status.HTTP_404_NOT_FOUND)
+    except PermissionError as e:
+        return Response({'action': "Delete Application", 'message': str(e)},
+                        status=status.HTTP_403_FORBIDDEN)
+    except:
+        logger.warning("Delete Application: " + str(sys.exc_info()))
+
+        return Response({'action': "Delete Application", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@isAuthorized(allowed_users='*')
+def getContributorStats(request, id, email, user_type):
+    try:
+        contributors = Contributor.objects.all()
+        serialized_data = ContributorSerializer(contributors, many=True).data
+        return Response({'action': "Get Contributor Stats", 'message': "Contributor Stats Fetched",
+                            'data': serialized_data},
+                        status=status.HTTP_200_OK)
+    except:
+        logger.warning("Get Contributor Stats: " + str(sys.exc_info()))
+
+        return Response({'action': "Get Contributor Stats", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)

@@ -1,6 +1,7 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
+from simple_history.models import HistoricalRecords
 
 from .constants import *
 
@@ -10,9 +11,10 @@ from .constants import *
 
 class User(models.Model):
     email = models.EmailField(primary_key=True, blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
-    id = models.CharField(blank=False, max_length=25)
+    id = models.CharField(blank=False, max_length=25, db_index=True)
     user_type = ArrayField(models.CharField(blank=False, max_length=10), size=4, default=list, blank=False)
     last_login_time = models.DateTimeField(default=timezone.now)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name_plural = "User"
@@ -30,18 +32,46 @@ class Student(models.Model):
                          default=list, blank=True)
     cpi = models.DecimalField(decimal_places=2, max_digits=4)
     can_apply = models.BooleanField(default=True, verbose_name='Registered')
+    changed_by = models.ForeignKey(User, blank=True, on_delete=models.RESTRICT, default=None, null=True)
+    degree = models.CharField(choices=DEGREE_CHOICES, blank=False, max_length=10, default=DEGREE_CHOICES[0][0])
+    history = HistoricalRecords(user_model=User)
 
     def __str__(self):
         return str(self.roll_no)
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        if isinstance(value, User):
+            self.changed_by = value
+        else:
+            self.changed_by = None
 
 
 class Admin(models.Model):
     id = models.CharField(blank=False, max_length=15, primary_key=True)
     name = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
+    changed_by = models.ForeignKey(User, blank=True, on_delete=models.RESTRICT, default=None, null=True)
+    history = HistoricalRecords(user_model=User)
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        if isinstance(value, User):
+            self.changed_by = value
+        else:
+            self.changed_by = None
 
 
 def two_day_after_today():
-    return timezone.now() + timezone.timedelta(days=2)
+    # round off to nearest day
+    return timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timezone.timedelta(days=2)
 
 
 class Placement(models.Model):
@@ -53,7 +83,7 @@ class Placement(models.Model):
     nature_of_business = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
     type_of_organisation = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="", blank=False)
     website = models.CharField(blank=True, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
-    company_details = models.CharField(max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
+    company_details = models.CharField(max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True, blank=True)
     company_details_pdf_names = ArrayField(
         models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=5,
         default=list, blank=True)
@@ -114,6 +144,8 @@ class Placement(models.Model):
     deadline_datetime = models.DateTimeField(blank=False, verbose_name="Deadline Date", default=two_day_after_today)
     created_at = models.DateTimeField(blank=False, default=None, null=True)
     updated_at = models.DateTimeField(blank=False, default=None, null=True)
+    changed_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    history = HistoricalRecords(user_model=User)
 
     def format(self):
         if self.company_name is not None:
@@ -156,7 +188,19 @@ class Placement(models.Model):
         if self.other_requirements is not None:
             self.other_requirements = self.other_requirements.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
         if self.additional_info is not None:
-            self.additional_info = [info.strip()[:JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT] for info in list(self.additional_info)]
+            self.additional_info = [info.strip()[:JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT] for info in
+                                    list(self.additional_info)]
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        if isinstance(value, User):
+            self.changed_by = value
+        else:
+            self.changed_by = None
 
     def save(self, *args, **kwargs):
         ''' On save, add timestamps '''
@@ -179,6 +223,8 @@ class PlacementApplication(models.Model):
     selected = models.BooleanField(null=True, default=None, blank=True)
     applied_at = models.DateTimeField(blank=False, default=None, null=True)
     updated_at = models.DateTimeField(blank=False, default=None, null=True)
+    changed_by = models.ForeignKey(User, blank=False, on_delete=models.RESTRICT, default=None, null=True)
+    history = HistoricalRecords(user_model=User)
 
     def save(self, *args, **kwargs):
         ''' On save, add timestamps '''
@@ -187,6 +233,17 @@ class PlacementApplication(models.Model):
         self.updated_at = timezone.now()
 
         return super(PlacementApplication, self).save(*args, **kwargs)
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        if isinstance(value, User):
+            self.changed_by = value
+        else:
+            self.changed_by = None
 
     class Meta:
         verbose_name_plural = "Placement Applications"
@@ -204,5 +261,31 @@ class PrePlacementOffer(models.Model):
     compensation = models.IntegerField(blank=False)  # Job - Per Year
     compensation_details = models.CharField(blank=True, max_length=200)
     tier = models.CharField(blank=False, choices=TIERS, max_length=10)
-    designation = models.CharField(blank=False, max_length=25, default=None, null=True)
+    designation = models.CharField(blank=False, max_length=100, default=None, null=True)
     accepted = models.BooleanField(default=None, null=True)
+    changed_by = models.ForeignKey(User, blank=False, on_delete=models.RESTRICT, default=None, null=True)
+    history = HistoricalRecords(user_model=User)
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        if isinstance(value, User):
+            self.changed_by = value
+        else:
+            self.changed_by = None
+
+
+class Contributor(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, blank=False, default="")
+    email = models.EmailField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, blank=False, default="", unique=True)
+    github_id = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, blank=False, default="", unique=True)
+    linkedin = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, unique=True, null=True)
+    commits = models.IntegerField(blank=False, default=0)
+    image = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, blank=False, default="", null=True)
+
+    def __str__(self):
+        return self.name

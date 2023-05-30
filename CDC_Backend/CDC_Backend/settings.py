@@ -15,7 +15,6 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv("../dev.env")
-# import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,13 +23,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'e_i2g3z!y4+p3dwm%k9k=zmsot@aya-0$mmetgxz4mp#8_oy#*'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG') == "True"
 
-ALLOWED_HOSTS = ['cdc-iitdh.herokuapp.com/', 'localhost', '192.168.29.199']
+ALLOWED_HOSTS = ['cdc.iitdh.ac.in', 'localhost']
 
+ADMINS = [('Gowtham Sai', '190010036@iitdh.ac.in'), ('Karthik Mv', '200010030@iitdh.ac.in')]
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,7 +44,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'django_db_logger',
-    'background_task'
+    'background_task',
+    'simple_history',
+    'import_export',
+    "django_extensions"
 ]
 
 MIDDLEWARE = [
@@ -54,10 +57,11 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsPostCsrfMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'CDC_Backend.urls'
@@ -144,13 +148,14 @@ STATICFILES_DIR = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = [
+    "https://cdc.iitdh.ac.in",
     "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000"
+    "https://localhost:3000"
 ]
+CORS_REPLACE_HTTPS_REFERER = True
+CSRF_TRUSTED_ORIGINS = [ "https://cdc.iitdh.ac.in", "http://cdc.iitdh.ac.in"]
 
 # EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = './emails'
@@ -181,14 +186,13 @@ LOGGING = {
             'class': 'django_db_logger.db_log_handler.DatabaseLogHandler'
         },
         'mail_admins': {
-            'level': 'ERROR',
+            'level': 'WARNING',
             'class': 'django.utils.log.AdminEmailHandler',
-            'include_html': True,
         }
     },
     'loggers': {
         'db': {
-            'handlers': ['db_log'],
+            'handlers': ['db_log', 'mail_admins'],
             'level': 'DEBUG'
         }
     }

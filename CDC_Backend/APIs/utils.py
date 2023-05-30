@@ -12,6 +12,7 @@ from os import path, remove
 import background_task
 import jwt
 import pdfkit
+import pytz
 import requests as rq
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -27,7 +28,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from .constants import *
-from .models import User, PrePlacementOffer, PlacementApplication, Placement
+from .models import User, PrePlacementOffer, PlacementApplication, Placement, Student
 
 logger = logging.getLogger('db')
 
@@ -57,6 +58,7 @@ def precheck(required_data=None):
 
                 return view_func(request, *args, **kwargs)
             except:
+                logger.warning("Pre check: " + str(sys.exc_info()))
                 return Response({'action': "Pre check", 'message': "Something went wrong"},
                                 status=status.HTTP_400_BAD_REQUEST)
 
@@ -77,7 +79,6 @@ def isAuthorized(allowed_users=None):
                     token_id = headers['HTTP_AUTHORIZATION'][7:]
                     idinfo = id_token.verify_oauth2_token(token_id, requests.Request(), CLIENT_ID)
                     email = idinfo[EMAIL]
-                    print(email)
                     user = get_object_or_404(User, email=email)
                     if user:
                         user.last_login_time = timezone.now()
@@ -138,7 +139,7 @@ def saveFile(file, location):
     return file_name
 
 
-@background_task.background(schedule=5)
+@background_task.background(schedule=2)
 def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
     try:
         if not isinstance(data, dict):
@@ -147,12 +148,15 @@ def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
         text_content = strip_tags(html_content)
 
         email_from = settings.EMAIL_HOST_USER
-        recipient_list = [str(email_to), ]
+        if type(email_to) is list:
+            recipient_list = [str(email) for email in email_to]
+        else:
+            recipient_list = [str(email_to), ]
 
         msg = EmailMultiAlternatives(subject, text_content, email_from, recipient_list)
         msg.attach_alternative(html_content, "text/html")
         if attachment_jnf_response:
-            logger.info(attachment_jnf_response)
+            # logger.info(attachment_jnf_response)
             pdf = pdfkit.from_string(attachment_jnf_response['html'], False,
                                      options={"--enable-local-file-access": "", '--dpi': '96'})
             msg.attach(attachment_jnf_response['name'], pdf, 'application/pdf')
@@ -160,7 +164,6 @@ def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
         return True
     except:
         logger.error("Send Email: " + str(sys.exc_info()))
-        print(str(sys.exc_info()[1]))
         return False
 
 
@@ -169,31 +172,36 @@ def PlacementApplicationConditions(student, placement):
         selected_companies = PlacementApplication.objects.filter(student=student, selected=True)
         selected_companies_PSU = [i for i in selected_companies if i.placement.tier == 'psu']
         PPO = PrePlacementOffer.objects.filter(student=student, accepted=True)
-        # find lenght of PPO
-        print(PPO)
-        print(len(PPO), "ere")
+        PPO_PSU = [i for i in PPO if i.tier == 'psu']
+        # find length of PPO
         if len(selected_companies) + len(PPO) >= MAX_OFFERS_PER_STUDENT:
             raise PermissionError("Max Applications Reached for the Season")
 
         if len(selected_companies_PSU) > 0:
             raise PermissionError('Selected for PSU Can\'t apply anymore')
 
+        if len(PPO_PSU) > 0:
+            raise PermissionError('Selected for PSU Can\'t apply anymore')
+
         if placement.tier == 'psu':
             return True, "Conditions Satisfied"
 
         for i in selected_companies:
-            print(int(i.placement.tier) < int(placement.tier), int(i.placement.tier), int(placement.tier))
             if int(i.placement.tier) < int(placement.tier):
                 return False, "Can't apply for this tier"
+
+        for i in PPO:
+            if int(i.tier) < int(placement.tier):
+                return False, "Can't apply for this tier"
+
+        if student.degree != 'bTech' and not placement.rs_eligible:
+            raise PermissionError("Can't apply for this placement")
 
         return True, "Conditions Satisfied"
 
     except PermissionError as e:
         return False, e
     except:
-        print(sys.exc_info())
-        print(traceback.format_exc())
-
         logger.warning("Utils - PlacementApplicationConditions: " + str(sys.exc_info()))
         return False, "_"
 
@@ -231,7 +239,6 @@ def getTier(compensation_gross, is_psu=False):
         logger.warning("Utils - getTier: " + str(sys.exc_info()))
         return False, e
     except:
-        print(sys.exc_info())
         logger.warning("Utils - getTier: " + str(sys.exc_info()))
         return False, "_"
 
@@ -248,36 +255,35 @@ def generateOneTimeVerificationLink(email, opening_id, opening_type):
         link = LINK_TO_EMAIl_VERIFICATION_API.format(token=token)
         return True, link
     except:
-        print(sys.exc_info())
         logger.warning("Utils - generateOneTimeVerificationLink: " + str(sys.exc_info()))
         return False, "_"
 
 
 def verify_recaptcha(request):
     try:
-        print(settings.RECAPTCHA_SECRET_KEY)
         data = {
             'secret': settings.RECAPTCHA_SECRET_KEY,
             'response': request
         }
-        print(data)
         r = rq.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         result = r.json()
-        # logger.info("Recaptcha Response: " + str(result)+"request: "+str(data))
-
-        print(result, "Result")
+        if not result['success']:
+            logger.warning("Utils - verify_recaptcha: " + str(result))
         return result['success']
     except:
         # get exception line number
-        print(sys.exc_info())
-        print(traceback.format_exc())
         logger.warning("Utils - verify_recaptcha: " + str(sys.exc_info()))
         return False, "_"
 
 
 def opening_description_table_html(opening):
-    details = model_to_dict(opening, fields=[field.name for field in Placement._meta.fields],
-                            exclude=EXCLUDE_IN_PDF)
+    # check typing of opening
+    if isinstance(opening, Placement):
+        details = model_to_dict(opening, fields=[field.name for field in Placement._meta.fields],
+                                exclude=EXCLUDE_IN_PDF)
+    # check typing of opening is query dict
+    else:  # if isinstance(opening, QueryDict):
+        details = opening
     keys = list(details.keys())
     newdetails = {}
     for key in keys:
@@ -287,7 +293,7 @@ def opening_description_table_html(opening):
             if key == 'website':
                 details[key] = {"details": details[key], "type": ["link"]}
             else:
-                details[key] = {"details": details[key]["details"], "type": ["list", "link"],
+                details[key] = {"details": [item for item in details[key]["details"]], "type": ["list", "link"],
                                 "link": PDF_FILES_SERVING_ENDPOINT + opening.id + "/"}
         new_key = key.replace('_', ' ')
         if new_key.endswith(' names'):
@@ -295,9 +301,95 @@ def opening_description_table_html(opening):
         new_key = new_key.capitalize()
         newdetails[new_key] = details[key]
     imagepath = os.path.abspath('./templates/image.png')
-    print(imagepath)
     data = {
         "data": newdetails,
         "imgpath": imagepath
     }
     return render_to_string(COMPANY_JNF_RESPONSE_TEMPLATE, data)
+
+
+def placement_eligibility_filters(student, placements):
+    try:
+        filtered_placements = []
+        for placement in placements.iterator():
+
+            if PlacementApplicationConditions(student, placement)[0]:
+                filtered_placements.append(placement)
+
+        return filtered_placements
+    except:
+        logger.warning("Utils - placement_eligibility_filters: " + str(sys.exc_info()))
+        return placements
+
+
+@background_task.background(schedule=2)
+def send_opening_notifications(placement_id):
+    try:
+        placement = get_object_or_404(Placement, id=placement_id)
+        students = Student.objects.all()
+        for student in students.iterator():
+            if student.branch in placement.allowed_branch:
+                if student.degree == 'bTech' or placement.rs_eligible is True:
+                    if PlacementApplicationConditions(student, placement)[0]:
+                        try:
+                            student_user = get_object_or_404(User, id=student.id)
+                            subject = NOTIFY_STUDENTS_OPENING_TEMPLATE_SUBJECT.format(
+                                company_name=placement.company_name)
+                            deadline_datetime = placement.deadline_datetime.astimezone(pytz.timezone('Asia/Kolkata'))
+                            data = {
+                                "company_name": placement.company_name,
+                                "opening_type": 'Placement',
+                                "designation": placement.designation,
+                                "deadline": deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
+                                "link": PLACEMENT_OPENING_URL.format(id=placement.id)
+                            }
+                            sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
+                        except Http404:
+                            logger.warning('Utils - send_opening_notifications: user not found : ' + student.id)
+                        except Exception as e:
+                            logger.warning('Utils - send_opening_notifications: For Loop' + str(e))
+
+    except:
+        logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
+        return False
+
+
+def exception_email(opening):
+    opening = opening.dict()
+    data = {
+        "designation": opening["designation"],
+        "opening_type": PLACEMENT,
+        "company_name": opening["company_name"],
+    }
+    pdfhtml = opening_description_table_html(opening)
+    name = opening["company_name"] + '_jnf_response.pdf'
+    attachment_jnf_respone = {
+        "name": name,
+        "html": pdfhtml,
+    }
+
+    sendEmail(CDC_MAIl_ADDRESS, COMPANY_OPENING_ERROR_TEMPLATE.format(company_name=opening["company_name"]), data,
+              COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
+
+
+def store_all_files(request):
+    files = request.FILES
+    data = request.data
+    # save all the files
+    if files:
+        # company details pdf
+        for file in files.getlist(COMPANY_DETAILS_PDF):
+            file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + "temp" + '/'
+            saveFile(file, file_location)
+        # compensation details pdf
+        for file in files.getlist(COMPENSATION_DETAILS_PDF):
+            file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + "temp" + '/'
+            saveFile(file, file_location)
+        # selection procedure details pdf
+        for file in files.getlist(SELECTION_PROCEDURE_DETAILS_PDF):
+            file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + "temp" + '/'
+            saveFile(file, file_location)
+        # description pdf
+        for file in files.getlist(DESCRIPTION_PDF):
+            file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + "temp" + '/'
+            saveFile(file, file_location)

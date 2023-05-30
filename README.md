@@ -9,11 +9,12 @@ python# CDC - Backend
 3. Create a Virtual Environment in the [CDC_Backend](./) folder with this command below <br>
    `python -m venv venv`
 3. Activate the environment with this command <br>
-   `.\venv\Scripts\activate`
+   `.\venv\Scripts\activate` (for WINDOWS) <br>
+   `source ./venv/bin/activate` (for LINUX)
 4. Install the dependencies <br>
    `pip install -r requirements.txt `
 5. Ensure that you have the PostgreSQL installed on your machine and is running on PORT **5432** <br>
-6. Make sure to give the correct database credentials in [settings.py](./CDC_Backend/CDC_Backend/settings.py)
+6. Make sure to give the correct database credentials in [settings.py](./CDC_Backend/CDC_Backend/settings.py)(https://www.youtube.com/watch?v=bE9h6aAky4s&t=193s)
 7. Run these following commands below. (The same are there in setup.sh for linux users and setup.bat for windows users)
 ```cd  CDC_Backend
 python manage.py flush --no-input
@@ -25,10 +26,12 @@ python manage.py makemigrations APIs
 ```
 
 
+
 ### Running the Application
 
 1. Activate the environment with this command. <br>
-   `.\venv\Scripts\activate`
+   `.\venv\Scripts\activate` (for WINDOWS) <br>
+   `source ./venv/bin/activate` (for LINUX) 
 2. Start the application by running this command (_Run the command where [manage.py](./CDC_Backend/manage.py) is
    located_) <br>
    ` python manage.py runserver`
@@ -45,6 +48,12 @@ python manage.py makemigrations APIs
 And then recognize it
 8.Check the client  link in dev.env in backend and  .env in frontend  is the same
 
+ 
+ # Error
+ 1.make sure that your machine time and google time are same ,if not go to setting of date and time and sync this 
+ 2.make sure u have used  same id for both student and Admin that is your iitfh roll_no
+ 3. same client link in .env of frontend or constants.py of bakcend 
+ 
 ### Deploying
 
 1. Add the hosted domain name in `ALLOWED_HOSTS` in [settings.py](./CDC_Backend/CDC_Backend/settings.py)
