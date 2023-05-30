@@ -276,3 +276,16 @@ class PrePlacementOffer(models.Model):
             self.changed_by = value
         else:
             self.changed_by = None
+
+
+class Contributor(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, blank=False, default="")
+    email = models.EmailField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, blank=False, default="", unique=True)
+    github_id = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, blank=False, default="", unique=True)
+    linkedin = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, unique=True, null=True)
+    commits = models.IntegerField(blank=False, default=0)
+    image = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, blank=False, default="", null=True)
+
+    def __str__(self):
+        return self.name
