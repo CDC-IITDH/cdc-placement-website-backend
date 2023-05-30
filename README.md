@@ -5,7 +5,7 @@ python# CDC - Backend
 ### Setup
 
 1. Download the Repository to your local machine <br>
-2. Make Sour u have downloaded python from python.org 
+2. Make Sure u have downloaded python from python.org or windows store.
 3. Create a Virtual Environment in the [CDC_Backend](./) folder with this command below <br>
    `python -m venv venv`
 3. Activate the environment with this command <br>
@@ -14,14 +14,15 @@ python# CDC - Backend
    `pip install -r requirements.txt `
 5. Ensure that you have the PostgreSQL installed on your machine and is running on PORT **5432** <br>
 6. Make sure to give the correct database credentials in [settings.py](./CDC_Backend/CDC_Backend/settings.py)
-7. Run these following commands ..
-8. cd  CDC_Backend
+7. Run these following commands below. (The same are there in setup.sh for linux users and setup.bat for windows users)
+```cd  CDC_Backend
 python manage.py flush --no-input
 python manage.py makemigrations
 python manage.py migrate
 python manage.py collectstatic --noinput
 mkdir Storage
 python manage.py makemigrations APIs
+```
 
 
 ### Running the Application
@@ -40,7 +41,7 @@ python manage.py makemigrations APIs
 4. Set up the Username and Password
 5. You can log in and change the database values anytime.
 6. Create your id as insitute Roll No for both admin and student .
-7.if u are still getting an error ,open inspect and see in network 
+7. if you are still getting an error ,open inspect and see in network 
 And then recognize it
 8.Check the client  link in dev.env in backend and  .env in frontend  is the same
 
