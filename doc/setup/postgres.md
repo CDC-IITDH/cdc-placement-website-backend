@@ -1,6 +1,6 @@
 typical conf file for pg_hba.conf for dev work.
 
-
+```
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
 
 # "local" is for Unix domain socket connections only
@@ -14,3 +14,4 @@ host    all             all             ::1/128                 md5
 local   replication     all                                     peer
 host    replication     all             127.0.0.1/32            ident
 host    replication     all             ::1/128                 ident
+```
