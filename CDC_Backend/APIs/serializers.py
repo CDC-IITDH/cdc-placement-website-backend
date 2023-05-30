@@ -162,7 +162,8 @@ class PlacementApplicationSerializer(serializers.ModelSerializer):
         return data
 
     def get_resume_link(self, obj):
-        ele = {'link': LINK_TO_STORAGE_RESUME + urllib.parse.quote(str(obj.student.roll_no) + "/" + obj.resume), 'name': obj.resume}
+        ele = {'link': LINK_TO_STORAGE_RESUME + urllib.parse.quote(str(obj.student.roll_no) + "/" + obj.resume),
+               'name': obj.resume}
         return ele
 
     class Meta:
@@ -186,6 +187,8 @@ class PlacementApplicationSerializerForAdmin(serializers.ModelSerializer):
         model = PlacementApplication
         exclude = ['placement', 'resume']
 
+
 class ContributorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contributor
+        fields = '__all__'
