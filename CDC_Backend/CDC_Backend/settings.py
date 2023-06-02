@@ -47,9 +47,7 @@ INSTALLED_APPS = [
     'background_task',
     'simple_history',
     'import_export',
-    'django_extensions',
-    "django_extensions"
-
+    'django_extensions'
 ]
 
 MIDDLEWARE = [

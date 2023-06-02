@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 
 from .utils import *
+from .serializers import *
 
 logger = logging.getLogger('db')
 
@@ -283,7 +284,8 @@ def verifyEmail(request):
                 "opening_type": PLACEMENT,
                 "company_name": opening.company_name,
             }
-            sendEmail([opening.email, CDC_MAIl_ADDRESS], COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
+            sendEmail([opening.email, CDC_MAIl_ADDRESS],
+                      COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
                       COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
 
         return Response({'action': "Verify Email", 'message': "Email Verified Successfully"},
@@ -297,4 +299,24 @@ def verifyEmail(request):
     except:
         logger.warning("Verify Email: " + str(sys.exc_info()))
         return Response({'action': "Verify Email", 'message': "Something went wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@precheck([PLACEMENT_ID])
+def autoFillJnf(request):
+    try:
+        data = request.GET
+        placement_id = data.get(PLACEMENT_ID)
+        opening = get_object_or_404(Placement, id=placement_id)
+        serializer = AutofillSerializers(opening)
+        return Response({'action': "Get AutoFill", 'message': 'Data Found', 'placement_data': serializer.data},
+                        status=status.HTTP_200_OK)
+    except Http404:
+        return Response({'action': "Get AutoFill", 'message': 'Placement Not Found'},
+                        status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        traceback_str = traceback.format_exc()
+        logger.warning("Get AutoFill: " + traceback_str)
+        return Response({'action': "Get AutoFill", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
