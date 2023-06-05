@@ -267,8 +267,6 @@ def verify_recaptcha(request):
         }
         r = rq.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         result = r.json()
-        # print
-        print(result)
         if not result['success']:
             logger.warning("Utils - verify_recaptcha: " + str(result))
         return result['success']
