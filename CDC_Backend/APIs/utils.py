@@ -285,7 +285,7 @@ def opening_description_table_html(opening):
     else:  # if isinstance(opening, QueryDict):
         details = opening
     keys = list(details.keys())
-    newdetails = {}
+    newdetails = {"ID": opening.id}
     for key in keys:
         if isinstance(details[key], list):
             details[key] = {"details": details[key], "type": ["list"]}
