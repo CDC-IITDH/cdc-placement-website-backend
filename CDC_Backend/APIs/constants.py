@@ -90,6 +90,7 @@ FIELD = "field"
 STATUS_ACCEPTING_APPLICATIONS = "Accepting Applications"
 
 PLACEMENT = "Placement"
+PLACEMENT_ID = "placement_id"
 
 COMPANY_NAME = "company_name"
 ADDRESS = "address"
@@ -159,7 +160,6 @@ STUDENT_APPLICATION_UPDATED_TEMPLATE_SUBJECT = 'CDC - Application Updated - {com
 COMPANY_EMAIl_VERIFICATION_TEMPLATE_SUBJECT = 'Email Verification - Career Development Cell, IIT Dharwad'
 NOTIFY_STUDENTS_OPENING_TEMPLATE_SUBJECT = 'Placement Opportunity at {company_name}'
 REMINDER_STUDENTS_OPENING_TEMPLATE_SUBJECT = 'Reminder - Placement Opportunity at {company_name}'
-
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE = 'student_application_submitted.html'
 COMPANY_OPENING_SUBMITTED_TEMPLATE = 'company_opening_submitted.html'
 STUDENT_APPLICATION_STATUS_SELECTED_TEMPLATE = 'student_application_status_selected.html'
@@ -169,7 +169,6 @@ COMPANY_EMAIL_VERIFICATION_TEMPLATE = 'company_email_verification.html'
 COMPANY_JNF_RESPONSE_TEMPLATE = 'company_jnf_response.html'
 NOTIFY_STUDENTS_OPENING_TEMPLATE = 'notify_students_new_opening.html'
 REMINDER_STUDENTS_OPENING_TEMPLATE = 'students_opening_reminder.html'
-
 APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'CPI',
                              'Resume', 'Selected', ]
 
