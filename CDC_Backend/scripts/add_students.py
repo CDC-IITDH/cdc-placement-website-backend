@@ -2,8 +2,11 @@ import random
 from django.db.utils import IntegrityError
 from APIs.models import Student
 
+from APIs.constants import BRANCHES, BATCH_CHOICES, DEGREE_CHOICES
+
 # To run this script run the following command:
 # python manage.py runscript add_students --script-args <add_type> <num_of_stundents_to_add>
+
 
 def run(*args):
 
@@ -39,11 +42,11 @@ def run(*args):
                     id = i-1,
                     roll_no = 220010000 + i,
                     name = "Student " + str(i),
-                    branch = random.choice(["CSE", "EE", "MECH", "CHEM", "CIVIL", "EP", "BSMS", "MNC"]),
+                    branch = random.choice(BRANCHES),
                     phone_number = random.randint(1000000000, 9999999999),
                     cpi = random.random()*10,
-                    degree = "bTech",
-                    batch = random.randint(2018, 2023)
+                    degree = random.choice(DEGREE_CHOICES)[0],
+                    batch = random.choice(BATCH_CHOICES)[0],
                 )
                 student.save()
             except IntegrityError:
