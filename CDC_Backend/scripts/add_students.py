@@ -15,7 +15,8 @@ def run(*args):
         raise ValueError("Invalid number of arguments passed")
     
     if args[0] in ("manual", "man") :
-        if not args:
+
+        if len(args) != 2 or not args[1].isdigit() or int(args[1]) < 1:
             raise ValueError("Invalid number of arguments passed")
 
         print("id\troll_no\tname\tbranch\tphone_number\tcpi\tdegree\tbatch")
@@ -40,7 +41,7 @@ def run(*args):
             student.save()
 
     elif args[0] in ("auto", "automatic"):
-        if not args:
+        if len(args) != 2 or not args[1].isdigit() or int(args[1]) < 1:
             raise ValueError("Invalid number of arguments passed")
         
         for i in range(1, int(args[1])+1):
@@ -61,7 +62,7 @@ def run(*args):
     
     elif args[0] in ("del", "delete"):
         # delete students with name starting with Student
-        s = Student.objects.filter(name__startswith="Student")
+        s = Student.objects.filter(name__startswith="Stundent")
         s.delete()
 
     else:
