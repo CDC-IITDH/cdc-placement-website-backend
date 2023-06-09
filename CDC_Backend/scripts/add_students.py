@@ -17,17 +17,24 @@ def run(*args):
     if args[0] in ("manual", "man") :
         if not args:
             raise ValueError("Invalid number of arguments passed")
-        
+
+        print("id\troll_no\tname\tbranch\tphone_number\tcpi\tdegree\tbatch")
         for i in range(1, int(args[1])+1):
+            details = input()
+            details = details.split(",")
+            details = [i.strip() for i in details]
+            details = [int(details[0]), int(details[1]), details[2], details[3], 
+                       int(details[4]), float(details[5]), details[6], details[7]]
+
             student = Student.objects.create(
-                id = input("Enter id: "),
-                roll_no = input("Enter roll_no: "),
-                name = input("Enter name: "),
-                branch = input("Enter branch: "),
-                phone_number = input("Enter phone_number: "),
-                cpi = input("Enter cpi: "),
-                degree = input("Enter degree: "),
-                batch = input("Enter batch: ")
+                id = details[0],
+                roll_no = details[1],
+                name = details[2],
+                branch = details[3],
+                phone_number = details[4],
+                cpi = details[5],
+                degree = details[6],
+                batch = details[7],
 
             )
             student.save()
