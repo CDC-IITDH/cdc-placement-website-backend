@@ -66,7 +66,7 @@ SUPER_ADMIN = 's_admin'
 COMPANY = 'company'
 TIER = 'tier'
 # To be Configured Properly
-FOURTH_YEAR = '2019'
+FOURTH_YEAR = '2020'
 MAX_OFFERS_PER_STUDENT = 2
 MAX_RESUMES_PER_STUDENT = 3
 EMAIL_VERIFICATION_TOKEN_TTL = 48  # in hours

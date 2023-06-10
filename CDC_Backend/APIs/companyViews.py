@@ -194,7 +194,7 @@ def addPlacement(request):
                                                                        '%d-%m-%Y').date()
 
         # Only Allowing Fourth Year for Placement
-        opening.allowed_batch = [2017, 2018, 2019, 2020, 2021]
+        opening.allowed_batch = [FOURTH_YEAR,]
         # Check if allowed_branch are valid
         if data[ALLOWED_BRANCH] is None:
             raise ValueError('Allowed Branch cannot be empty')

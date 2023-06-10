@@ -247,3 +247,9 @@ def getContributorStats(request, id, email, user_type):
 
         return Response({'action': "Get Contributor Stats", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+        
+#view for sudentAcceptOffer
+@api_view(['POST'])
+@isAuthorized(allowed_users=[STUDENT])
+def studentAcceptOffer(request, id, email, user_type):
+    None
