@@ -49,6 +49,9 @@ CDC_MAIl_ADDRESS = 'cdc@iitdh.ac.in'
 
 # To be Configured Properly
 CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID')  # Google Login Client ID
+CLIENT_SECRET = os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET')  # Google Login Client Secret
+REDIRECT_URI = 'postmessage'  # Google Login Redirect URI
+OAUTH2_API_ENDPOINT = 'https://oauth2.googleapis.com/token'  # Google Login OAUTH2 URL
 
 # To be Configured Properly
 PLACEMENT_OPENING_URL = "https://cdc.iitdh.ac.in/portal/student/dashboard/placements/{id}"  # On frontend, this is the URL to be opened
@@ -58,6 +61,9 @@ LINK_TO_APPLICATIONS_CSV = "https://cdc.iitdh.ac.in/storage/Application_CSV/"
 LINK_TO_EMAIl_VERIFICATION_API = "https://cdc.iitdh.ac.in/portal/company/verifyEmail?token={token}"
 PDF_FILES_SERVING_ENDPOINT = 'https://cdc.iitdh.ac.in/storage/Company_Attachments/'  # TODO: Change this to actual URL
 
+AUTH_CODE = "code"
+ID_TOKEN = "id_token"
+REFRESH_TOKEN = "refresh_token"
 EMAIL = "email"
 
 STUDENT = 'student'
