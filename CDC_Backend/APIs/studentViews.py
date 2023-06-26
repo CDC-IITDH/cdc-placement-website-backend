@@ -274,3 +274,22 @@ def getContributorStats(request, id, email, user_type):
 
         return Response({'action': "Get Contributor Stats", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+        
+#view for sudentAcceptOffer
+@api_view(['POST'])
+@isAuthorized(allowed_users=[STUDENT])
+def studentAcceptOffer(request, id, email, user_type):
+    try:
+        company_id = request.data['id']
+        student_id=request.data['profileInfo']['id']
+        offer_status = request.data['offerStatus']
+        placement_application=PlacementApplication.objects.get(placement=company_id,student=student_id)
+        placement_application.offer_accepted=offer_status
+        placement_application.save()
+        return Response({'action': "Accept Offer", 'message': "Updated Offer Status"},
+                        status=status.HTTP_200_OK)
+    except:
+        logger.warning("Accept Offer: " + str(sys.exc_info()))
+
+        return Response({'action': "Accept Offer", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)

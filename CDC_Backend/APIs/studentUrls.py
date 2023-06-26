@@ -11,4 +11,5 @@ urlpatterns = [
     path("submitApplication/", studentViews.submitApplication, name="Submit Application"),
     path("deleteApplication/", studentViews.deleteApplication, name="Delete Application"),
     path("getContributorStats/", studentViews.getContributorStats, name="Get Contributor Stats"),
+    path("studentAcceptOffer/", studentViews.studentAcceptOffer, name="Student Accept Offer"),
 ]
