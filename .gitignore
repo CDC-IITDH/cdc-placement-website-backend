@@ -140,6 +140,10 @@ dmypy.json
 .idea
 *.pyc
 dev.env
+.vscode/settings.json
+
+#vscode settings
+.vscode/
 
 #vscode settings
 .vscode/

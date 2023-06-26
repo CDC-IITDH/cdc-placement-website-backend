@@ -30,7 +30,7 @@ DEBUG = os.environ.get('DEBUG') == "True"
 
 ALLOWED_HOSTS = ['cdc.iitdh.ac.in', 'localhost']
 
-ADMINS = [('Gowtham Sai', '190010036@iitdh.ac.in'), ('Karthik Mv', '200010030@iitdh.ac.in')]
+ADMINS = [ ('Karthik Mv', '200010030@iitdh.ac.in')]
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'background_task',
     'simple_history',
     'import_export',
-    "django_extensions"
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
