@@ -32,11 +32,12 @@ from .models import User, PrePlacementOffer, PlacementApplication, Placement, St
 
 logger = logging.getLogger('db')
 
-
+import requests
 def get_token():
     def decorator(view_func):
         def wrapper_func(request, *args, **kwargs):
             try:
+                print("one")
                 authcode = request.data[AUTH_CODE]
                 data = {
                     'code': authcode,
@@ -45,23 +46,32 @@ def get_token():
                     'redirect_uri': REDIRECT_URI,
                     'grant_type': 'authorization_code'
                 }
-                r = rq.post(OAUTH2_API_ENDPOINT, data=data)
+                print("two")
+                r = requests.post(OAUTH2_API_ENDPOINT, data=data)
+
+                print(r)
                 if r.status_code == 200:
+                    print("four")
                     response = r.json()
                     token = response[ID_TOKEN]
                     refresh_token = response[REFRESH_TOKEN]
                     request.META["HTTP_AUTHORIZATION"] = "Bearer " + token
                     request.META["MODIFIED"] = "True"
                     kwargs['refresh_token'] = refresh_token
+                    print("five")
                     return view_func(request, *args, **kwargs)
                 else:
+                    print("six")
                     return Response({'action': "Get Token", 'message': "Invalid Auth Code"},
                                     status=status.HTTP_400_BAD_REQUEST)
             except Exception as e:
+                print("seven")
                 logger.warning("Get Token: " + str(sys.exc_info()))
                 return Response({'action': "Get Token", 'message': str(e)},
                                 status=status.HTTP_400_BAD_REQUEST)
+
         return wrapper_func
+
     return decorator
 
 
@@ -117,7 +127,8 @@ def isAuthorized(allowed_users=None):
                         user.save()
                         if len(set(user.user_type).intersection(set(allowed_users))) or allowed_users == '*':
                             if "MODIFIED" in headers:
-                                return view_func(request, user.id, user.email, user.user_type, token_id, *args, **kwargs)
+                                return view_func(request, user.id, user.email, user.user_type, token_id, *args,
+                                                 **kwargs)
                             else:
                                 return view_func(request, user.id, user.email, user.user_type, *args, **kwargs)
                         else:

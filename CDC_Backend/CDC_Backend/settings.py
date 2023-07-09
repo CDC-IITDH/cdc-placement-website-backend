@@ -30,7 +30,7 @@ DEBUG = os.environ.get('DEBUG') == "True"
 
 ALLOWED_HOSTS = ['cdc.iitdh.ac.in', 'localhost']
 
-ADMINS = [ ('Karthik Mv', '200010030@iitdh.ac.in')]
+ADMINS = [('Karthik Mv', '200010030@iitdh.ac.in')]
 # Application definition
 
 INSTALLED_APPS = [

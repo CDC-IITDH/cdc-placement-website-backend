@@ -10,13 +10,15 @@ logger = logging.getLogger('db')
 @precheck(required_data=[AUTH_CODE])
 @get_token()
 @isAuthorized(allowed_users='*')
-def login(request, id, email, user_type, token, refresh_token):
+def login(request,  email, user_type, token, refresh_token):
     try:
         return Response({'action': "Login", 'message': "Verified", "user_type": user_type, "id_token": token, "refresh_token": refresh_token},
                         status=status.HTTP_200_OK)
     except:
+        logger.error("Login Failed")
         return Response({'action': "Login", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 @precheck(required_data=[REFRESH_TOKEN])
@@ -41,7 +43,6 @@ def refresh(request):
         logger.error("refresh_token"+str(response))
         return Response({'action': "Refresh Token", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
-
 
 
 @api_view(['GET'])
