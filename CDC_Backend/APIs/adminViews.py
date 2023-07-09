@@ -429,3 +429,205 @@ def getStudentApplication(request, id, email, user_type):
         logger.warning("Get Student Application: " + str(sys.exc_info()))
         return Response({'action': "Get Student Application", 'message': "Something Went Wrong"},
                         status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@isAuthorized(allowed_users=[ADMIN])
+def getStats(request, id, email, user_type):
+    try:
+        stats = []
+        placement_ids = {}
+
+        tier_count = {
+            "CSE": {
+                "1":0,
+                "2":0,
+                "3":0,
+                "4":0,
+                "5":0,
+                "6":0,
+                "7":0,
+                "psu":0,
+            },
+            "EE": {
+                "1":0,
+                "2":0,
+                "3":0,
+                "4":0,
+                "5":0,
+                "6":0,
+                "7":0,
+                "psu":0,
+            },
+            "MMAE": {
+                "1":0,
+                "2":0,
+                "3":0,
+                "4":0,
+                "5":0,
+                "6":0,
+                "7":0,
+                "psu":0,
+
+            },
+            "Total": {
+                "1":0,
+                "2":0,
+                "3":0,
+                "4":0,
+                "5":0,
+                "6":0,
+                "7":0,
+                "psu":0,
+            },
+        }
+        number_of_students_placed = {
+            "CSE": 0,
+            "EE": 0,
+            "MMAE": 0,
+            "Total": 0,
+        }
+        number_of_students_with_multiple_offers = 0
+        number_of_students_with_no_offers = {
+            "CSE": 0,
+            "EE": 0,
+            "MMAE": 0,
+            "Total": 0,
+        }
+        max_CTC = {
+            "CSE": 0,
+            "EE": 0,
+            "MMAE": 0
+        }
+        average_CTC = {
+            "CSE": 0,
+            "EE": 0,
+            "MMAE": 0
+        }
+        count = {
+            "CSE": 0,
+            "EE": 0,
+            "MMAE": 0
+        }
+
+
+
+        students = Student.objects.all().order_by("roll_no")
+        for student in students.iterator():
+
+            applications = PlacementApplication.objects.filter(student=student, selected=True)
+            ppos = PrePlacementOffer.objects.filter(student=student, accepted=True)
+
+            first_offer_data = None
+
+            second_offer_data = None
+
+            # get the first and second offer
+            offers = []
+            offers.extend(applications)
+            offers.extend(ppos)
+
+            if len(offers) == 0:
+                number_of_students_with_no_offers[student.branch] += 1
+                number_of_students_with_no_offers["Total"] += 1
+            else:
+                number_of_students_placed[student.branch] += 1
+                number_of_students_placed["Total"] += 1
+                if len(offers) > 1:
+                    number_of_students_with_multiple_offers += 1
+
+
+
+            for offer in offers:
+                if type(offer) == PrePlacementOffer:
+                    if first_offer_data is None:
+                        first_offer_data = {
+                            "id": offer.id,
+                            "company": offer.company,
+                            "compensation": offer.compensation,
+                            "tier": offer.tier,
+                            "type": "PPO",
+                        }
+                    elif second_offer_data is None:
+                        second_offer_data = {
+                            "id": offer.id,
+                            "company": offer.company,
+                            "compensation": offer.compensation,
+                            "tier": offer.tier,
+                            "type": "PPO",
+                        }
+                elif type(offer) == PlacementApplication:
+                    if first_offer_data is None:
+                        first_offer_data = {
+                            "id": offer.placement.id,
+                            "company": offer.placement.company_name,
+                            "compensation": offer.placement.compensation_CTC,
+                            "tier": offer.placement.tier,
+                            "type": "Placement",
+                        }
+                    elif second_offer_data is None:
+                        second_offer_data = {
+                            "id": offer.placement.id,
+                            "company": offer.placement.company_name,
+                            "compensation": offer.placement.compensation_CTC,
+                            "tier": offer.placement.tier,
+                            "type": "Placement",
+                        }
+
+            data = {
+                "id": student.id,
+                "name": student.name,
+                "roll_no": student.roll_no,
+                "batch": student.batch,
+                "branch": student.branch,
+                "cpi": student.cpi,
+                "first_offer": first_offer_data['company'] if first_offer_data is not None else None,
+                "first_offer_tier": first_offer_data['tier'] if first_offer_data is not None else None,
+                "first_offer_compensation": first_offer_data['compensation'] if first_offer_data is not None else None,
+
+                "second_offer": second_offer_data['company'] if second_offer_data is not None else None,
+                "second_offer_tier": second_offer_data['tier'] if second_offer_data is not None else None,
+                "second_offer_compensation": second_offer_data['compensation'] if second_offer_data is not None else None,
+            }
+            if first_offer_data is not None:
+                tier_count[student.branch][first_offer_data['tier']] += 1
+                tier_count['Total'][first_offer_data['tier']] += 1
+                max_CTC[student.branch] = max(max_CTC[student.branch], first_offer_data['compensation'])
+                average_CTC[student.branch] += first_offer_data['compensation']
+                count[student.branch] += 1
+
+                if first_offer_data['type'] == "Placement":
+                    placement_ids[first_offer_data['company']] = first_offer_data['id']
+
+            if second_offer_data is not None:
+                tier_count[student.branch][second_offer_data['tier']] += 1
+                tier_count['Total'][second_offer_data['tier']] += 1
+                max_CTC[student.branch] = max(max_CTC[student.branch], second_offer_data['compensation'])
+                average_CTC[student.branch] += second_offer_data['compensation']
+                count[student.branch] += 1
+
+                if second_offer_data['type'] == "Placement":
+                    placement_ids[second_offer_data['company']] = second_offer_data['id']
+
+            stats.append(data)
+
+        for branch in average_CTC:
+            if count[branch] > 0:
+                average_CTC[branch] /= count[branch]
+                # round off to 2 decimal places
+                average_CTC[branch] = round(average_CTC[branch], 2)
+            else:
+                average_CTC[branch] = 0
+        return Response({'action': "Get Stats", 'message': "Stats fetched", 'stats': stats, 'placement_ids': placement_ids,
+                         "tier_count": {br: tier_count[br].values() for br in tier_count},
+                         "number_of_students_placed": number_of_students_placed,
+                         "number_of_students_with_multiple_offers": number_of_students_with_multiple_offers,
+                         "number_of_students_with_no_offers": number_of_students_with_no_offers,
+                         "max_CTC": max_CTC,
+                         "average_CTC": average_CTC,
+                         },
+                        status=status.HTTP_200_OK)
+    except:
+        logger.warning("Get Stats: " + str(sys.exc_info()))
+        print(sys.exc_info())
+        return Response({'action': "Get Stats", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)

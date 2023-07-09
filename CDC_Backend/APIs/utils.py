@@ -33,6 +33,38 @@ from .models import User, PrePlacementOffer, PlacementApplication, Placement, St
 logger = logging.getLogger('db')
 
 
+def get_token():
+    def decorator(view_func):
+        def wrapper_func(request, *args, **kwargs):
+            try:
+                authcode = request.data[AUTH_CODE]
+                data = {
+                    'code': authcode,
+                    'client_id': CLIENT_ID,
+                    'client_secret': CLIENT_SECRET,
+                    'redirect_uri': REDIRECT_URI,
+                    'grant_type': 'authorization_code'
+                }
+                r = rq.post(OAUTH2_API_ENDPOINT, data=data)
+                if r.status_code == 200:
+                    response = r.json()
+                    token = response[ID_TOKEN]
+                    refresh_token = response[REFRESH_TOKEN]
+                    request.META["HTTP_AUTHORIZATION"] = "Bearer " + token
+                    request.META["MODIFIED"] = "True"
+                    kwargs['refresh_token'] = refresh_token
+                    return view_func(request, *args, **kwargs)
+                else:
+                    return Response({'action': "Get Token", 'message': "Invalid Auth Code"},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                logger.warning("Get Token: " + str(sys.exc_info()))
+                return Response({'action': "Get Token", 'message': str(e)},
+                                status=status.HTTP_400_BAD_REQUEST)
+        return wrapper_func
+    return decorator
+
+
 def precheck(required_data=None):
     if required_data is None:
         required_data = []
@@ -84,7 +116,10 @@ def isAuthorized(allowed_users=None):
                         user.last_login_time = timezone.now()
                         user.save()
                         if len(set(user.user_type).intersection(set(allowed_users))) or allowed_users == '*':
-                            return view_func(request, user.id, user.email, user.user_type, *args, **kwargs)
+                            if "MODIFIED" in headers:
+                                return view_func(request, user.id, user.email, user.user_type, token_id, *args, **kwargs)
+                            else:
+                                return view_func(request, user.id, user.email, user.user_type, *args, **kwargs)
                         else:
                             raise PermissionError("Access Denied. You are not allowed to use this service")
                 else:
@@ -172,12 +207,17 @@ def PlacementApplicationConditions(student, placement):
         selected_companies = PlacementApplication.objects.filter(student=student, selected=True)
         selected_companies_PSU = [i for i in selected_companies if i.placement.tier == 'psu']
         PPO = PrePlacementOffer.objects.filter(student=student, accepted=True)
+        PPO_PSU = [i for i in PPO if i.tier == 'psu']
         # find length of PPO
         if len(selected_companies) + len(PPO) >= MAX_OFFERS_PER_STUDENT:
             raise PermissionError("Max Applications Reached for the Season")
 
         if len(selected_companies_PSU) > 0:
             raise PermissionError('Selected for PSU Can\'t apply anymore')
+
+        if len(PPO_PSU) > 0:
+            raise PermissionError('Selected for PSU Can\'t apply anymore')
+
         if placement.tier == 'psu':
             return True, "Conditions Satisfied"
 
@@ -186,7 +226,7 @@ def PlacementApplicationConditions(student, placement):
                 return False, "Can't apply for this tier"
 
         for i in PPO:
-            if int(i.placement.tier) < int(placement.tier):
+            if int(i.tier) < int(placement.tier):
                 return False, "Can't apply for this tier"
 
         if student.degree != 'bTech' and not placement.rs_eligible:
@@ -280,7 +320,7 @@ def opening_description_table_html(opening):
     else:  # if isinstance(opening, QueryDict):
         details = opening
     keys = list(details.keys())
-    newdetails = {}
+    newdetails = {"ID": opening.id}
     for key in keys:
         if isinstance(details[key], list):
             details[key] = {"details": details[key], "type": ["list"]}
