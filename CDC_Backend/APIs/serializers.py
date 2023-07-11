@@ -189,3 +189,10 @@ class PlacementApplicationSerializerForAdmin(serializers.ModelSerializer):
 class ContributorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contributor
+
+
+
+class AutofillSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Placement
+        fields = '__all__'
