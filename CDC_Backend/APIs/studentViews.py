@@ -261,8 +261,8 @@ def deleteApplication(request, id, email, user_type):
 
 
 @api_view(['GET'])
-@isAuthorized(allowed_users='*')
-def getContributorStats(request, id, email, user_type):
+# @isAuthorized(allowed_users='*')
+def getContributorStats(request):
     try:
         contributors = Contributor.objects.all()
         serialized_data = ContributorSerializer(contributors, many=True).data

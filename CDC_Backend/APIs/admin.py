@@ -161,3 +161,5 @@ class PrePlacementOffer(PrePlacementOfferAdmin):
 
     def Student(self, obj):
         return model_admin_url(obj.student)
+
+admin.site.register(Contributor)
