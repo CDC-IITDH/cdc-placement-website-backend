@@ -47,10 +47,10 @@ TIERS = [
 ]
 
 SEASON_CHOICES = (
-        ('summer', 'Summer'),
-        ('winter', 'Winter'),
-        ('monsoon', 'Monsoon'),
-        ('spring', 'Spring'),
+        ['summer', 'Summer'],
+        ['winter', 'Winter'],
+        ['autumn', 'Autumn'],
+        ['spring', 'Spring'],
     )
 
 DEGREE_CHOICES = [

@@ -48,6 +48,7 @@ class Internship(models.Model):
     description = models.CharField(blank=False, max_length=INF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
     interning_period_from = models.DateField(blank=False, default=None, null=True)
     interning_period_to = models.DateField(blank=False, default=None, null=True)
+    season = models.CharField(blank=False, max_length=10, choices=SEASON_CHOICES, default=None)
     is_work_from_home = models.BooleanField(blank=False, default=False)
     sophomore_eligible = models.BooleanField(blank=False, default=False)
     tentative_no_of_offers = models.IntegerField(blank=False, default=None, null=True)
