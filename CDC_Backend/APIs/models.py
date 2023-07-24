@@ -291,12 +291,12 @@ class Internship(models.Model):
     #Company Address
     address = models.CharField(blank=False, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT)
     city = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
+    city_type = models.CharField(blank=True, max_length=15, choices=OFFER_CITY_TYPE)
     state = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
     country = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
     pin_code = models.IntegerField(blank=False, default=None, null=True)
     company_type = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT)
     nature_of_business = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
-    type_of_organisation = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="", blank=False)
     #Internship Details
     is_description_pdf = models.BooleanField(blank=False, default=False)
     description_pdf_names = ArrayField(
@@ -313,6 +313,11 @@ class Internship(models.Model):
     interning_period_from = models.DateField(blank=False, default=None, null=True)
     interning_period_to = models.DateField(blank=False, default=None, null=True)
     is_work_from_home = models.BooleanField(blank=False, default=False)
+    allowed_branch = ArrayField(
+        models.CharField(choices=BRANCH_CHOICES, blank=False, max_length=10),
+        size=TOTAL_BRANCHES,
+        default=list
+    )
     sophomore_eligible = models.BooleanField(blank=False, default=False)
     rs_eligible = models.BooleanField(blank=False, default=False)
     tentative_no_of_offers = models.IntegerField(blank=False, default=None, null=True)
@@ -362,8 +367,6 @@ class Internship(models.Model):
             self.address = self.address.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
         if self.nature_of_business is not None:
             self.nature_of_business = self.nature_of_business.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
-        if self.type_of_organisation is not None:
-            self.type_of_organisation = self.type_of_organisation.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
         if self.website is not None:
             self.website = self.website.strip()[:JNF_TEXT_MAX_CHARACTER_COUNT]
         if self.contact_person_name is not None:

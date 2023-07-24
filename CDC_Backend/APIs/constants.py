@@ -45,7 +45,7 @@ DEGREE_CHOICES = [
 TOTAL_BRANCHES = 4  # Total No of Branches
 TOTAL_BATCHES = 5  # Total No of Batches
 
-CDC_MAIl_ADDRESS = 'cdc@iitdh.ac.in'
+CDC_MAIl_ADDRESS = '200010030@iitdh.ac.in'
 
 # To be Configured Properly
 CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID')  # Google Login Client ID
@@ -99,7 +99,6 @@ PLACEMENT = "Placement"
 PLACEMENT_ID = "placement_id"
 
 COMPANY_NAME = "company_name"
-ADDRESS = "address"
 COMPANY_TYPE = "company_type"
 NATURE_OF_BUSINESS = "nature_of_business"
 TYPE_OF_ORGANISATION = "type_of_organisation"
@@ -110,6 +109,7 @@ IS_COMPANY_DETAILS_PDF = "is_company_details_pdf"
 COMPANY_DETAILS_PDF_NAMES = "company_details_pdf_names"
 PHONE_NUMBER = 'phone_number'
 CONTACT_PERSON_NAME = 'contact_person_name'
+ADDRESS = "address"
 CITY = 'city'
 STATE = 'state'
 COUNTRY = 'country'
@@ -181,12 +181,42 @@ APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone N
 
 
 # Internships
+INTERNSHIP = 'Internship'
+INTERNSHIP_ID = 'internship_id'
+INF_COMPANY_NAME = 'companyname'
+INTERNSHIP_LOCATION = 'internship_location'
+SEASON = 'season'
+START_DATE = 'start_date'
+END_DATE = 'end_date'
+WORK_TYPE = 'work_type'
+SOPHOMORES_ELIIGIBLE = 'sophomores_allowed'
+NUM_OFFERS = 'num_offers'
+IS_STIPEND_DETAILS_PDF = 'is_stipend_details_pdf'
+STIPEND = 'stipend'
+FACILITIES = 'facilities'
+OTHER_FACILITIES = 'other_facilities'
+STIPEND_DETAILS_PDF = 'stipend_details_pdf'
+
+SEASONS = (
+    'Summer',
+    'Winter',
+    'Autumn',
+    'Spring',
+)
+
 SEASON_CHOICES = (
         ['summer', 'Summer'],
         ['winter', 'Winter'],
         ['autumn', 'Autumn'],
         ['spring', 'Spring'],
     )
+
+FACILITIES_CHOICES = [
+    'Accommodation',
+    'Food',
+    'Transport',
+    'Medical',
+]
 
 INF_FACILITIES_PROVIDED = [
     ['Accommodation', 'Accommodation'],
