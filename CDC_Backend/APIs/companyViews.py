@@ -304,11 +304,9 @@ def verifyEmail(request):
         return Response({'action': "Verify Email", 'message': "Opening Not Found"},
                         status=status.HTTP_404_NOT_FOUND)
     except ValueError as e:
-        print(traceback.format_exc())
         return Response({'action': "Verify Email", 'message': str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
     except:
-        print(traceback.format_exc())
         logger.warning("Verify Email: " + str(sys.exc_info()))
         return Response({'action': "Verify Email", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
@@ -354,7 +352,6 @@ def addInternship(request):
         if not verify_recaptcha(data[RECAPTCHA_VALUE]):
             raise Exception("Recaptcha Failed")
         
-        print(internship)
         internship.id = generateRandomString()
         # Add a company details in the internship
         internship.company_name = data[COMPANY_NAME]
