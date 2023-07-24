@@ -178,3 +178,23 @@ REMINDER_STUDENTS_OPENING_TEMPLATE = 'students_opening_reminder.html'
 APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'CPI',
                              'Resume', 'Selected', ]
 
+
+
+# Internships
+SEASON_CHOICES = (
+        ['summer', 'Summer'],
+        ['winter', 'Winter'],
+        ['autumn', 'Autumn'],
+        ['spring', 'Spring'],
+    )
+
+INF_FACILITIES_PROVIDED = [
+    ['Accommodation', 'Accommodation'],
+    ['Food', 'Food'],
+    ['Transport', 'Transport'],
+    ['Medical', 'Medical'],
+]
+
+INF_TOTAL_SEASONS = 4
+
+INF_TOTAL_FACILITIES = 4

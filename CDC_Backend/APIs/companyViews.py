@@ -320,3 +320,13 @@ def autoFillJnf(request):
         logger.warning("Get AutoFill: " + traceback_str)
         return Response({'action': "Get AutoFill", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+## Internships ## 
+
+
+@api_view(['POST'])
+def addInternship(request):
+    logger.info(request.data)
+    return Response({'action': "Add Internship", 'message': "Internship Added Successfully"},
+                    status=status.HTTP_200_OK)
