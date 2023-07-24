@@ -26,6 +26,15 @@ OFFER_CITY_TYPE = [
     ['International', 'International']
 ]
 
+FACILITIES_PROVIDED = [
+    ['Accommodation', 'Accommodation'],
+    ['Food', 'Food'],
+    ['Transport', 'Transport'],
+    ['Medical', 'Medical'],
+]
+
+TOTAL_FACILITIES = 4
+
 TIERS = [
     ['psu', 'PSU'],
     ['1', 'Tier 1'],
@@ -37,6 +46,13 @@ TIERS = [
     ['7', 'Tier 7'],
 ]
 
+SEASON_CHOICES = (
+        ['summer', 'Summer'],
+        ['winter', 'Winter'],
+        ['autumn', 'Autumn'],
+        ['spring', 'Spring'],
+    )
+
 DEGREE_CHOICES = [
     ['bTech', 'B.Tech'],
     ['ms/phd', 'MS/ PhD'],
@@ -45,13 +61,10 @@ DEGREE_CHOICES = [
 TOTAL_BRANCHES = 4  # Total No of Branches
 TOTAL_BATCHES = 5  # Total No of Batches
 
-CDC_MAIl_ADDRESS = '200010030@iitdh.ac.in'
+CDC_MAIl_ADDRESS = '2000'
 
 # To be Configured Properly
 CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID')  # Google Login Client ID
-CLIENT_SECRET = os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET')  # Google Login Client Secret
-REDIRECT_URI = 'postmessage'  # Google Login Redirect URI
-OAUTH2_API_ENDPOINT = 'https://oauth2.googleapis.com/token'  # Google Login OAUTH2 URL
 
 # To be Configured Properly
 PLACEMENT_OPENING_URL = "https://cdc.iitdh.ac.in/portal/student/dashboard/placements/{id}"  # On frontend, this is the URL to be opened
@@ -61,9 +74,6 @@ LINK_TO_APPLICATIONS_CSV = "https://cdc.iitdh.ac.in/storage/Application_CSV/"
 LINK_TO_EMAIl_VERIFICATION_API = "https://cdc.iitdh.ac.in/portal/company/verifyEmail?token={token}"
 PDF_FILES_SERVING_ENDPOINT = 'https://cdc.iitdh.ac.in/storage/Company_Attachments/'  # TODO: Change this to actual URL
 
-AUTH_CODE = "code"
-ID_TOKEN = "id_token"
-REFRESH_TOKEN = "refresh_token"
 EMAIL = "email"
 
 STUDENT = 'student'
@@ -76,10 +86,10 @@ FOURTH_YEAR = '2020'
 MAX_OFFERS_PER_STUDENT = 2
 MAX_RESUMES_PER_STUDENT = 3
 EMAIL_VERIFICATION_TOKEN_TTL = 48  # in hours
-JNF_TEXT_MAX_CHARACTER_COUNT = 100
-JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT = 200
-JNF_TEXTAREA_MAX_CHARACTER_COUNT = 1000
-JNF_SMALLTEXT_MAX_CHARACTER_COUNT = 50
+INF_TEXT_MAX_CHARACTER_COUNT = 100
+INF_TEXTMEDIUM_MAX_CHARACTER_COUNT = 200
+INF_TEXTAREA_MAX_CHARACTER_COUNT = 1000
+INF_SMALLTEXT_MAX_CHARACTER_COUNT = 50
 
 STORAGE_DESTINATION_RESUMES = "./Storage/Resumes/"
 STORAGE_DESTINATION_COMPANY_ATTACHMENTS = './Storage/Company_Attachments/'
@@ -96,9 +106,9 @@ FIELD = "field"
 STATUS_ACCEPTING_APPLICATIONS = "Accepting Applications"
 
 PLACEMENT = "Placement"
-PLACEMENT_ID = "placement_id"
 
 COMPANY_NAME = "company_name"
+ADDRESS = "address"
 COMPANY_TYPE = "company_type"
 NATURE_OF_BUSINESS = "nature_of_business"
 TYPE_OF_ORGANISATION = "type_of_organisation"
@@ -109,7 +119,6 @@ IS_COMPANY_DETAILS_PDF = "is_company_details_pdf"
 COMPANY_DETAILS_PDF_NAMES = "company_details_pdf_names"
 PHONE_NUMBER = 'phone_number'
 CONTACT_PERSON_NAME = 'contact_person_name'
-ADDRESS = "address"
 CITY = 'city'
 STATE = 'state'
 COUNTRY = 'country'
@@ -165,7 +174,7 @@ STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT = 'CDC - Application Submitted - 
 STUDENT_APPLICATION_UPDATED_TEMPLATE_SUBJECT = 'CDC - Application Updated - {company_name}'
 COMPANY_EMAIl_VERIFICATION_TEMPLATE_SUBJECT = 'Email Verification - Career Development Cell, IIT Dharwad'
 NOTIFY_STUDENTS_OPENING_TEMPLATE_SUBJECT = 'Placement Opportunity at {company_name}'
-REMINDER_STUDENTS_OPENING_TEMPLATE_SUBJECT = 'Reminder - Placement Opportunity at {company_name}'
+
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE = 'student_application_submitted.html'
 COMPANY_OPENING_SUBMITTED_TEMPLATE = 'company_opening_submitted.html'
 STUDENT_APPLICATION_STATUS_SELECTED_TEMPLATE = 'student_application_status_selected.html'
@@ -174,57 +183,7 @@ STUDENT_APPLICATION_UPDATED_TEMPLATE = 'student_application_updated.html'
 COMPANY_EMAIL_VERIFICATION_TEMPLATE = 'company_email_verification.html'
 COMPANY_JNF_RESPONSE_TEMPLATE = 'company_jnf_response.html'
 NOTIFY_STUDENTS_OPENING_TEMPLATE = 'notify_students_new_opening.html'
-REMINDER_STUDENTS_OPENING_TEMPLATE = 'students_opening_reminder.html'
+
 APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'CPI',
                              'Resume', 'Selected', ]
 
-
-
-# Internships
-INTERNSHIP = 'Internship'
-INTERNSHIP_ID = 'internship_id'
-INF_COMPANY_NAME = 'companyname'
-INTERNSHIP_LOCATION = 'internship_location'
-SEASON = 'season'
-START_DATE = 'start_date'
-END_DATE = 'end_date'
-WORK_TYPE = 'work_type'
-SOPHOMORES_ELIIGIBLE = 'sophomores_allowed'
-NUM_OFFERS = 'num_offers'
-IS_STIPEND_DETAILS_PDF = 'is_stipend_details_pdf'
-STIPEND = 'stipend'
-FACILITIES = 'facilities'
-OTHER_FACILITIES = 'other_facilities'
-STIPEND_DETAILS_PDF = 'stipend_details_pdf'
-
-SEASONS = (
-    'Summer',
-    'Winter',
-    'Autumn',
-    'Spring',
-)
-
-SEASON_CHOICES = (
-        ['summer', 'Summer'],
-        ['winter', 'Winter'],
-        ['autumn', 'Autumn'],
-        ['spring', 'Spring'],
-    )
-
-FACILITIES_CHOICES = [
-    'Accommodation',
-    'Food',
-    'Transport',
-    'Medical',
-]
-
-INF_FACILITIES_PROVIDED = [
-    ['Accommodation', 'Accommodation'],
-    ['Food', 'Food'],
-    ['Transport', 'Transport'],
-    ['Medical', 'Medical'],
-]
-
-INF_TOTAL_SEASONS = 4
-
-INF_TOTAL_FACILITIES = 4

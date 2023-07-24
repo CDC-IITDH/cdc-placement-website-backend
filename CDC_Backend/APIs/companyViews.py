@@ -167,7 +167,7 @@ def addPlacement(request):
         opening.selection_procedure_details = data[SELECTION_PROCEDURE_DETAILS]
         opening.is_selection_procedure_details_pdf = data[IS_SELECTION_PROCEDURE_DETAILS_PDF]
 
-        if opening.is_selection_procedure_details_pdf:
+        if opening.is_selection_procedure_details_pdf == "true":
             selection_procedure_details_pdf = []
             for file in files.getlist(SELECTION_PROCEDURE_DETAILS_PDF):
                 file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + opening.id + '/'
@@ -195,7 +195,7 @@ def addPlacement(request):
                                                                        '%d-%m-%Y').date()
 
         # Only Allowing Fourth Year for Placement
-        opening.allowed_batch = [2017, 2018, 2019, 2020, 2021]
+        opening.allowed_batch = [FOURTH_YEAR,]
         # Check if allowed_branch are valid
         if data[ALLOWED_BRANCH] is None:
             raise ValueError('Allowed Branch cannot be empty')
@@ -268,6 +268,16 @@ def verifyEmail(request):
             else:
                 send_email_to_company = False
             opening.save()
+        elif opening_type == INTERNSHIP:
+            opening = get_object_or_404(Internship, id=opening_id)
+            if email != opening.email:
+                raise ValueError("Invalid Email")
+            if not opening.email_verified:
+                opening.email_verified = True
+                send_email_to_company = True
+            else:
+                send_email_to_company = False
+            opening.save()
         else:
             raise ValueError('Invalid opening type')
 
@@ -281,7 +291,7 @@ def verifyEmail(request):
             }
             data = {
                 "designation": opening.designation,
-                "opening_type": PLACEMENT,
+                "opening_type": opening_type,
                 "company_name": opening.company_name,
             }
             sendEmail([opening.email, CDC_MAIl_ADDRESS],
@@ -294,9 +304,11 @@ def verifyEmail(request):
         return Response({'action': "Verify Email", 'message': "Opening Not Found"},
                         status=status.HTTP_404_NOT_FOUND)
     except ValueError as e:
+        print(traceback.format_exc())
         return Response({'action': "Verify Email", 'message': str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
     except:
+        print(traceback.format_exc())
         logger.warning("Verify Email: " + str(sys.exc_info()))
         return Response({'action': "Verify Email", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
@@ -320,3 +332,187 @@ def autoFillJnf(request):
         logger.warning("Get AutoFill: " + traceback_str)
         return Response({'action': "Get AutoFill", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+## Internships ## 
+
+
+@api_view(['POST'])
+@precheck([COMPANY_NAME, WEBSITE, IS_COMPANY_DETAILS_PDF, COMPANY_DETAILS, ADDRESS,
+          CITY, STATE, COUNTRY, PINCODE, COMPANY_TYPE, NATURE_OF_BUSINESS, IS_DESCRIPTION_PDF,
+          DESIGNATION, INTERNSHIP_LOCATION, DESCRIPTION, SEASON, START_DATE, END_DATE, WORK_TYPE,
+          ALLOWED_BRANCH, SOPHOMORES_ELIIGIBLE, RS_ELIGIBLE, NUM_OFFERS, IS_STIPEND_DETAILS_PDF, STIPEND,
+          FACILITIES, OTHER_FACILITIES, SELECTION_PROCEDURE_ROUNDS, SELECTION_PROCEDURE_DETAILS, IS_SELECTION_PROCEDURE_DETAILS_PDF,
+          SELECTION_PROCEDURE_DETAILS, OTHER_REQUIREMENTS,
+          CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, RECAPTCHA_VALUE])
+def addInternship(request):
+    logger.info("INF filled by " + str(request.data['email']))
+    try:
+        data = request.data
+        files = request.FILES
+        internship = Internship()
+        if not verify_recaptcha(data[RECAPTCHA_VALUE]):
+            raise Exception("Recaptcha Failed")
+        
+        print(internship)
+        internship.id = generateRandomString()
+        # Add a company details in the internship
+        internship.company_name = data[COMPANY_NAME]
+        internship.website = data[WEBSITE]
+        if data[IS_COMPANY_DETAILS_PDF] == "true":
+            internship.is_company_details_pdf = True
+        else:
+            internship.is_company_details_pdf = False
+        if internship.is_company_details_pdf:
+            company_details_pdf = []
+            for file in files.getlist(COMPANY_DETAILS_PDF):
+                file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + internship.id + '/'
+                company_details_pdf.append(saveFile(file, file_location))
+            internship.company_details_pdf_names = company_details_pdf
+
+        internship.company_details = data[COMPANY_DETAILS]
+        internship.address = data[ADDRESS]
+        internship.city = data[CITY]
+        internship.state = data[STATE]
+        internship.country = data[COUNTRY]
+        if internship.country.upper() == 'INDIA':
+            internship.city_type = 'Domestic'
+        else:
+            internship.city_type = 'International'
+        internship.pin_code = data[PINCODE]
+        internship.company_type = data[COMPANY_TYPE]
+        internship.nature_of_business = data[NATURE_OF_BUSINESS]
+
+        if data[IS_DESCRIPTION_PDF] == "true":
+            internship.is_description_pdf = True
+        else:
+            internship.is_description_pdf = False
+
+        if internship.is_description_pdf:
+            description_pdf = []
+            for file in files.getlist(DESCRIPTION_PDF):
+                file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + internship.id + '/'
+                description_pdf.append(saveFile(file, file_location))
+            internship.description_pdf_names = description_pdf
+        internship.designation = data[DESIGNATION]
+        internship.location = data[INTERNSHIP_LOCATION]
+        internship.description = data[DESCRIPTION]
+        if data[SEASON] == "":
+            raise ValueError('Season cannot be empty')
+        elif set(json.loads(data[SEASON])).issubset(SEASONS):
+            internship.season = json.loads(data[SEASON])
+        else:
+            raise ValueError('Season must be a subset of ' + str(SEASONS))
+        internship.interning_period_from = datetime.datetime.strptime(data[START_DATE], '%d-%m-%Y').date()
+        internship.interning_period_to = datetime.datetime.strptime(data[END_DATE], '%d-%m-%Y').date()
+
+        if data[WORK_TYPE] == 'Work from home':
+            internship.work_from_home = True
+        else:
+            internship.work_from_home = False
+        if data[ALLOWED_BRANCH] is None:
+            raise ValueError('Allowed Branch cannot be empty')
+        elif set(json.loads(data[ALLOWED_BRANCH])).issubset(BRANCHES):
+            internship.allowed_branch = json.loads(data[ALLOWED_BRANCH])
+        else:
+            raise ValueError('Allowed Branch must be a subset of ' + str(BRANCHES))
+
+        if data[SOPHOMORES_ELIIGIBLE] == 'Yes':
+            internship.sophomores_eligible = True
+        else:
+            internship.sophomores_eligible = False
+        if data[RS_ELIGIBLE] == 'Yes':
+            internship.rs_eligible = True
+        else:
+            internship.rs_eligible = False
+        if data[NUM_OFFERS].isdigit():
+            internship.num_offers = int(data[NUM_OFFERS])
+        else:
+            raise ValueError('Number of offers must be an integer')
+        
+        if data[IS_STIPEND_DETAILS_PDF] == "true":
+            internship.is_stipend_details_pdf = True
+        else:
+            internship.is_stipend_details_pdf = False
+            
+        if internship.is_stipend_details_pdf:
+            stipend_details_pdf = []
+            for file in files.getlist(STIPEND_DETAILS_PDF):
+                file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + internship.id + '/'
+                stipend_details_pdf.append(saveFile(file, file_location))
+            internship.stipend_description_pdf_names = stipend_details_pdf
+
+        if data[STIPEND].isdigit():
+            internship.stipend = int(data[STIPEND])
+        else:
+            raise ValueError('Stipend must be an integer')
+
+        if data[FACILITIES] != "":
+            if set(json.loads(data[FACILITIES])).issubset(FACILITIES_CHOICES):
+                internship.facilities = json.loads(data[FACILITIES])
+            else:
+                raise ValueError('Facilities must be a subset of ' + str(FACILITIES_CHOICES))
+        else:
+            internship.facilities = []
+        internship.other_facilities = data[OTHER_FACILITIES]
+
+        if data[SELECTION_PROCEDURE_ROUNDS] is None:
+            raise ValueError('Selection Procedure Rounds cannot be empty')
+        else:
+            try:
+                internship.selection_procedure_rounds = json.loads(data[SELECTION_PROCEDURE_ROUNDS])
+            except:
+                raise ValueError('Selection Procedure Rounds must be a list')
+        
+        internship.selection_procedure_details = data[SELECTION_PROCEDURE_DETAILS]
+        if data[IS_SELECTION_PROCEDURE_DETAILS_PDF] == "true":
+            internship.is_selection_procedure_details_pdf = True
+        else:
+            internship.is_selection_procedure_details_pdf = False
+
+        if internship.is_selection_procedure_details_pdf:
+            selection_procedure_details_pdf = []
+            for file in files.getlist(SELECTION_PROCEDURE_DETAILS_PDF):
+                file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + internship.id + '/'
+                selection_procedure_details_pdf.append(saveFile(file, file_location))
+            internship.selection_procedure_details_pdf_names = selection_procedure_details_pdf
+        internship.other_requirements = data[OTHER_REQUIREMENTS]
+
+
+        internship.contact_person_name = data[CONTACT_PERSON_NAME]
+        internship.phone_number = data[PHONE_NUMBER]
+        internship.email = data[EMAIL]
+        internship.save()
+
+        stat, link = generateOneTimeVerificationLink(internship.email, internship.id, "Internship")
+        if not stat:
+            raise RuntimeError("Error in generating one time verification link for internship")
+        data = {
+            "designation": internship.designation,
+            "one_time_link": link
+        }
+    
+        sendEmail(internship.email, COMPANY_EMAIl_VERIFICATION_TEMPLATE_SUBJECT, data,
+                    COMPANY_EMAIL_VERIFICATION_TEMPLATE)
+        
+        return Response({'action': "Add Internship", 'message': "Internship Added Successfully"},
+                        status=status.HTTP_200_OK)
+    except ValueError as e:
+        store_all_files(request)
+        # exception_email(data)
+        logger.info("ValueError in addInternship: " + str(e))
+        return Response({'action': "Add Internship", 'message': str(e)},
+                        status=status.HTTP_400_BAD_REQUEST)
+    except:
+        store_all_files(request)
+        print(traceback.format_exc())
+        # exception_email(data)
+        logger.warning("Add New Internship: " + str(sys.exc_info()))
+        return Response({'action': "Add Internship", 'message': "Something went wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+

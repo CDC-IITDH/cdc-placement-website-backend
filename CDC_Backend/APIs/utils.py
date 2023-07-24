@@ -28,7 +28,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from .constants import *
-from .models import User, PrePlacementOffer, PlacementApplication, Placement, Student
+from .models import User, PrePlacementOffer, PlacementApplication, Placement, Student, Internship
 
 logger = logging.getLogger('db')
 
@@ -81,15 +81,18 @@ def precheck(required_data=None):
                         request_data = request.POST
                 if len(request_data):
                     for i in required_data:
+                        # print(i)
                         if i not in request_data:
                             return Response({'action': "Pre check", 'message': str(i) + " Not Found"},
                                             status=status.HTTP_400_BAD_REQUEST)
                 else:
                     return Response({'action': "Pre check", 'message': "Message Data not Found"},
                                     status=status.HTTP_400_BAD_REQUEST)
-
+                # print("Pre check: " + str(request_data))
                 return view_func(request, *args, **kwargs)
             except:
+                # print what exception is
+                print(traceback.format_exc())
                 logger.warning("Pre check: " + str(sys.exc_info()))
                 return Response({'action': "Pre check", 'message': "Something went wrong"},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -315,6 +318,9 @@ def opening_description_table_html(opening):
     # check typing of opening
     if isinstance(opening, Placement):
         details = model_to_dict(opening, fields=[field.name for field in Placement._meta.fields],
+                                exclude=EXCLUDE_IN_PDF)
+    elif isinstance(opening, Internship):
+        details = model_to_dict(opening, fields=[field.name for field in Internship._meta.fields],
                                 exclude=EXCLUDE_IN_PDF)
     # check typing of opening is query dict
     else:  # if isinstance(opening, QueryDict):

@@ -144,7 +144,7 @@ class Placement(models.Model):
     deadline_datetime = models.DateTimeField(blank=False, verbose_name="Deadline Date", default=two_day_after_today)
     created_at = models.DateTimeField(blank=False, default=None, null=True)
     updated_at = models.DateTimeField(blank=False, default=None, null=True)
-    changed_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    changed_by = models.ForeignKey(User, on_delete=models.RESTRICT, blank=True, null=True)
     history = HistoricalRecords(user_model=User)
 
     def format(self):
@@ -221,6 +221,7 @@ class PlacementApplication(models.Model):
     resume = models.CharField(max_length=JNF_TEXT_MAX_CHARACTER_COUNT, blank=False, null=True, default=None)
     additional_info = models.JSONField(blank=True, null=True, default=None)
     selected = models.BooleanField(null=True, default=None, blank=True)
+    offer_accepted = models.BooleanField(null=True, default=None, blank=True) # True if offer accepted, False if rejected, None if not yet decided
     applied_at = models.DateTimeField(blank=False, default=None, null=True)
     updated_at = models.DateTimeField(blank=False, default=None, null=True)
     changed_by = models.ForeignKey(User, blank=False, on_delete=models.RESTRICT, default=None, null=True)
@@ -276,6 +277,140 @@ class PrePlacementOffer(models.Model):
             self.changed_by = value
         else:
             self.changed_by = None
+
+class Internship(models.Model):
+    id = models.CharField(blank=False, primary_key=True, max_length=15) #unique id for each internship
+    # Company Details
+    company_name = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT)
+    website = models.CharField(blank=True, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
+    is_company_details_pdf = models.BooleanField(blank=False, default=False)
+    company_details_pdf_names = ArrayField(
+        models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=5,
+        default=list, blank=True)
+    company_details = models.CharField(max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True, blank=True)
+    #Company Address
+    address = models.CharField(blank=False, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT)
+    city = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
+    city_type = models.CharField(blank=True, max_length=15, choices=OFFER_CITY_TYPE)
+    state = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
+    country = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
+    pin_code = models.IntegerField(blank=False, default=None, null=True)
+    company_type = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT)
+    nature_of_business = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
+    #Internship Details
+    is_description_pdf = models.BooleanField(blank=False, default=False)
+    description_pdf_names = ArrayField(
+        models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=5, default=list,
+        blank=True)
+    designation = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT, default="")
+    description = models.CharField(blank=False, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
+    location = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
+    season = ArrayField(
+        models.CharField(choices=SEASON_CHOICES, max_length=10, blank=False),
+        size=INF_TOTAL_SEASONS,
+        default=list
+    )
+    interning_period_from = models.DateField(blank=False, default=None, null=True)
+    interning_period_to = models.DateField(blank=False, default=None, null=True)
+    is_work_from_home = models.BooleanField(blank=False, default=False)
+    allowed_branch = ArrayField(
+        models.CharField(choices=BRANCH_CHOICES, blank=False, max_length=10),
+        size=TOTAL_BRANCHES,
+        default=list
+    )
+    sophomore_eligible = models.BooleanField(blank=False, default=False)
+    rs_eligible = models.BooleanField(blank=False, default=False)
+    tentative_no_of_offers = models.IntegerField(blank=False, default=None, null=True)
+    is_stipend_description_pdf = models.BooleanField(blank=False, default=False)
+    stipend_description_pdf_names=ArrayField(
+        models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=5, default=list,
+        blank=True)
+    stipend=models.IntegerField(blank=False, default=None, null=True)
+    facilities_provided=ArrayField(
+        models.CharField(choices=INF_FACILITIES_PROVIDED, blank=False, max_length=20),
+        size=INF_TOTAL_FACILITIES,
+        default=list
+    )
+    additional_facilities = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
+    academic_requirements = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
+    # selection process
+    selection_procedure_rounds = ArrayField(
+        models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=10,
+        default=list, blank=True)
+    selection_procedure_details = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT)
+    selection_procedure_details_pdf_names = ArrayField(
+        models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT),
+        size=5, default=list, blank=True)
+    is_selection_procedure_details_pdf = models.BooleanField(blank=False, default=False)
+    #contact details of company person
+    contact_person_name = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
+    phone_number = models.PositiveBigIntegerField(blank=False)
+    email = models.EmailField(blank=False)
+    contact_person_designation = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
+    telephone_number = models.PositiveBigIntegerField(blank=True, default=None, null=True)
+    email_verified = models.BooleanField(blank=False, default=False)
+    #history
+    created_at = models.DateTimeField(blank=False, default=None, null=True)
+    updated_at = models.DateTimeField(blank=False, default=None, null=True)
+    changed_by = models.ForeignKey(User, on_delete=models.RESTRICT, blank=True, null=True)
+    history = HistoricalRecords(user_model=User)
+
+    
+    def format(self):
+        if self.company_name is not None:
+            self.company_name = self.company_name.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        if self.company_type is not None:
+            self.company_type = self.company_type.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        if self.company_details is not None:
+            self.company_details = self.company_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.address is not None:
+            self.address = self.address.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.nature_of_business is not None:
+            self.nature_of_business = self.nature_of_business.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.website is not None:
+            self.website = self.website.strip()[:JNF_TEXT_MAX_CHARACTER_COUNT]
+        if self.contact_person_name is not None:
+            self.contact_person_name = self.contact_person_name.strip()[:JNF_TEXT_MAX_CHARACTER_COUNT]
+        if self.city is not None:
+            self.city = self.city.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        if self.state is not None:
+            self.state = self.state.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        if self.country is not None:
+            self.country = self.country.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        if self.city_type is not None:
+            self.city_type = self.city_type.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        if self.selection_procedure_details is not None:
+            self.selection_procedure_details = self.selection_procedure_details.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.description is not None:
+            self.description = self.description.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.additional_facilities is not None:
+            self.additional_facilities = self.additional_facilities.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.academic_requirements is not None:
+            self.academic_requirements = self.academic_requirements.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.contact_person_designation is not None:
+            self.contact_person_designation = self.contact_person_designation.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        if isinstance(value, User):
+            self.changed_by = value
+        else:
+            self.changed_by = None
+            
+    def save(self, *args, **kwargs):
+        ''' On save, add timestamps '''
+        if not self.created_at:
+            self.created_at = timezone.now()
+        self.format()
+        self.updated_at = timezone.now()
+        return super(Internship, self).save(*args, **kwargs)
+    
+    def __str__(self):
+        return self.company_name + " - " + self.id
 
 
 class Contributor(models.Model):
