@@ -153,10 +153,11 @@ STUDENT_SELECTED = "student_selected"
 
 EXCLUDE_IN_PDF = ['id', 'is_company_details_pdf', 'offer_accepted', 'is_description_pdf',
                   'is_compensation_details_pdf', 'is_selection_procedure_details_pdf',
-                  'email_verified', 'created_at']
+                  'email_verified', 'created_at', 'changed_by', 'is_stipend_description_pdf']
 SPECIAL_FORMAT_IN_PDF = ['website', 'company_details_pdf_names', 'description_pdf_names',
                          'compensation_details_pdf_names',
-                         'selection_procedure_details_pdf_names']
+                         'selection_procedure_details_pdf_names',
+                         'stipend_description_pdf_names']
 
 COMPANY_OPENING_ERROR_TEMPLATE = "Alert! Error submitting opening for {company_name}."
 COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT = "Notification Submitted - {id} - Career Development Cell, IIT Dharwad"
@@ -205,10 +206,10 @@ SEASONS = (
 )
 
 SEASON_CHOICES = (
-        ['summer', 'Summer'],
-        ['winter', 'Winter'],
-        ['autumn', 'Autumn'],
-        ['spring', 'Spring'],
+        ['Summer', 'Summer'],
+        ['Winter', 'Winter'],
+        ['Autumn', 'Autumn'],
+        ['Spring', 'Spring'],
     )
 
 FACILITIES_CHOICES = [
