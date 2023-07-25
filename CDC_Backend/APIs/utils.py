@@ -316,10 +316,13 @@ def verify_recaptcha(request):
 
 def opening_description_table_html(opening):
     # check typing of opening
+    type = ""
     if isinstance(opening, Placement):
+        type = "Job"
         details = model_to_dict(opening, fields=[field.name for field in Placement._meta.fields],
                                 exclude=EXCLUDE_IN_PDF)
     elif isinstance(opening, Internship):
+        type = "Internship"
         details = model_to_dict(opening, fields=[field.name for field in Internship._meta.fields],
                                 exclude=EXCLUDE_IN_PDF)
     # check typing of opening is query dict
@@ -344,7 +347,8 @@ def opening_description_table_html(opening):
     imagepath = os.path.abspath('./templates/image.png')
     data = {
         "data": newdetails,
-        "imgpath": imagepath
+        "imgpath": imagepath,
+        "type": type
     }
     return render_to_string(COMPANY_JNF_RESPONSE_TEMPLATE, data)
 
