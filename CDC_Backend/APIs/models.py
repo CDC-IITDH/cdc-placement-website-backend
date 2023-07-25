@@ -346,8 +346,8 @@ class Internship(models.Model):
     contact_person_name = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
     phone_number = models.PositiveBigIntegerField(blank=False)
     email = models.EmailField(blank=False)
-    contact_person_designation = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
-    telephone_number = models.PositiveBigIntegerField(blank=True, default=None, null=True)
+    # contact_person_designation = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
+    # telephone_number = models.PositiveBigIntegerField(blank=True, default=None, null=True)
     email_verified = models.BooleanField(blank=False, default=False)
     #history
     created_at = models.DateTimeField(blank=False, default=None, null=True)
@@ -387,8 +387,8 @@ class Internship(models.Model):
             self.additional_facilities = self.additional_facilities.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
         if self.academic_requirements is not None:
             self.academic_requirements = self.academic_requirements.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
-        if self.contact_person_designation is not None:
-            self.contact_person_designation = self.contact_person_designation.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
+        # if self.contact_person_designation is not None:
+        #     self.contact_person_designation = self.contact_person_designation.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
         
     @property
     def _history_user(self):
