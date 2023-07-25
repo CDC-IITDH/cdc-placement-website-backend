@@ -45,7 +45,7 @@ DEGREE_CHOICES = [
 TOTAL_BRANCHES = 4  # Total No of Branches
 TOTAL_BATCHES = 5  # Total No of Batches
 
-CDC_MAIl_ADDRESS = '200010030@iitdh.ac.in'
+CDC_MAIl_ADDRESS = 'cdc@iitdh.ac.in'
 
 # To be Configured Properly
 CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID')  # Google Login Client ID

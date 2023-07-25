@@ -386,7 +386,7 @@ def send_opening_notifications(placement_id):
                                 "opening_type": 'Placement',
                                 "designation": placement.designation,
                                 "deadline": deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
-                                "link": PLACEMENT_OPENING_URL.format(id=placement.id)
+                                "link": PLACEMENT_OPENING_URL.format(id=placement.designation)
                             }
                             sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
                         except Http404:
