@@ -195,7 +195,7 @@ IS_STIPEND_DETAILS_PDF = 'is_stipend_details_pdf'
 STIPEND = 'stipend'
 FACILITIES = 'facilities'
 OTHER_FACILITIES = 'other_facilities'
-STIPEND_DETAILS_PDF = 'stipend_details_pdf'
+STIPEND_DETAILS_PDF = 'compensation_details_pdf'
 
 SEASONS = (
     'Summer',

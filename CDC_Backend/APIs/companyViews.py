@@ -404,9 +404,9 @@ def addInternship(request):
         internship.interning_period_to = datetime.datetime.strptime(data[END_DATE], '%d-%m-%Y').date()
 
         if data[WORK_TYPE] == 'Work from home':
-            internship.work_from_home = True
+            internship.is_work_from_home = True
         else:
-            internship.work_from_home = False
+            internship.is_work_from_home = False
         if data[ALLOWED_BRANCH] is None:
             raise ValueError('Allowed Branch cannot be empty')
         elif set(json.loads(data[ALLOWED_BRANCH])).issubset(BRANCHES):
@@ -415,24 +415,24 @@ def addInternship(request):
             raise ValueError('Allowed Branch must be a subset of ' + str(BRANCHES))
 
         if data[SOPHOMORES_ELIIGIBLE] == 'Yes':
-            internship.sophomores_eligible = True
+            internship.sophomore_eligible = True
         else:
-            internship.sophomores_eligible = False
+            internship.sophomore_eligible = False
         if data[RS_ELIGIBLE] == 'Yes':
             internship.rs_eligible = True
         else:
             internship.rs_eligible = False
         if data[NUM_OFFERS].isdigit():
-            internship.num_offers = int(data[NUM_OFFERS])
+            internship.tentative_no_of_offers = int(data[NUM_OFFERS])
         else:
             raise ValueError('Number of offers must be an integer')
         
         if data[IS_STIPEND_DETAILS_PDF] == "true":
-            internship.is_stipend_details_pdf = True
+            internship.is_stipend_description_pdf = True
         else:
-            internship.is_stipend_details_pdf = False
+            internship.is_stipend_description_pdf = False
             
-        if internship.is_stipend_details_pdf:
+        if internship.is_stipend_description_pdf:
             stipend_details_pdf = []
             for file in files.getlist(STIPEND_DETAILS_PDF):
                 file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + internship.id + '/'
@@ -446,7 +446,7 @@ def addInternship(request):
 
         if data[FACILITIES] != "":
             if set(json.loads(data[FACILITIES])).issubset(FACILITIES_CHOICES):
-                internship.facilities = json.loads(data[FACILITIES])
+                internship.facilities_provided = json.loads(data[FACILITIES])
             else:
                 raise ValueError('Facilities must be a subset of ' + str(FACILITIES_CHOICES))
         else:
@@ -462,6 +462,7 @@ def addInternship(request):
                 raise ValueError('Selection Procedure Rounds must be a list')
         
         internship.selection_procedure_details = data[SELECTION_PROCEDURE_DETAILS]
+
         if data[IS_SELECTION_PROCEDURE_DETAILS_PDF] == "true":
             internship.is_selection_procedure_details_pdf = True
         else:
@@ -473,7 +474,9 @@ def addInternship(request):
                 file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + internship.id + '/'
                 selection_procedure_details_pdf.append(saveFile(file, file_location))
             internship.selection_procedure_details_pdf_names = selection_procedure_details_pdf
-        internship.other_requirements = data[OTHER_REQUIREMENTS]
+        
+        internship.additional_facilities = data[OTHER_FACILITIES]
+        internship.academic_requirements = data[OTHER_REQUIREMENTS]
 
 
         internship.contact_person_name = data[CONTACT_PERSON_NAME]
@@ -497,7 +500,7 @@ def addInternship(request):
     except ValueError as e:
         store_all_files(request)
         # exception_email(data)
-        logger.info("ValueError in addInternship: " + str(e))
+        logger.warning("ValueError in addInternship: " + str(e))
         return Response({'action': "Add Internship", 'message': str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
     except:
