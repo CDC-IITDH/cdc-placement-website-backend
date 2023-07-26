@@ -233,13 +233,15 @@ def addPlacement(request):
     except ValueError as e:
         store_all_files(request)
         exception_email(data)
-        logger.info("ValueError in addPlacement: " + str(e))
+        logger.warning("ValueError in addPlacement: " + str(e))
+        logger.warning(traceback.format_exc())
         return Response({'action': "Add Placement", 'message': str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
     except:
         store_all_files(request)
         exception_email(data)
         logger.warning("Add New Placement: " + str(sys.exc_info()))
+        logger.warning(traceback.format_exc())
         return Response({'action': "Add Placement", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -407,7 +409,7 @@ def addInternship(request):
             internship.is_work_from_home = True
         else:
             internship.is_work_from_home = False
-        if data[ALLOWED_BRANCH] is None:
+        if data[ALLOWED_BRANCH] is None or json.loads(data[ALLOWED_BRANCH]) == "":
             raise ValueError('Allowed Branch cannot be empty')
         elif set(json.loads(data[ALLOWED_BRANCH])).issubset(BRANCHES):
             internship.allowed_branch = json.loads(data[ALLOWED_BRANCH])
@@ -443,14 +445,16 @@ def addInternship(request):
             internship.stipend = int(data[STIPEND])
         else:
             raise ValueError('Stipend must be an integer')
-
-        if data[FACILITIES] != "":
-            if set(json.loads(data[FACILITIES])).issubset(FACILITIES_CHOICES):
+        if data[FACILITIES] != "" :
+            if json.loads(data[FACILITIES]) == "":
+                internship.facilities_provided = []
+            elif set(json.loads(data[FACILITIES])).issubset(FACILITIES_CHOICES):
                 internship.facilities_provided = json.loads(data[FACILITIES])
             else:
                 raise ValueError('Facilities must be a subset of ' + str(FACILITIES_CHOICES))
         else:
-            internship.facilities = []
+            internship.facilities_provided = []
+
         internship.other_facilities = data[OTHER_FACILITIES]
 
         if data[SELECTION_PROCEDURE_ROUNDS] is None:
@@ -501,18 +505,13 @@ def addInternship(request):
         store_all_files(request)
         # exception_email(data)
         logger.warning("ValueError in addInternship: " + str(e))
+        logger.warning(traceback.format_exc())
         return Response({'action': "Add Internship", 'message': str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
     except:
         store_all_files(request)
-        print(traceback.format_exc())
         # exception_email(data)
         logger.warning("Add New Internship: " + str(sys.exc_info()))
+        logger.warning(traceback.format_exc())
         return Response({'action': "Add Internship", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
-
