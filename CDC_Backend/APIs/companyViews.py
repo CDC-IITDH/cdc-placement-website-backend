@@ -285,20 +285,7 @@ def verifyEmail(request):
 
         if send_email_to_company:
             # Email sending part.
-            pdfhtml = opening_description_table_html(opening)
-            name = opening.company_name + '_jnf_response.pdf'
-            attachment_jnf_respone = {
-                "name": name,
-                "html": pdfhtml,
-            }
-            data = {
-                "designation": opening.designation,
-                "opening_type": opening_type,
-                "company_name": opening.company_name,
-            }
-            sendEmail([opening.email, CDC_MAIl_ADDRESS],
-                      COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
-                      COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
+            send_email_for_opening(opening)
 
         return Response({'action': "Verify Email", 'message': "Email Verified Successfully"},
                         status=status.HTTP_200_OK)

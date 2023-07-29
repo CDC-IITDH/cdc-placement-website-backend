@@ -9,6 +9,7 @@ from import_export.admin import ImportExportMixin, ExportMixin
 from import_export import resources
 
 from .models import *
+from .utils import send_email_for_opening
 
 
 class ArrayFieldListFilter(admin.SimpleListFilter):
@@ -109,10 +110,20 @@ class PlacementResources(resources.ModelResource):
 class AdminAdmin(ExportMixin, SimpleHistoryAdmin):
     resource_class = PlacementResources
 
+    def save_model(self, request, obj, form, change):
+        # Check if email_verified field is being changed from False to True
+        if change and not obj._state.adding and obj.email_verified and form.initial.get('email_verified', False) != obj.email_verified:
+            # Run the send_email_for_opening function
+            send_email_for_opening(obj)
+
+        # Save the model as usual
+        super().save_model(request, obj, form, change)
+
+
 
 @admin.register(Placement)
 class Placement(AdminAdmin):
-    list_display = (COMPANY_NAME, CONTACT_PERSON_NAME, PHONE_NUMBER, 'tier', 'compensation_CTC')
+    list_display = (COMPANY_NAME, CONTACT_PERSON_NAME, PHONE_NUMBER, 'tier', 'compensation_CTC', 'email_verified')
     search_fields = (COMPANY_NAME, CONTACT_PERSON_NAME)
     ordering = (COMPANY_NAME, CONTACT_PERSON_NAME, 'tier', 'compensation_CTC')
     list_filter = ('tier',)
