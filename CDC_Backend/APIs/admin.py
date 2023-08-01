@@ -173,4 +173,31 @@ class PrePlacementOffer(PrePlacementOfferAdmin):
     def Student(self, obj):
         return model_admin_url(obj.student)
 
-admin.site.register(Internship)
+
+class InternshipResources(resources.ModelResource):
+    class Meta:
+        model = Internship
+        exclude = ('id', 'changed_by', 'is_company_details_pdf', 'is_description_pdf',
+                   'is_compensation_details_pdf', 'is_selection_procedure_details_pdf')
+
+
+class InternAdmin(ExportMixin, SimpleHistoryAdmin):
+    resource_class = InternshipResources
+
+    def save_model(self, request, obj, form, change):
+        # Check if email_verified field is being changed from False to True
+        if change and not obj._state.adding and obj.email_verified and form.initial.get('email_verified', False) != obj.email_verified:
+            # Run the send_email_for_opening function
+            send_email_for_opening(obj)
+
+        # Save the model as usual
+        super().save_model(request, obj, form, change)
+
+
+
+@admin.register(Internship)
+class Placement(InternAdmin):
+    list_display = (COMPANY_NAME, CONTACT_PERSON_NAME, PHONE_NUMBER, 'stipend', 'email_verified')
+    search_fields = (COMPANY_NAME, CONTACT_PERSON_NAME)
+    ordering = (COMPANY_NAME, CONTACT_PERSON_NAME, 'stipend', )
+
