@@ -1,5 +1,7 @@
 import os
 
+DEBUG = os.environ.get('DEBUG')
+
 BRANCH_CHOICES = [
     ["CSE", "CSE"],
     ["EE", "EE"],

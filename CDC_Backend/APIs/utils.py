@@ -459,8 +459,12 @@ def send_email_for_opening(opening):
             "company_name": opening.company_name,
         }
 
+        if DEBUG:
+            emails = [opening.email]
+        else:
+            emails = [opening.email, CDC_MAIl_ADDRESS]
         # Send the email
-        sendEmail([opening.email, CDC_MAIl_ADDRESS],
+        sendEmail(emails,
                   COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
                   COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
 
