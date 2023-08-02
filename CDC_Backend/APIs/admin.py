@@ -184,15 +184,13 @@ class InternshipResources(resources.ModelResource):
 class InternAdmin(ExportMixin, SimpleHistoryAdmin):
     resource_class = InternshipResources
 
-    # def save_model(self, request, obj, form, change):
-    #     # Check if email_verified field is being changed from False to True
-    #     if change and not obj._state.adding and obj.email_verified and form.initial.get('email_verified', False) != obj.email_verified:
-    #         # Run the send_email_for_opening function
-    #         send_email_for_opening(obj)
-    #
-    #     # Save the model as usual
-    #     super().save_model(request, obj, form, change)
+    def save_model(self, request, obj, form, change):
+        # Check if email_verified field is being changed from False to True
+        if change and not obj._state.adding and obj.email_verified and form.initial.get('email_verified', False) != obj.email_verified:
+            # Run the send_email_for_opening function
+            send_email_for_opening(obj)
 
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Internship)
