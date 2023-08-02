@@ -221,7 +221,8 @@ def addPlacement(request):
             raise RuntimeError("Error in generating one time verification link for placement")
         data = {
             "designation": opening.designation,
-            "one_time_link": link
+            "one_time_link": link,
+            "opening_type": "Job"
         }
 
         sendEmail(opening.email, COMPANY_EMAIl_VERIFICATION_TEMPLATE_SUBJECT, data,
@@ -480,7 +481,8 @@ def addInternship(request):
             raise RuntimeError("Error in generating one time verification link for internship")
         data = {
             "designation": internship.designation,
-            "one_time_link": link
+            "one_time_link": link,
+            "opening_type": "Internship"
         }
     
         sendEmail(internship.email, COMPANY_EMAIl_VERIFICATION_TEMPLATE_SUBJECT, data,

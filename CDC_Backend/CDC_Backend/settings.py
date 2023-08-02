@@ -157,10 +157,14 @@ CORS_ORIGIN_WHITELIST = [
 CORS_REPLACE_HTTPS_REFERER = True
 CSRF_TRUSTED_ORIGINS = [ "https://cdc.iitdh.ac.in", "http://cdc.iitdh.ac.in"]
 
-# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = './emails'
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = ''
+if DEBUG:
+    # file based email backend for development
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = './test-emails'
+else:
+    # SMTP backend for production
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587

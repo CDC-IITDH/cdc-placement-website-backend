@@ -465,7 +465,7 @@ def send_email_for_opening(opening):
             emails = [opening.email, CDC_MAIl_ADDRESS]
         # Send the email
         sendEmail(emails,
-                  COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.id), data,
+                  COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.designation, company=opening.company_name), data,
                   COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
 
     except Exception as e:

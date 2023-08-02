@@ -162,7 +162,7 @@ SPECIAL_FORMAT_IN_PDF = ['website', 'company_details_pdf_names', 'description_pd
                          'stipend_description_pdf_names']
 
 COMPANY_OPENING_ERROR_TEMPLATE = "Alert! Error submitting opening for {company_name}."
-COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT = "Notification Submitted - {id} - Career Development Cell, IIT Dharwad"
+COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT = "Notification Submitted - {id}, {company} - Career Development Cell, IIT Dharwad"
 STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT = 'Application Status - {company_name} - {id}'
 STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT = 'CDC - Application Submitted - {company_name}'
 STUDENT_APPLICATION_UPDATED_TEMPLATE_SUBJECT = 'CDC - Application Updated - {company_name}'
