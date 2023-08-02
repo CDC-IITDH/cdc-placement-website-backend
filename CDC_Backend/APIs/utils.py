@@ -61,7 +61,9 @@ def get_token():
                 logger.warning("Get Token: " + str(sys.exc_info()))
                 return Response({'action': "Get Token", 'message': str(e)},
                                 status=status.HTTP_400_BAD_REQUEST)
+
         return wrapper_func
+
     return decorator
 
 
@@ -120,7 +122,8 @@ def isAuthorized(allowed_users=None):
                         user.save()
                         if len(set(user.user_type).intersection(set(allowed_users))) or allowed_users == '*':
                             if "MODIFIED" in headers:
-                                return view_func(request, user.id, user.email, user.user_type, token_id, *args, **kwargs)
+                                return view_func(request, user.id, user.email, user.user_type, token_id, *args,
+                                                 **kwargs)
                             else:
                                 return view_func(request, user.id, user.email, user.user_type, *args, **kwargs)
                         else:
@@ -438,3 +441,35 @@ def store_all_files(request):
         for file in files.getlist(DESCRIPTION_PDF):
             file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + "temp" + '/'
             saveFile(file, file_location)
+
+
+def send_email_for_opening(opening):
+    try:
+
+        # Prepare email data and attachment
+        pdfhtml = opening_description_table_html(opening)
+        name = opening.company_name + '_jnf_response.pdf'
+        attachment_jnf_respone = {
+            "name": name,
+            "html": pdfhtml,
+        }
+        data = {
+            "designation": opening.designation,
+            "opening_type": "INTERNSHIP" if isinstance(opening, Internship) else "PLACEMENT",
+            "company_name": opening.company_name,
+        }
+
+        if DEBUG:
+            emails = [opening.email]
+        else:
+            emails = [opening.email, CDC_MAIl_ADDRESS]
+        # Send the email
+        sendEmail(emails,
+                  COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.designation, company=opening.company_name), data,
+                  COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
+
+    except Exception as e:
+        # Handle the exception here (e.g., log the error, send an error email, etc.)
+        print("An error occurred while sending the email:", e)
+
+
