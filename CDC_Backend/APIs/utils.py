@@ -416,7 +416,7 @@ def exception_email(opening):
         "html": pdfhtml,
     }
 
-    sendEmail(CDC_MAIl_ADDRESS, COMPANY_OPENING_ERROR_TEMPLATE.format(company_name=opening["company_name"]), data,
+    sendEmail("cdc@iitdh.ac.in", COMPANY_OPENING_ERROR_TEMPLATE.format(company_name=opening["company_name"]), data,
               COMPANY_OPENING_SUBMITTED_TEMPLATE, attachment_jnf_respone)
 
 
@@ -448,7 +448,10 @@ def send_email_for_opening(opening):
 
         # Prepare email data and attachment
         pdfhtml = opening_description_table_html(opening)
-        name = opening.company_name + '_jnf_response.pdf'
+        if isinstance(opening, Placement):
+            name = opening.company_name + '_jnf_response.pdf'
+        elif isinstance(opening, Internship):
+            name = opening.company_name + '_inf_response.pdf'
         attachment_jnf_respone = {
             "name": name,
             "html": pdfhtml,
@@ -459,10 +462,7 @@ def send_email_for_opening(opening):
             "company_name": opening.company_name,
         }
 
-        if DEBUG:
-            emails = [opening.email]
-        else:
-            emails = [opening.email, CDC_MAIl_ADDRESS]
+        emails = [opening.email] + CDC_REPS_EMAILS
         # Send the email
         sendEmail(emails,
                   COMPANY_OPENING_SUBMITTED_TEMPLATE_SUBJECT.format(id=opening.designation, company=opening.company_name), data,
