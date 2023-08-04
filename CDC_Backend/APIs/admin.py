@@ -123,7 +123,7 @@ class AdminAdmin(ExportMixin, SimpleHistoryAdmin):
 
 @admin.register(Placement)
 class Placement(AdminAdmin):
-    list_display = (COMPANY_NAME, CONTACT_PERSON_NAME, PHONE_NUMBER, 'tier', 'compensation_CTC', 'email_verified', 'updated_at')
+    list_display = (COMPANY_NAME, DESIGNATION , CONTACT_PERSON_NAME, PHONE_NUMBER, 'tier', 'compensation_CTC', 'email_verified', 'updated_at')
     search_fields = (COMPANY_NAME, CONTACT_PERSON_NAME)
     ordering = ('updated_at', COMPANY_NAME, CONTACT_PERSON_NAME, 'tier', 'compensation_CTC')
     list_filter = ('tier',)
@@ -195,7 +195,7 @@ class InternAdmin(ExportMixin, SimpleHistoryAdmin):
 
 @admin.register(Internship)
 class Placement(InternAdmin):
-    list_display = (COMPANY_NAME, CONTACT_PERSON_NAME, PHONE_NUMBER, 'stipend', 'email_verified', 'updated_at')
+    list_display = (COMPANY_NAME, DESIGNATION, CONTACT_PERSON_NAME, PHONE_NUMBER, 'stipend', 'email_verified', 'updated_at')
     search_fields = (COMPANY_NAME, CONTACT_PERSON_NAME)
     ordering = ('updated_at', COMPANY_NAME, CONTACT_PERSON_NAME, 'stipend')
 

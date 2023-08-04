@@ -211,7 +211,7 @@ class Placement(models.Model):
         return super(Placement, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.company_name + " - " + self.id
+        return self.company_name + " - " + self.designation
 
 
 class PlacementApplication(models.Model):
@@ -327,9 +327,10 @@ class Internship(models.Model):
         blank=True)
     stipend=models.IntegerField(blank=False, default=None, null=True)
     facilities_provided=ArrayField(
-        models.CharField(choices=INF_FACILITIES_PROVIDED, blank=False, max_length=20),
+        models.CharField(null=True,  choices=INF_FACILITIES_PROVIDED, max_length=20),
         size=INF_TOTAL_FACILITIES,
-        default=list
+        default=list,
+        blank=True
     )
     additional_facilities = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
     academic_requirements = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
@@ -410,7 +411,47 @@ class Internship(models.Model):
         return super(Internship, self).save(*args, **kwargs)
     
     def __str__(self):
-        return self.company_name + " - " + self.id
+        return self.company_name + " - " + self.designation
+    
+
+class InternshipApplication(models.Model):
+    id = models.CharField(blank=False, primary_key=True, max_length=15)
+    internship = models.ForeignKey(Internship, blank=False, on_delete=models.RESTRICT, default=None, null=True)
+    student = models.ForeignKey(Student, blank=False, on_delete=models.CASCADE)
+    resume = models.CharField(max_length=JNF_TEXT_MAX_CHARACTER_COUNT, blank=False, null=True, default=None)
+    additional_info = models.JSONField(blank=True, null=True, default=None)
+    selected = models.BooleanField(null=True, default=None, blank=True)
+    stipend = models.IntegerField(blank=True, default=None, null=True)
+    applied_at = models.DateTimeField(blank=False, default=None, null=True)
+    updated_at = models.DateTimeField(blank=False, default=None, null=True)
+    changed_by = models.ForeignKey(User, blank=False, on_delete=models.RESTRICT, default=None, null=True)
+    history = HistoricalRecords(user_model=User)
+
+    def save(self, *args, **kwargs):
+        ''' On save, add timestamps '''
+        if not self.applied_at:
+            self.applied_at = timezone.now()
+        self.updated_at = timezone.now()
+
+        return super(InternshipApplication, self).save(*args, **kwargs)
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        if isinstance(value, User):
+            self.changed_by = value
+        else:
+            self.changed_by = None
+
+    class Meta:
+        verbose_name_plural = "Internship Applications"
+        unique_together = ('internship_id', 'student_id')
+
+    def __str__(self):
+        return self.internship.company_name + " - " + self.student.name
 
 
 class Contributor(models.Model):
