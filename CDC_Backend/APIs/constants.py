@@ -51,9 +51,12 @@ CDC_REPS_EMAILS = [
     "cdc@iitdh.ac.in",
     "cdcfic@iitdh.ac.in",
     "priyanka.naga@iitdh.ac.in",
-    "bharathbn@iitdh.ac.in",
-    "naveenmb@iitdh.ac.in",
-    "sraut@iitdh.ac.in"
+    "vandana@iitdh.ac.in",
+    "sairam@iitdh.ac.in",
+    "satyapriya.gupta@iitdh.ac.in",
+    "dhriti.ghosh@iitdh.ac.in",
+    "suvamay.jana@iitdh.ac.in",
+    "ramesh.nayaka@iitdh.ac.in"
 ]
 
 # To be Configured Properly
