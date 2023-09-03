@@ -16,6 +16,7 @@ BRANCHES = [
     "EP"
 ]
 BATCH_CHOICES = [
+    ["2022", "2022"],
     ["2021", "2021"],
     ["2020", "2020"],
     ["2019", "2019"],
@@ -42,10 +43,11 @@ TIERS = [
 DEGREE_CHOICES = [
     ['bTech', 'B.Tech'],
     ['ms/phd', 'MS/ PhD'],
+    ['mTech', 'M.Tech'],
 ]
 
 TOTAL_BRANCHES = 4  # Total No of Branches
-TOTAL_BATCHES = 5  # Total No of Batches
+TOTAL_BATCHES = 6  # Total No of Batches
 
 CDC_REPS_EMAILS = [
     "cdc@iitdh.ac.in",
