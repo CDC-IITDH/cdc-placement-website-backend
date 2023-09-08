@@ -253,6 +253,8 @@ def getTier(compensation_gross, is_psu=False):
             return True, 'psu'
         if compensation_gross < 0:
             raise ValueError("Negative Compensation")
+        elif compensation_gross < 450000:  # Open Tier If less than 450,000
+            return True, "8"
         elif compensation_gross < 600000:  # Tier 7 If less than 600,000
             return True, "7"
         # Tier 6 If less than 800,000 and greater than or equal to 600,000
