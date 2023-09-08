@@ -38,6 +38,7 @@ TIERS = [
     ['5', 'Tier 5'],
     ['6', 'Tier 6'],
     ['7', 'Tier 7'],
+    ['8', 'Open Tier'],
 ]
 
 DEGREE_CHOICES = [
