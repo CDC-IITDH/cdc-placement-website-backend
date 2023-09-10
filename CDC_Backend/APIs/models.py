@@ -23,7 +23,7 @@ class User(models.Model):
 
 class Student(models.Model):
     id = models.CharField(blank=False, max_length=15, primary_key=True)
-    roll_no = models.IntegerField(blank=False)
+    roll_no = models.CharField(blank=False, max_length=15, unique=True)
     name = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
     batch = models.CharField(max_length=10, choices=BATCH_CHOICES, blank=False)
     branch = models.CharField(choices=BRANCH_CHOICES, blank=False, max_length=10)
