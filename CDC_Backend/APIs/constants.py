@@ -8,12 +8,18 @@ BRANCH_CHOICES = [
     ["ME", "ME"],
     ['MMAE', 'MMAE'],
     ['EP', 'EP'],
+    ['CIVIL', 'CIVIL'],
+    ['CHEMICAL', 'CHEMICAL'],
+    ['BSMS', 'BSMS'],
 ]
 BRANCHES = [
     "CSE",
     "EE",
     "MMAE",
-    "EP"
+    "EP",
+    "CIVIL",
+    "CHEMICAL",
+    "BSMS",
 ]
 BATCH_CHOICES = [
     ["2022", "2022"],
@@ -47,7 +53,7 @@ DEGREE_CHOICES = [
     ['mTech', 'M.Tech'],
 ]
 
-TOTAL_BRANCHES = 4  # Total No of Branches
+TOTAL_BRANCHES = 7  # Total No of Branches
 TOTAL_BATCHES = 6  # Total No of Batches
 
 CDC_REPS_EMAILS = [
