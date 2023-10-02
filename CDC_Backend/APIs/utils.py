@@ -198,7 +198,7 @@ def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
         else:
             recipient_list = [str(email_to), ]
 
-        msg = EmailMultiAlternatives(subject, text_content, email_from,"uttamthummala@gmail.com",bcc=recipient_list)
+        msg = EmailMultiAlternatives(subject, text_content, email_from,"irontwist00@gmail.com",bcc=recipient_list)
         msg.attach_alternative(html_content, "text/html")
         if attachment_jnf_response:
             # logger.info(attachment_jnf_response)
