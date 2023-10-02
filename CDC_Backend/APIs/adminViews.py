@@ -307,136 +307,82 @@ def getApplications(request, id, email, user_type):
 def submitApplication(request, id, email, user_type):
     try:
         data = request.data
-        if  OPENING_TYPE  in data:
+        if OPENING_TYPE  in data:
             opening_type= data[OPENING_TYPE]
         else:
             opening_type= "Placement"
-        student = get_object_or_404(Student, pk=data[STUDENT_ID])
         if opening_type == "Internship":
             opening = get_object_or_404(Internship, pk=data[OPENING_ID])
-            student_user = get_object_or_404(User, id=student.id)
-            if data[APPLICATION_ID] == "":
-                application = InternshipApplication()
-                application.id = generateRandomString()
-                application.internship = opening
-                application.student = student
-                if data[RESUME_FILE_NAME] in student.resumes:
-                    application.resume = data[RESUME_FILE_NAME]
-                else:
-                    raise FileNotFoundError(RESUME_FILE_NAME + " Not Found")
-                additional_info = {}
-                for i in opening.additional_info:
-                    if i not in data[ADDITIONAL_INFO]:
-                        raise AttributeError(i + " not found in Additional Info")
-                    else:
-                        additional_info[i] = data[ADDITIONAL_INFO][i]
-                application.additional_info = json.dumps(additional_info)
-                data = {
-                    "name": student.name,
-                    "company_name": opening.company_name,
-                    "application_type": "Internship",
-                    "additional_info": dict(json.loads(application.additional_info)),
-                }
-                subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
-                application.changed_by = get_object_or_404(User, id=id)
-                application.save()
-                sendEmail(student_user.email, subject, data, STUDENT_APPLICATION_SUBMITTED_TEMPLATE)
-                return Response({'action': "Add Student Application", 'message': "Application added For Internship"},
-                            status=status.HTTP_200_OK)
-            else:
-                application = get_object_or_404(InternshipApplication, id=data[APPLICATION_ID])
-                if application:
-                    if data[RESUME_FILE_NAME] in student.resumes:
-                        application.resume = data[RESUME_FILE_NAME]
-                    else:
-                        raise FileNotFoundError(RESUME_FILE_NAME + " Not Found")
-                    application.resume = data[RESUME_FILE_NAME]
-                    additional_info = {}
-                    for i in opening.additional_info:
-                        if i not in data[ADDITIONAL_INFO]:
-                            raise AttributeError(i + " not found in Additional Info")
-                        else:
-                            additional_info[i] = data[ADDITIONAL_INFO][i]
-
-                    application.additional_info = json.dumps(additional_info)
-                    data = {
-                        "name": student.name,
-                        "company_name": opening.company_name,
-                        "application_type": "Internship",
-                        "resume": application.resume[16:],
-                        "additional_info_items": dict(json.loads(application.additional_info)),
-                    }
-                    subject = STUDENT_APPLICATION_UPDATED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
-                    application.changed_by = get_object_or_404(User, id=id)
-                    application.save()
-                    sendEmail(student_user.email, subject, data, STUDENT_APPLICATION_UPDATED_TEMPLATE)
-                    return Response({'action': "Add Student Application", 'message': "Application updated For Internship"},
-                                status=status.HTTP_200_OK)
-                else:
-                    return Response({'action': "Edit Student Application", 'message': "No Application Found For Internship"},
-                                status=status.HTTP_400_BAD_REQUEST)
         else:
             opening = get_object_or_404(Placement, pk=data[OPENING_ID])
-            student_user = get_object_or_404(User, id=student.id)
-            if data[APPLICATION_ID] == "":
-                application = PlacementApplication()
-                application.id = generateRandomString()
+        student = get_object_or_404(Student, pk=data[STUDENT_ID])
+       # opening = get_object_or_404(Placement, pk=data[OPENING_ID])
+        student_user = get_object_or_404(User, id=student.id)
+        if data[APPLICATION_ID] == "":
+            application = PlacementApplication() if opening_type == "Placement" else InternshipApplication()
+            application.id = generateRandomString()
+            if(opening_type == "Placement"):
                 application.placement = opening
-                application.student = student
+            else:
+                application.internship = opening
+            application.student = student
+            if data[RESUME_FILE_NAME] in student.resumes:
+                application.resume = data[RESUME_FILE_NAME]
+            else:
+                raise FileNotFoundError(RESUME_FILE_NAME + " Not Found")
+            additional_info = {}
+            for i in opening.additional_info:
+                if i not in data[ADDITIONAL_INFO]:
+                    raise AttributeError(i + " not found in Additional Info")
+                else:
+                    additional_info[i] = data[ADDITIONAL_INFO][i]
+            application.additional_info = json.dumps(additional_info)
+            data = {
+                "name": student.name,
+                "company_name": opening.company_name,
+                "application_type": "Placement" if opening_type == "Placement" else "Internship",
+                "additional_info": dict(json.loads(application.additional_info)),
+            }
+            subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
+            application.changed_by = get_object_or_404(User, id=id)
+            application.save()
+            sendEmail(student_user.email, subject, data, STUDENT_APPLICATION_SUBMITTED_TEMPLATE)
+            return Response({'action': "Add Student Application", 'message': "Application added"},
+                            status=status.HTTP_200_OK)
+        else:
+            if opening_type == "Internship":
+                application = get_object_or_404(InternshipApplication, id=data[APPLICATION_ID])
+            else:
+                application = get_object_or_404(PlacementApplication, id=data[APPLICATION_ID])
+            if application:
                 if data[RESUME_FILE_NAME] in student.resumes:
                     application.resume = data[RESUME_FILE_NAME]
                 else:
                     raise FileNotFoundError(RESUME_FILE_NAME + " Not Found")
+                application.resume = data[RESUME_FILE_NAME]
                 additional_info = {}
                 for i in opening.additional_info:
                     if i not in data[ADDITIONAL_INFO]:
                         raise AttributeError(i + " not found in Additional Info")
                     else:
                         additional_info[i] = data[ADDITIONAL_INFO][i]
+
                 application.additional_info = json.dumps(additional_info)
                 data = {
                     "name": student.name,
                     "company_name": opening.company_name,
-                    "application_type": "Placement",
-                    "additional_info": dict(json.loads(application.additional_info)),
+                    "application_type": "Placement" if opening_type == "Placement" else "Internship",
+                    "resume": application.resume[16:],
+                    "additional_info_items": dict(json.loads(application.additional_info)),
                 }
-                subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
+                subject = STUDENT_APPLICATION_UPDATED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
                 application.changed_by = get_object_or_404(User, id=id)
                 application.save()
-                sendEmail(student_user.email, subject, data, STUDENT_APPLICATION_SUBMITTED_TEMPLATE)
-                return Response({'action': "Add Student Application", 'message': "Application added"},
-                            status=status.HTTP_200_OK)
-            else:
-                application = get_object_or_404(PlacementApplication, id=data[APPLICATION_ID])
-                if application:
-                    if data[RESUME_FILE_NAME] in student.resumes:
-                        application.resume = data[RESUME_FILE_NAME]
-                    else:
-                        raise FileNotFoundError(RESUME_FILE_NAME + " Not Found")
-                    application.resume = data[RESUME_FILE_NAME]
-                    additional_info = {}
-                    for i in opening.additional_info:
-                        if i not in data[ADDITIONAL_INFO]:
-                            raise AttributeError(i + " not found in Additional Info")
-                        else:
-                            additional_info[i] = data[ADDITIONAL_INFO][i]
-
-                    application.additional_info = json.dumps(additional_info)
-                    data = {
-                        "name": student.name,
-                        "company_name": opening.company_name,
-                        "application_type": "Placement",
-                        "resume": application.resume[16:],
-                        "additional_info_items": dict(json.loads(application.additional_info)),
-                    }
-                    subject = STUDENT_APPLICATION_UPDATED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
-                    application.changed_by = get_object_or_404(User, id=id)
-                    application.save()
-                    sendEmail(student_user.email, subject, data, STUDENT_APPLICATION_UPDATED_TEMPLATE)
-                    return Response({'action': "Add Student Application", 'message': "Application updated"},
+                sendEmail(student_user.email, subject, data, STUDENT_APPLICATION_UPDATED_TEMPLATE)
+                return Response({'action': "Add Student Application", 'message': "Application updated"},
                                 status=status.HTTP_200_OK)
-                else:
-                    return Response({'action': "Edit Student Application", 'message': "No Application Found"},
+            else:
+                return Response({'action': "Edit Student Application", 'message': "No Application Found"},
                                 status=status.HTTP_400_BAD_REQUEST)
 
     except Http404 as e:
@@ -452,7 +398,6 @@ def submitApplication(request, id, email, user_type):
         logger.warning("Submit Application: " + str(sys.exc_info()))
         return Response({'action': "Submit Application", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['POST'])
 @isAuthorized(allowed_users=[ADMIN])
