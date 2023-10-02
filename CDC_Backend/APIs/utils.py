@@ -405,26 +405,29 @@ def internship_eligibility_filters(student, internships):
 
 
 @background_task.background(schedule=2)
-def send_opening_notifications(placement_id):
+def send_opening_notifications(opening_id, opening_type):
     try:
-        placement = get_object_or_404(Placement, id=placement_id)
+        if opening_type == PLACEMENT:
+            opening = get_object_or_404(Placement, id=opening_id)
+        else:
+            opening = get_object_or_404(Internship, id=opening_id)
         emails=[]
         students = Student.objects.all()
         for student in students.iterator():
-            if student.branch in placement.allowed_branch:
-                if student.degree == 'bTech' or placement.rs_eligible is True:
-                    if PlacementApplicationConditions(student, placement)[0]:
+            if student.branch in opening.allowed_branch:
+                if student.degree == 'bTech' or opening.rs_eligible is True:
+                    if (isinstance(opening,Placement) and PlacementApplicationConditions(student, opening)[0]) or (isinstance(opening,Internship) and InternshipApplicationConditions(student, opening)[0]):
                         try:
                             student_user = get_object_or_404(User, id=student.id)
                             subject = NOTIFY_STUDENTS_OPENING_TEMPLATE_SUBJECT.format(
-                                company_name=placement.company_name)
-                            deadline_datetime = placement.deadline_datetime.astimezone(pytz.timezone('Asia/Kolkata'))
+                                company_name=opening.company_name)
+                            deadline_datetime = opening.deadline_datetime.astimezone(pytz.timezone('Asia/Kolkata'))
                             data = {
-                                "company_name": placement.company_name,
-                                "opening_type": 'Placement',
-                                "designation": placement.designation,
+                                "company_name": opening.company_name,
+                                "opening_type": "INTERNSHIP" if isinstance(opening, Internship) else "PLACEMENT",
+                                "designation": opening.designation,
                                 "deadline": deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
-                                "link": PLACEMENT_OPENING_URL.format(id=placement.designation)
+                                "link": PLACEMENT_OPENING_URL.format(id=opening.designation)
                             }
                             emails.append(student_user.email)
                             #sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
@@ -432,6 +435,7 @@ def send_opening_notifications(placement_id):
                             logger.warning('Utils - send_opening_notifications: user not found : ' + student.id)
                         except Exception as e:
                             logger.warning('Utils - send_opening_notifications: For Loop' + str(e))
+                    
         sendEmail(emails, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE) #handled multiple mailings
     except:
         logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
@@ -442,7 +446,7 @@ def exception_email(opening):
     opening = opening.dict()
     data = {
         "designation": opening["designation"],
-        "opening_type": PLACEMENT,
+        "opening_type": "INTERNSHIP" if opening["opening_type"] == "INF" else "PLACEMENT",
         "company_name": opening["company_name"],
     }
     pdfhtml = opening_description_table_html(opening)
