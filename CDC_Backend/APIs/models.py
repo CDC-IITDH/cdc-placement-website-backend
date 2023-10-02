@@ -32,6 +32,7 @@ class Student(models.Model):
                          default=list, blank=True)
     cpi = models.DecimalField(decimal_places=2, max_digits=4)
     can_apply = models.BooleanField(default=True, verbose_name='Registered')
+    can_apply_internship = models.BooleanField(default=True, verbose_name='Internship Registered') #added for internship
     changed_by = models.ForeignKey(User, blank=True, on_delete=models.RESTRICT, default=None, null=True)
     degree = models.CharField(choices=DEGREE_CHOICES, blank=False, max_length=10, default=DEGREE_CHOICES[0][0])
     history = HistoricalRecords(user_model=User)
@@ -318,6 +319,11 @@ class Internship(models.Model):
         size=TOTAL_BRANCHES,
         default=list
     )
+    allowed_batch = ArrayField(
+        models.CharField(max_length=10, choices=BATCH_CHOICES),
+        size=TOTAL_BATCHES,
+        default=list
+    )
     sophomore_eligible = models.BooleanField(blank=False, default=False)
     rs_eligible = models.BooleanField(blank=False, default=False)
     tentative_no_of_offers = models.IntegerField(blank=False, default=None, null=True)
@@ -332,6 +338,11 @@ class Internship(models.Model):
         default=list,
         blank=True
     )
+    additional_info = ArrayField(models.CharField(blank=True, max_length=JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT), size=15,
+                                 default=list, blank=True)
+    offer_accepted = models.BooleanField(blank=False, default=None, null=True)
+    deadline_datetime = models.DateTimeField(blank=False, verbose_name="Deadline Date", default=two_day_after_today)
+
     additional_facilities = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
     academic_requirements = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
     # selection process
@@ -388,6 +399,9 @@ class Internship(models.Model):
             self.additional_facilities = self.additional_facilities.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
         if self.academic_requirements is not None:
             self.academic_requirements = self.academic_requirements.strip()[:JNF_TEXTAREA_MAX_CHARACTER_COUNT]
+        if self.additional_info is not None:
+            self.additional_info = [info.strip()[:JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT] for info in
+                                   list(self.additional_info)]
         # if self.contact_person_designation is not None:
         #     self.contact_person_designation = self.contact_person_designation.strip()[:JNF_SMALLTEXT_MAX_CHARACTER_COUNT]
         

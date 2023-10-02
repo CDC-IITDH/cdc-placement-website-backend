@@ -28,7 +28,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from .constants import *
-from .models import User, PrePlacementOffer, PlacementApplication, Placement, Student, Internship
+from .models import User, PrePlacementOffer, PlacementApplication, Placement, Student, Internship,InternshipApplication
 
 logger = logging.getLogger('db')
 
@@ -112,10 +112,12 @@ def isAuthorized(allowed_users=None):
         def wrapper_func(request, *args, **kwargs):
             try:
                 headers = request.META
+                #print(headers)
                 if 'HTTP_AUTHORIZATION' in headers:
                     token_id = headers['HTTP_AUTHORIZATION'][7:]
                     idinfo = id_token.verify_oauth2_token(token_id, requests.Request(), CLIENT_ID)
                     email = idinfo[EMAIL]
+      #              print(idinfo)
                     user = get_object_or_404(User, email=email)
                     if user:
                         user.last_login_time = timezone.now()
@@ -167,6 +169,8 @@ def saveFile(file, location):
 
     file_name = re.sub(r'[\\/:*?"<>|]', '_', file_name)
 
+ #   print("Inside saveFile: " + str(file_name))
+
     if not path.isdir(location):
         os.makedirs(location)
 
@@ -194,7 +198,7 @@ def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
         else:
             recipient_list = [str(email_to), ]
 
-        msg = EmailMultiAlternatives(subject, text_content, email_from, recipient_list)
+        msg = EmailMultiAlternatives(subject, text_content, email_from,"uttamthummala@gmail.com",bcc=recipient_list)
         msg.attach_alternative(html_content, "text/html")
         if attachment_jnf_response:
             # logger.info(attachment_jnf_response)
@@ -244,6 +248,20 @@ def PlacementApplicationConditions(student, placement):
         return False, e
     except:
         logger.warning("Utils - PlacementApplicationConditions: " + str(sys.exc_info()))
+        return False, "_"
+
+def InternshipApplicationConditions(student, internship):
+    try:
+        selected_companies = InternshipApplication.objects.filter(student=student, selected=True)
+        if len(selected_companies)>=1:
+            print("selected companies > 1")
+            return False, "You have already secured a Internship"
+        return True, "Conditions Satisfied"
+
+    except PermissionError as e:
+        return False, e
+    except:
+        logger.warning("Utils - InternshipApplicationConditions: " + str(sys.exc_info()))
         return False, "_"
 
 
@@ -370,12 +388,27 @@ def placement_eligibility_filters(student, placements):
     except:
         logger.warning("Utils - placement_eligibility_filters: " + str(sys.exc_info()))
         return placements
+def internship_eligibility_filters(student, internships):
+    try:
+        filtered_internships = []
+        for internship in internships.iterator():
+
+            if InternshipApplicationConditions(student, internship)[0]:
+                filtered_internships.append(internship)
+            else:
+                print("Not applicable")
+
+        return filtered_internships
+    except:
+        logger.warning("Utils - internship_eligibility_filters: " + str(sys.exc_info()))
+        return internships
 
 
 @background_task.background(schedule=2)
 def send_opening_notifications(placement_id):
     try:
         placement = get_object_or_404(Placement, id=placement_id)
+        emails=[]
         students = Student.objects.all()
         for student in students.iterator():
             if student.branch in placement.allowed_branch:
@@ -393,12 +426,13 @@ def send_opening_notifications(placement_id):
                                 "deadline": deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
                                 "link": PLACEMENT_OPENING_URL.format(id=placement.designation)
                             }
-                            sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
+                            emails.append(student_user.email)
+                            #sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
                         except Http404:
                             logger.warning('Utils - send_opening_notifications: user not found : ' + student.id)
                         except Exception as e:
                             logger.warning('Utils - send_opening_notifications: For Loop' + str(e))
-
+        sendEmail(emails, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE) #handled multiple mailings
     except:
         logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
         return False

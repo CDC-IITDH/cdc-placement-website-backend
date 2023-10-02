@@ -138,6 +138,13 @@ class PlacementApplicationResources(resources.ModelResource):
 class PlacementAdmin(ExportMixin, SimpleHistoryAdmin):
     resource_class = PlacementApplicationResources
 
+class InternshipApplicationResources(resources.ModelResource):
+    class Meta:
+        model = InternshipApplication
+        exclude = ('id', 'changed_by')
+class InternshipApplicationAdmin(ExportMixin, SimpleHistoryAdmin):
+    resource_class = InternshipApplicationResources
+
 
 @admin.register(PlacementApplication)
 class PlacementApplication(PlacementAdmin):
@@ -151,7 +158,18 @@ class PlacementApplication(PlacementAdmin):
 
     def Student(self, obj):
         return model_admin_url(obj.student)
+@admin.register(InternshipApplication)
+class InternshipApplication(InternshipApplicationAdmin):
+    list_display = ('id', 'Internship', 'Student', 'selected')
+    search_fields = ('id',)
+    ordering = ('id',)
+    list_filter = ('selected',)
 
+    def Internship(self, obj):
+        return model_admin_url(obj.internship)
+
+    def Student(self, obj):
+        return model_admin_url(obj.student)
 
 class PrePlacementResources(resources.ModelResource):
     class Meta:
@@ -178,7 +196,7 @@ class InternshipResources(resources.ModelResource):
     class Meta:
         model = Internship
         exclude = ('id', 'changed_by', 'is_company_details_pdf', 'is_description_pdf',
-                   'is_compensation_details_pdf', 'is_selection_procedure_details_pdf')
+                   'is_stipend_details_pdf', 'is_selection_procedure_details_pdf')
 
 
 class InternAdmin(ExportMixin, SimpleHistoryAdmin):

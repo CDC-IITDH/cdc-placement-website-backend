@@ -21,6 +21,12 @@ BRANCHES = [
     "CHEMICAL",
     "BSMS",
 ]
+BATCHES = [    #change it accordingly
+    "2023",
+    "2022",
+    "2021",
+    "2020",
+]
 BATCH_CHOICES = [
     ["2022", "2022"],
     ["2021", "2021"],
@@ -218,6 +224,7 @@ STIPEND = 'stipend'
 FACILITIES = 'facilities'
 OTHER_FACILITIES = 'other_facilities'
 STIPEND_DETAILS_PDF = 'compensation_details_pdf'
+STIPEND_DETAILS_PDF_NAMES = 'stipend_description_pdf_names'
 
 SEASONS = (
     'Summer',
