@@ -353,7 +353,7 @@ def studentAcceptOffer(request, id, email, user_type):
 
 @api_view(['POST'])
 @isAuthorized(allowed_users=[STUDENT])
-@precheck(required_data=["Title","Description","opening_id"])
+@precheck(required_data=["Title","Description","opening_id","opening_type"])
 def addIssue(request, id, email, user_type):
     try:
         data = request.data
@@ -362,23 +362,24 @@ def addIssue(request, id, email, user_type):
         issue.student = student
         issue.title = data["Title"]
         issue.description = data["Description"]
-    #    issue.opening=get_object_or_404(Placement, id=data["opening_id"]) or get_object_or_404(Internship, id=data["opening_id"])
+        issue.opening_id = data["opening_id"]
+        issue.opening_type = data["opening_type"]
         try:
-            issue.opening=get_object_or_404(Placement, id=data["opening_id"])
+            if data["opening_type"]==PLACEMENT:
+                opening=get_object_or_404(Placement, id=data["opening_id"])
+            else:
+                opening=get_object_or_404(Internship, id=data["opening_id"])
         except:
-            try:
-                issue.opening=get_object_or_404(Internship, id=data["opening_id"])
-            except:
-                return Response({'action': "Add Issue", 'message': "Opening Not Found"},
+            return Response({'action': "Add Issue", 'message': "Opening Not Found"},
                         status=status.HTTP_400_BAD_REQUEST)
         issue.save()
         subject=ISSUE_SUBMITTED_TEMPLATE_SUBJECT
         data={
             "name":student.name,
-            "application_type":PLACEMENT if isinstance(issue.opening,Placement) else INTERNSHIP,
-            "company_name":issue.opening.company_name,
+            "application_type":issue.opening_type,
+            "company_name":opening.company_name,
             "additional_info":{
-                "Title":issue.title,
+                "Abstract":issue.title,
                 "Description":issue.description
             },
             "email":email

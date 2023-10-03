@@ -254,7 +254,7 @@ def InternshipApplicationConditions(student, internship):
     try:
         selected_companies = InternshipApplication.objects.filter(student=student, selected=True)
         if len(selected_companies)>=1:
-            print("selected companies > 1")
+           # print("selected companies > 1")
             return False, "You have already secured a Internship"
         return True, "Conditions Satisfied"
 
@@ -420,23 +420,22 @@ def send_opening_notifications(opening_id, opening_type=PLACEMENT):
                     if (isinstance(opening,Placement) and PlacementApplicationConditions(student, opening)[0]) or (isinstance(opening,Internship) and InternshipApplicationConditions(student, opening)[0]):
                         try:
                             student_user = get_object_or_404(User, id=student.id)
-                            subject = NOTIFY_STUDENTS_OPENING_TEMPLATE_SUBJECT.format(
-                                company_name=opening.company_name)
-                            deadline_datetime = opening.deadline_datetime.astimezone(pytz.timezone('Asia/Kolkata'))
-                            data = {
-                                "company_name": opening.company_name,
-                                "opening_type": "INTERNSHIP" if isinstance(opening, Internship) else "PLACEMENT",
-                                "designation": opening.designation,
-                                "deadline": deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
-                                "link": PLACEMENT_OPENING_URL.format(id=opening.designation) if opening_type == PLACEMENT else INTERNSHIP_OPENING_URL.format(id=opening.designation),
-                            }
                             emails.append(student_user.email)
                             #sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
                         except Http404:
                             logger.warning('Utils - send_opening_notifications: user not found : ' + student.id)
                         except Exception as e:
                             logger.warning('Utils - send_opening_notifications: For Loop' + str(e))
-                    
+        subject = NOTIFY_STUDENTS_OPENING_TEMPLATE_SUBJECT.format(
+                                company_name=opening.company_name)
+        deadline_datetime = opening.deadline_datetime.astimezone(pytz.timezone('Asia/Kolkata'))
+        data = {
+            "company_name": opening.company_name,
+            "opening_type": "INTERNSHIP" if isinstance(opening, Internship) else "PLACEMENT",
+            "designation": opening.designation,
+            "deadline": deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
+            "link": PLACEMENT_OPENING_URL.format(id=opening.designation) if opening_type == PLACEMENT else INTERNSHIP_OPENING_URL.format(id=opening.designation),
+            }                            
         sendEmail(emails, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE) #handled multiple mailings
     except:
         logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
