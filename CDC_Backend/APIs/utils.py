@@ -395,8 +395,6 @@ def internship_eligibility_filters(student, internships):
 
             if InternshipApplicationConditions(student, internship)[0]:
                 filtered_internships.append(internship)
-            else:
-                print("Not applicable")
 
         return filtered_internships
     except:

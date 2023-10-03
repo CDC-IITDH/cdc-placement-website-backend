@@ -48,7 +48,7 @@ def refresh(request):
 @isAuthorized(allowed_users=[STUDENT])
 def studentProfile(request, id, email, user_type):
     try:
-        print(id)
+        #print(id)
         studentDetails = get_object_or_404(Student, id=id)
 
         data = StudentSerializer(studentDetails).data
@@ -117,7 +117,6 @@ def getDashboard(request, id, email, user_type):
                                               offer_accepted=True, email_verified=True).order_by('deadline_datetime')
         
         filtered_internships = internship_eligibility_filters(studentDetails, internships)
-        print(len(filtered_internships))
         internshipsdata = InternshipSerializerForStudent(filtered_internships, many=True).data
 
         internshipApplications = InternshipApplication.objects.filter(student_id=id)
