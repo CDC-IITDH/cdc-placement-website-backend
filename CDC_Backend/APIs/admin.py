@@ -217,3 +217,12 @@ class Placement(InternAdmin):
     search_fields = (COMPANY_NAME, CONTACT_PERSON_NAME)
     ordering = ('updated_at', COMPANY_NAME, CONTACT_PERSON_NAME, 'stipend')
 
+@admin.register(Issues)
+class Issues(admin.ModelAdmin):
+    list_display = ('id', 'title', 'description')
+    search_fields = ('id', 'title', 'description')
+    ordering = ('id', 'title', 'description')
+   # list_filter = ('status',)
+
+    def Student(self, obj):
+        return model_admin_url(obj.student)
