@@ -198,7 +198,7 @@ def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
         else:
             recipient_list = [str(email_to), ]
 
-        msg = EmailMultiAlternatives(subject, text_content, email_from,"irontwist00@gmail.com",bcc=recipient_list)
+        msg = EmailMultiAlternatives(subject, text_content, email_from,None,bcc=recipient_list)
         msg.attach_alternative(html_content, "text/html")
         if attachment_jnf_response:
             # logger.info(attachment_jnf_response)
@@ -405,8 +405,9 @@ def internship_eligibility_filters(student, internships):
 
 
 @background_task.background(schedule=2)
-def send_opening_notifications(opening_id, opening_type):
+def send_opening_notifications(opening_id, opening_type=PLACEMENT):
     try:
+       # print(opening_id, opening_type)
         if opening_type == PLACEMENT:
             opening = get_object_or_404(Placement, id=opening_id)
         else:
