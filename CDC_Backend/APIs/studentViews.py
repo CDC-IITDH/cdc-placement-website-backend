@@ -328,17 +328,17 @@ def studentAcceptOffer(request, id, email, user_type):
     try:
         company_id = request.data['id']
         student_id=request.data['profileInfo']['id']
-        offer_status = request.data['offerStatus']
+        offer_accepted = request.data['offerStatus']
         if OPENING_TYPE in request.data:
             opening_type = request.data[OPENING_TYPE]
         else:
             opening_type = PLACEMENT
         if opening_type==INTERNSHIP:
-            application=InternshipApplication.objects.get(internship=company_id,student=student_id) #check syntax
+            application=InternshipApplication.objects.get(internship=company_id,student=student_id,selected=True) 
         else:
-            application=PlacementApplication.objects.get(placement=company_id,student=student_id)
+            application=PlacementApplication.objects.get(placement=company_id,student=student_id,selected=True)
 
-        application.offer_accepted=offer_status
+        application.offer_accepted=offer_accepted
         application.save()
         return Response({'action': "Accept Offer", 'message': "Updated Offer Status"},
                         status=status.HTTP_200_OK)

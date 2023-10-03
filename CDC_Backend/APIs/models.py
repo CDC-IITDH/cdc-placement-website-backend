@@ -435,6 +435,7 @@ class InternshipApplication(models.Model):
     resume = models.CharField(max_length=JNF_TEXT_MAX_CHARACTER_COUNT, blank=False, null=True, default=None)
     additional_info = models.JSONField(blank=True, null=True, default=None)
     selected = models.BooleanField(null=True, default=None, blank=True)
+    offer_accepted = models.BooleanField(null=True, default=None, blank=True) # True if offer accepted, False if rejected, None if not yet decided
     stipend = models.IntegerField(blank=True, default=None, null=True)
     applied_at = models.DateTimeField(blank=False, default=None, null=True)
     updated_at = models.DateTimeField(blank=False, default=None, null=True)
