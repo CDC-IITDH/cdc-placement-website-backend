@@ -149,12 +149,17 @@ def updateOfferAccepted(request, id, email, user_type):
             opening_type= data[OPENING_TYPE]
         else:
             opening_type= "Placement"
+        if DEADLINE_DATETIME in data:
+            deadline_datetime = datetime.datetime.strptime(data[DEADLINE_DATETIME], '%Y-%m-%d %H:%M:%S %z')
+        else:
+            deadline_datetime = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + datetime.timedelta(days=2)
         if opening_type == "Internship":
             opening = get_object_or_404(Internship, pk=data[OPENING_ID])
         else:
             opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         if opening.offer_accepted is None:
             opening.offer_accepted = offer_accepted == "true"
+            opening.deadline_datetime = deadline_datetime
             opening.changed_by = get_object_or_404(User, id=id)
             opening.save()
             if opening.offer_accepted:

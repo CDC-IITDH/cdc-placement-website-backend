@@ -428,7 +428,7 @@ def send_opening_notifications(opening_id, opening_type=PLACEMENT):
                                 "opening_type": "INTERNSHIP" if isinstance(opening, Internship) else "PLACEMENT",
                                 "designation": opening.designation,
                                 "deadline": deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
-                                "link": PLACEMENT_OPENING_URL.format(id=opening.designation)
+                                "link": PLACEMENT_OPENING_URL.format(id=opening.designation) if opening_type == PLACEMENT else INTERNSHIP_OPENING_URL.format(id=opening.designation),
                             }
                             emails.append(student_user.email)
                             #sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
@@ -451,7 +451,7 @@ def exception_email(opening):
         "company_name": opening["company_name"],
     }
     pdfhtml = opening_description_table_html(opening)
-    name = opening["company_name"] + '_jnf_response.pdf'
+    name = opening["company_name"] + '_jnf_response.pdf' if opening[OPENING_TYPE]!="INF" else opening["company_name"] + '_inf_response.pdf'
     attachment_jnf_respone = {
         "name": name,
         "html": pdfhtml,
@@ -472,6 +472,10 @@ def store_all_files(request):
             saveFile(file, file_location)
         # compensation details pdf
         for file in files.getlist(COMPENSATION_DETAILS_PDF):
+            file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + "temp" + '/'
+            saveFile(file, file_location)
+        #stipend details pdf for internships
+        for file in files.getlist(STIPEND_DETAILS_PDF):
             file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + "temp" + '/'
             saveFile(file, file_location)
         # selection procedure details pdf

@@ -73,6 +73,10 @@ CDC_REPS_EMAILS = [
     "suvamay.jana@iitdh.ac.in",
     "ramesh.nayaka@iitdh.ac.in"
 ]
+CDC_REPS_EMAILS_FOR_ISSUE=[  #add reps emails 
+    "support.cdc@iitdh.ac.in"
+    "irontwist00@gmail.com"
+]
 
 # To be Configured Properly
 CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID')  # Google Login Client ID
@@ -207,7 +211,9 @@ APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone N
                              'Resume', 'Selected', ]
 
 
-
+ISSUE_SUBMITTED_TEMPLATE_SUBJECT = 'CDC - Issue Submitted'
+STUDENT_ISSUE_SUBMITTED_TEMPLATE = 'student_issue_submitted.html'
+REPS_ISSUE_SUBMITTED_TEMPLATE = 'reps_issue_submitted.html'
 # Internships
 INTERNSHIP = 'Internship'
 INTERNSHIP_ID = 'internship_id'
@@ -225,6 +231,7 @@ FACILITIES = 'facilities'
 OTHER_FACILITIES = 'other_facilities'
 STIPEND_DETAILS_PDF = 'compensation_details_pdf'
 STIPEND_DETAILS_PDF_NAMES = 'stipend_description_pdf_names'
+INTERNSHIP_OPENING_URL = "https://cdc.iitdh.ac.in/portal/student/dashboard/internships/{id}"  # On frontend, this is the URL to be opened
 
 SEASONS = (
     'Summer',

@@ -347,3 +347,51 @@ def studentAcceptOffer(request, id, email, user_type):
 
         return Response({'action': "Accept Offer", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+#view for addIssue
+
+@api_view(['POST'])
+@isAuthorized(allowed_users=[STUDENT])
+@precheck(required_data=["Title","Description","opening_id"])
+def addIssue(request, id, email, user_type):
+    try:
+        data = request.data
+        student = get_object_or_404(Student, id=id)
+        issue = Issues()
+        issue.student = student
+        issue.title = data["Title"]
+        issue.description = data["Description"]
+    #    issue.opening=get_object_or_404(Placement, id=data["opening_id"]) or get_object_or_404(Internship, id=data["opening_id"])
+        try:
+            issue.opening=get_object_or_404(Placement, id=data["opening_id"])
+        except:
+            try:
+                issue.opening=get_object_or_404(Internship, id=data["opening_id"])
+            except:
+                return Response({'action': "Add Issue", 'message': "Opening Not Found"},
+                        status=status.HTTP_400_BAD_REQUEST)
+        issue.save()
+        subject=ISSUE_SUBMITTED_TEMPLATE_SUBJECT
+        data={
+            "name":student.name,
+            "application_type":PLACEMENT if isinstance(issue.opening,Placement) else INTERNSHIP,
+            "company_name":issue.opening.company_name,
+            "additional_info":{
+                "Title":issue.title,
+                "Description":issue.description
+            },
+            "email":email
+            }
+        sendEmail(email, subject, data, STUDENT_ISSUE_SUBMITTED_TEMPLATE)
+        #send_mail_to reps
+        sendEmail(CDC_REPS_EMAILS_FOR_ISSUE,"Issue Raised",data,REPS_ISSUE_SUBMITTED_TEMPLATE)
+        return Response({'action': "Add Issue", 'message': "Issue Added"},
+                        status=status.HTTP_200_OK)
+    except Http404:
+        return Response({'action': "Add Issue", 'message': 'Student Not Found'},
+                        status=status.HTTP_404_NOT_FOUND)
+    except:
+        logger.warning("Add Issue: " + str(sys.exc_info()))
+        return Response({'action': "Add Issue", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)

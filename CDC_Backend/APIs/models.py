@@ -479,3 +479,30 @@ class Contributor(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class Issues(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, blank=False, default="")
+    description = models.CharField(max_length=200, blank=False, default="")
+    opening=(models.ForeignKey(Placement, on_delete=models.CASCADE, blank=False) or models.ForeignKey(Internship, on_delete=models.CASCADE, blank=False))
+    #status = models.CharField(max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, blank=False, default="")
+    student=models.ForeignKey(Student, on_delete=models.CASCADE, blank=False)
+    created_at = models.DateTimeField(blank=False, default=None, null=True)
+    updated_at = models.DateTimeField(blank=False, default=None, null=True)
+    changed_by = models.ForeignKey(User, on_delete=models.RESTRICT, blank=True, null=True)
+    history = HistoricalRecords(user_model=User)
+
+    def save(self, *args, **kwargs):
+        ''' On save, add timestamps '''
+        if not self.created_at:
+            self.created_at = timezone.now()
+        self.updated_at = timezone.now()
+
+        return super(Issues, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title + " - " + self.student.name
+    class Meta:
+        verbose_name_plural = "Issues"
+        
