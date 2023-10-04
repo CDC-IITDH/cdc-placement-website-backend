@@ -322,25 +322,35 @@ def getContributorStats(request, id, email, user_type):
         
 #view for sudentAcceptOffer
 @api_view(['POST'])
+@precheck(required_data=[OPENING_ID,"offer_accepted"])  
 @isAuthorized(allowed_users=[STUDENT])
 def studentAcceptOffer(request, id, email, user_type):
     try:
-        company_id = request.data['id']
-        student_id=request.data['profileInfo']['id']
-        offer_accepted = request.data['offerStatus']
+        company_id = request.data[OPENING_ID]
+        #student_id=request.data['profileInfo']['id']
+        student_id=id
+
+        offer_accepted = request.data['offer_accepted']
         if OPENING_TYPE in request.data:
             opening_type = request.data[OPENING_TYPE]
         else:
             opening_type = PLACEMENT
         if opening_type==INTERNSHIP:
-            application=InternshipApplication.objects.get(internship=company_id,student=student_id,selected=True) 
+            application=InternshipApplication.objects.filter(internship=company_id,student=student_id,selected=True) 
         else:
-            application=PlacementApplication.objects.get(placement=company_id,student=student_id,selected=True)
+            application=PlacementApplication.objects.filter(placement=company_id,student=student_id,selected=True)
 
-        application.offer_accepted=offer_accepted
-        application.save()
-        return Response({'action': "Accept Offer", 'message': "Updated Offer Status"},
+        if len(application):
+            application[0].offer_accepted=offer_accepted
+            application[0].save()
+            return Response({'action': "Accept Offer", 'message': "Updated Offer Status"},
                         status=status.HTTP_200_OK)
+        else:
+            return Response({'action': "Accept Offer", 'message': "Offer Not Found"},
+                        status=status.HTTP_404_NOT_FOUND)
+            
+
+        
     except:
         logger.warning("Accept Offer: " + str(sys.exc_info()))
 
