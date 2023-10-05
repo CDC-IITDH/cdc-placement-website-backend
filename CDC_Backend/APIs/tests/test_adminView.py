@@ -179,7 +179,7 @@ class AdminView(APITestCase):
         response = self.client.post(url, data=json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['message'], 'PPO Added')
+        self.assertEqual(response.data['message'], 'PPO added')
         self.assertEqual(PrePlacementOffer.objects.get(
             student=self.student1).company, data['company'])
         self.assertEqual(PrePlacementOffer.objects.get(
@@ -259,7 +259,7 @@ class AdminView(APITestCase):
         self.assertEqual(PlacementApplication.objects.get(  # note done yet
             student=self.student2).selected, False)
 
-    def test_getApplications(self):   #has issues check it once
+    def test_getApplications(self):  # has issues check it once
         url = reverse("Get Applications")
         data = {
             "opening_type": "Placement",
@@ -282,7 +282,7 @@ class AdminView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], 'Opening Not Found')
 
-#-done
+# -done
     def test_addAdditionalInfo(self):
         url = reverse("Add Additional Info")
         data = {
@@ -336,7 +336,7 @@ class AdminView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], 'Opening Not Found')
 
-    def test_updateEmailVerified(self):         #done
+    def test_updateEmailVerified(self):  # done
         url = reverse("Update Email Verified")
         self.placement1.email_verified = False
         self.placement1.save()
@@ -358,7 +358,7 @@ class AdminView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], 'Opening Not Found')
 
-    def test_updateofferAccepted(self):  #done
+    def test_updateofferAccepted(self):  # done
         url = reverse("Update Offer Accepted")
         self.placement1.offer_accepted = None
         self.placement1.save()
@@ -379,7 +379,8 @@ class AdminView(APITestCase):
         self.assertEqual(Placement.objects.get(
             id=self.placement1.id).deadline_datetime, timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)+timezone.timedelta(days=2))
         data['opening_id'] = self.placement3.id
-        data[DEADLINE_DATETIME]=(timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)+timezone.timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S %z')
+        data[DEADLINE_DATETIME] = (timezone.now().replace(
+            hour=0, minute=0, second=0, microsecond=0)+timezone.timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S %z')
         response = self.client.post(url, data=json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -400,7 +401,7 @@ class AdminView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], 'Opening Not Found')
 
-    def test_updateDeadline(self):  #done
+    def test_updateDeadline(self):  # done
         url = reverse("Update Deadline")
         data = {
             "opening_type": "Placement",
@@ -422,7 +423,7 @@ class AdminView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], 'Opening Not Found')
 
-    def test_markStatus(self):  #done
+    def test_markStatus(self):  # done
         url = reverse("Mark Status")
         data = {
             "opening_type": "Placement",
@@ -465,7 +466,7 @@ class AdminView(APITestCase):
         self.assertEqual(
             response.data['message'], "Student already selected")
 
-    def test_get_dashboard(self):  #working
+    def test_get_dashboard(self):  # working
         url = reverse("Get Dashboard")
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
         self.internship2.deadline_datetime = timezone.now().replace(
@@ -496,14 +497,15 @@ class AdminView(APITestCase):
 
  # -------------------------------------------------checking for internships-------------------
 
-    def test_getStudentApplication_internship(self):  #not done
+    def test_getStudentApplication_internship(self):  # not done
         url = reverse("Get student application")
         data = {
             "student_id": self.student1.id,
             "opening_id": self.internship1.id,
             "opening_type": "Placement"
         }
-        self.assertEqual(Student.objects.filter(id=self.student1.id).count(), 1)
+        self.assertEqual(Student.objects.filter(
+            id=self.student1.id).count(), 1)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
         response = self.client.post(url, data, content_type='application/json')
       #  self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -561,7 +563,7 @@ class AdminView(APITestCase):
         self.assertEqual(InternshipApplication.objects.get(  # note done yet
             student=self.student2).selected, False)
 
-    def test_getApplications_internship(self):  #done
+    def test_getApplications_internship(self):  # done
         url = reverse("Get Applications")
         data = {
             "opening_type": "Internship",
@@ -590,7 +592,7 @@ class AdminView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], 'Opening Not Found')
 
-#-working
+# -working
     def test_addAdditionalInfo_internship(self):
         url = reverse("Add Additional Info")
         data = {
@@ -650,7 +652,7 @@ class AdminView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], 'Opening Not Found')
 
-    def test_updateEmailVerified_internship(self):  #done
+    def test_updateEmailVerified_internship(self):  # done
         url = reverse("Update Email Verified")
         self.internship1.email_verified = False
         self.internship1.save()
@@ -674,7 +676,7 @@ class AdminView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], 'Opening Not Found')
 
-    def test_updateDeadline_internship(self):  #done
+    def test_updateDeadline_internship(self):  # done
         url = reverse("Update Deadline")
         data = {
             "opening_type": "Internship",
@@ -698,7 +700,7 @@ class AdminView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], 'Opening Not Found')
 
-    def test_updateofferAccepted_internship(self): #done
+    def test_updateofferAccepted_internship(self):  # done
         url = reverse("Update Offer Accepted")
         self.internship1.offer_accepted = None
         self.internship1.save()
@@ -720,7 +722,8 @@ class AdminView(APITestCase):
         self.assertEqual(self.internship1.deadline_datetime, timezone.now().replace(
             hour=0, minute=0, second=0, microsecond=0)+timezone.timedelta(days=2))
         data['opening_id'] = self.internship3.id
-        data[DEADLINE_DATETIME] = (timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)+timezone.timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S %z')
+        data[DEADLINE_DATETIME] = (timezone.now().replace(
+            hour=0, minute=0, second=0, microsecond=0)+timezone.timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S %z')
         response = self.client.post(url, data=json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -749,7 +752,7 @@ class AdminView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], 'Opening Not Found')
 
-    def test_markStatus_internship(self):  #done
+    def test_markStatus_internship(self):  # done
         url = reverse("Mark Status")
         data = {
             "opening_type": "Internship",
