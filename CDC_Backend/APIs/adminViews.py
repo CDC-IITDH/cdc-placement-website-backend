@@ -23,7 +23,7 @@ def markStatus(request, id, email, user_type):
         # Getting all application from db for this opening
         # applications = PlacementApplication.objects.filter(placement_id=data[OPENING_ID])
         for i in data[STUDENT_LIST]:
-           # print(i[STUDENT_ID])   issue is using student id instead of roll no both may not be same
+           # print(i[STUDENT_ID])   issue is using student id instead of roll no both may not be same                #remember this
             application = applications.filter(student__roll_no=i[STUDENT_ID])  # Filtering student's application
             if len(application) > 0:
                 application = application[0]
@@ -60,7 +60,7 @@ def markStatus(request, id, email, user_type):
                 application.chaged_by = get_object_or_404(User, id=id)
                 application.save()
             else:
-                raise ValueError("Student - " + i[STUDENT_ID] + " didn't apply for this opening")
+                raise ValueError("Student - " + str(i[STUDENT_ID]) + " didn't apply for this opening")
         return Response({'action': "Mark Status", 'message': "Marked Status"},
                         status=status.HTTP_200_OK)
 
@@ -152,7 +152,7 @@ def updateOfferAccepted(request, id, email, user_type):
         if DEADLINE_DATETIME in data:
             deadline_datetime = datetime.datetime.strptime(data[DEADLINE_DATETIME], '%Y-%m-%d %H:%M:%S %z')
         else:
-            deadline_datetime = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + datetime.timedelta(days=2)
+            deadline_datetime = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + datetime.timedelta(days=2)
         if opening_type == "Internship":
             opening = get_object_or_404(Internship, pk=data[OPENING_ID])
         else:
