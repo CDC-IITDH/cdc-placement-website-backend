@@ -20,151 +20,48 @@ class StudentViewsTestCase(APITestCase):
         self.assertEqual(
             self.user.email, User.objects.get(id=self.user.id).email)
         self.student = Student.objects.create(
-            name="Test Student",
-            id=self.user.id,
-            resumes=["8BSLybntULgrPPm_beehyv.pdf"],
-            # email="test@student.com",
-            # password="testpassword",
-            roll_no="200010052",
-            branch="CSE",
-            batch="2020",
-            phone_number="1234567890",
-            # resume_link="https://testresume.com"
-            changed_by=self.user,
-            can_apply=True,
-            can_apply_internship=True,
-            degree="bTech",
-            cpi=7.95,
+            name="Test Student", id=self.user.id, resumes=["8BSLybntULgrPPm_beehyv.pdf"], roll_no=str(os.environ.get("roll_no")), branch="CSE", batch="2020",  phone_number="1234567890",  changed_by=self.user,  can_apply=True,
+            can_apply_internship=True, degree="bTech", cpi=7.95,
         )
         self.assertEqual(self.student.name,
                          Student.objects.get(id=self.student.id).name)
-        # self.user=User.objects.filter(email="200010052@iitdh.ac.in").first()
-        # self.student = Student.objects.filter(id=self.user.id).first()
         self.internship = Internship.objects.create(
-            company_name="Test Company",
-            id=generateRandomString(),
-            website="https://testwebsite.com",
-            address="Test Address",
-            company_type="Test Company Type",
-            offer_accepted=True,
-            season=["Summer"],
-            allowed_branch=["CSE"],
-            allowed_batch=["2020"],
-            contact_person_name="Test Contact Person",
-            phone_number="1234567890",
-            email="test@test.com",
-            email_verified=True,
-            deadline_datetime=timezone.now().replace(hour=0, minute=0, second=0,
-                                                     microsecond=0) + timezone.timedelta(days=1),
-            # location="Test Location",
-            stipend=10000,
-            # apply_link="https://testapplylink.com"
+            company_name="Test Company", id=generateRandomString(),  website="https://testwebsite.com",  address="Test Address",   company_type="Test Company Type",   offer_accepted=True,   season=["Summer"],   allowed_branch=["CSE"],
+            allowed_batch=["2020"],  contact_person_name="Test Contact Person",  phone_number="1234567890",  email="test@test.com",  email_verified=True,  stipend=10000,
         )
-       # self.assertEqual(self.internship.company_name, Internship.objects.get(self.internship.id).company_name)
-        # self.internship1 =Internship.objects.create(
-        #     company_name="Test Company1",
-        #     id=generateRandomString(),
-        #     website="https://testwebsite1.com",
-        #     address="Test Address1",
-        #     company_type="Test Company Type1",
-        #     offer_accepted=True,
-        #     season=["Summer"],
-        #     allowed_branch=["CSE"],
-        #     allowed_batch=["2020"],
-        #     contact_person_name="Test Contact Person1",
-        #     phone_number="1234567890",
-        #     email="test@test1.com",
-        #     email_verified=True,
-        #     deadline_datetime=timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timezone.timedelta(days=1),
-        #     stipend=10000,
 
-        # )
         self.placement = Placement.objects.create(
-            company_name="Test Company",
-            id=generateRandomString(),
-            website="https://testwebsite.com",
-            address="Test Address",
-            company_type="Test Company Type",
-            offer_accepted=True,
-            tier="6",
-            # season="Summer",
-            allowed_branch=["CSE"],
-            allowed_batch=["2020"],
-            contact_person_name="Test Contact Person",
-            phone_number="1234567890",
-            email="test@test.com",
-            email_verified=True,
-            deadline_datetime=timezone.now().replace(hour=0, minute=0, second=0,
-                                                     microsecond=0) + timezone.timedelta(days=1),
+            company_name="Test Company", id=generateRandomString(), website="https://testwebsite.com", address="Test Address", company_type="Test Company Type",  offer_accepted=True,   tier="6", allowed_branch=["CSE"], allowed_batch=["2020"],
+            contact_person_name="Test Contact Person", phone_number="1234567890", email="test@test.com",  email_verified=True,
+
         )
-        # self.placement1 = Placement.objects.create(
-        #     company_name="Test Company1",
-        #     id=generateRandomString(),
-        #     website="https://testwebsite1.com",
-        #     address="Test Address1",
-        #     company_type="Test Company Type1",
-        #     offer_accepted=True,
-        #     tier="7",
-        #     # season="Summer",
-        #     allowed_branch=["CSE"],
-        #     allowed_batch=["2020"],
-        #     contact_person_name="Test Contact Person1",
-        #     phone_number="1234567890",
-        #     email="test@test1.com",
-        #     email_verified=True,
-        #     deadline_datetime=timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + timezone.timedelta(days=1),
-        # )
-        # self.assertEqual(self.placement.tier,"1")
+
         self.assertEqual(self.placement.company_name, Placement.objects.get(
             id=self.placement.id).company_name)
+
         self.internship_application = InternshipApplication.objects.create(
-            id=generateRandomString(),
-            internship=self.internship,
-            student=self.student,
-            resume="8BSLybntULgrPPm_beehyv.pdf",
-            selected=True
-            # status="Applied"
+            id=generateRandomString(), internship=self.internship, student=self.student, resume="8BSLybntULgrPPm_beehyv.pdf", selected=True
+
         )
-        # self.internship_application1=InternshipApplication.objects.create(
-        #     id=generateRandomString(),
-        #     internship=self.internship1,
-        #     student=self.student,
-        #     resume="8BSLybntULgrPPm_beehyv.pdf"
-        #     )
+
         self.assertEqual(self.internship_application.internship.company_name, InternshipApplication.objects.get(
             id=self.internship_application.id).internship.company_name)
         self.placement_application = PlacementApplication.objects.create(
-            id=generateRandomString(),
-            placement=self.placement,
-            student=self.student,
-            resume="8BSLybntULgrPPm_beehyv.pdf",
-            selected=True
-            # status="Applied"
+            id=generateRandomString(), placement=self.placement, student=self.student, resume="8BSLybntULgrPPm_beehyv.pdf", selected=True
+
         )
-        # self.placement_application1 = PlacementApplication.objects.create(
-        #     id=generateRandomString(),
-        #     placement=self.placement1,
-        #     student=self.student,
-        #     resume="8BSLybntULgrPPm_beehyv.pdf",
-        #    # selected=True
-        #    # status="Applied"
-        # )
+
         self.assertEqual(self.placement_application.placement.company_name, PlacementApplication.objects.get(
             id=self.placement_application.id).placement.company_name)
         self.issue = Issues.objects.create(
-            student=self.student,
-            title="Test Issue",
-            description="Test Issue Description",
-            opening_id=self.internship.id,
+            student=self.student, title="Test Issue", description="Test Issue Description", opening_id=self.internship.id,
             opening_type=INTERNSHIP
         )
+
         # get token from google OAuth API
         response = self.client.post(reverse('Refresh Token'), {
                                     'refresh_token': os.environ.get("refresh_token")}, format='json')
         self.student_token = response.data['id_token']
-       # self.student_token = get_access_token_id(os.environ.get("refresh_token"))
-
-        # self.contributor_token = get_token(self.contributor.email, "testpassword", CONTRIBUTOR)
 
     def test_student_accept_offer_internship(self):
         url = reverse('Student Accept Offer')
@@ -180,10 +77,19 @@ class StudentViewsTestCase(APITestCase):
         self.assertEqual(response.data['message'], 'Updated Offer Status')
         self.assertEqual(InternshipApplication.objects.get(
             id=self.internship_application.id).offer_accepted, True)
+
+    def test_student_accept_offer_internship_notFound(self):
+        url = reverse('Student Accept Offer')
+        data = {
+            'opening_id': self.internship.id,
+            'offer_accepted': True,
+            'opening_type': INTERNSHIP
+        }
         self.internship_application.selected = False
         self.internship_application.offer_accepted = False
         self.internship_application.save()
-
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], 'Offer Not Found')
@@ -203,68 +109,89 @@ class StudentViewsTestCase(APITestCase):
         self.assertEqual(response.data['message'], 'Application Deleted')
         self.assertEqual(InternshipApplication.objects.filter(
             id=self.internship_application.id).count(), 0)
+
+    def test_delete_application_internship_deadlinePassed(self):
+        url = reverse('Delete Application')
+        data = {
+            'application_id': self.internship_application.id,
+            'opening_type': INTERNSHIP
+        }
         self.internship.deadline_datetime = timezone.now().replace(
             hour=0, minute=0, second=0, microsecond=0)
         self.internship.save()
-        self.internship_application = InternshipApplication.objects.create(id=generateRandomString(),
-                                                                           internship=self.internship,
-                                                                           student=self.student,
-                                                                           resume="8BSLybntULgrPPm_beehyv.pdf",
-                                                                           selected=True)
-        data['application_id'] = self.internship_application.id
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data['message'], 'Deadline Passed')
         self.assertEqual(InternshipApplication.objects.filter(
             id=self.internship_application.id).count(), 1)
 
-    def test_add_application_internship(self):
+    def test_delete_application_internship_notFound(self):
         url = reverse('Delete Application')
         data = {
             'application_id': self.internship_application.id,
             'opening_type': INTERNSHIP
         }
+        self.internship_application.delete()
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + self.student_token)
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['message'], 'Application Deleted')
+        self.assertEqual(response.status_code,
+                         status.HTTP_404_NOT_FOUND)
+        self.assertEqual(
+            response.data['message'], 'No InternshipApplication matches the given query.')
         self.assertEqual(InternshipApplication.objects.filter(
             id=self.internship_application.id).count(), 0)
-        # deleted existing application
-        url = reverse('Add Application')
-        data = {
-            OPENING_ID: self.internship.id,
-            OPENING_TYPE: INTERNSHIP,
-            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf'
-        }
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['message'], 'Application Submitted')
-        self.assertEqual(InternshipApplication.objects.filter(
-            student=self.student).count(), 1)
-        self.internship_application = InternshipApplication.objects.filter(
-            student=self.student)
-        self.internship.deadline_datetime = timezone.now().replace(
-            hour=0, minute=0, second=0, microsecond=0)
-        self.internship.save()
 
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data['message'],
-                         'Application is already Submitted')
-        self.assertEqual(InternshipApplication.objects.filter(
-            student=self.student).count(), 1)
-        self.internship_application.delete()
-        data[OPENING_ID] = generateRandomString()
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.data['message'],
-                         'No Internship matches the given query.')
-        self.assertEqual(InternshipApplication.objects.filter(
-            student=self.student).count(), 0)
+    # def test_add_application_internship(self):
+    #     url = reverse('Delete Application')
+    #     data = {
+    #         'application_id': self.internship_application.id,
+    #         'opening_type': INTERNSHIP
+    #     }
+    #     self.client.credentials(
+    #         HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+    #     response = self.client.post(url, data, format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(response.data['message'], 'Application Deleted')
+    #     self.assertEqual(InternshipApplication.objects.filter(
+    #         id=self.internship_application.id).count(), 0)
+    #     # deleted existing application
+    #     url = reverse('Add Application')
+    #     data = {
+    #         OPENING_ID: self.internship.id,
+    #         OPENING_TYPE: INTERNSHIP,
+    #         RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+    #         ADDITIONAL_INFO: []
+    #     }
+    #     self.client.credentials(
+    #         HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+    #     response = self.client.post(url, data, format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(response.data['message'], 'Application Submitted')
+    #     self.assertEqual(InternshipApplication.objects.filter(
+    #         student=self.student).count(), 1)
+    #     self.internship_application = InternshipApplication.objects.filter(
+    #         student=self.student)
+    #     # self.internship.deadline_datetime = timezone.now().replace(
+    #     #     hour=0, minute=0, second=0, microsecond=0)
+    #     # self.internship.save()
+
+    #     response = self.client.post(url, data, format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    #     self.assertEqual(response.data['message'],
+    #                      'Application is already Submitted')
+    #     self.assertEqual(InternshipApplication.objects.filter(
+    #         student=self.student).count(), 1)
+    #     self.internship_application.delete()
+    #     data[OPENING_ID] = generateRandomString()
+    #     response = self.client.post(url, data, format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    #     self.assertEqual(response.data['message'],
+    #                      'No Internship matches the given query.')
+    #     self.assertEqual(InternshipApplication.objects.filter(
+    #         student=self.student).count(), 0)
 
     def test_student_accept_offer_placement(self):
         url = reverse('Student Accept Offer')
@@ -280,12 +207,26 @@ class StudentViewsTestCase(APITestCase):
         self.assertEqual(response.data['message'], 'Updated Offer Status')
         self.assertEqual(PlacementApplication.objects.get(
             id=self.placement_application.id).offer_accepted, True)
+
+    def test_student_accept_offer_placement_offerNotFound(self):
+        url = reverse('Student Accept Offer')
+        data = {
+            'opening_id': self.placement.id,
+            'offer_accepted': True,
+            'opening_type': PLACEMENT
+        }
         self.placement_application.selected = False
         self.placement_application.offer_accepted = False
         self.placement_application.save()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        self.assertEqual(response.status_code,
+                         status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'], 'Offer Not Found')
+        self.assertEqual(PlacementApplication.objects.filter(
+            id=self.placement_application.id, selected=True).count(), 0)
         self.assertEqual(PlacementApplication.objects.get(
             id=self.placement_application.id).offer_accepted, False)
 
@@ -302,40 +243,54 @@ class StudentViewsTestCase(APITestCase):
         self.assertEqual(response.data['message'], 'Application Deleted')
         self.assertEqual(PlacementApplication.objects.filter(
             id=self.placement_application.id).count(), 0)
-        self.placement.deadline_datetime = timezone.now().replace(
-            hour=0, minute=0, second=0, microsecond=0)
-        self.placement.save()
-        self.placement_application = PlacementApplication.objects.create(id=generateRandomString(),
-                                                                         placement=self.placement,
-                                                                         student=self.student,
-                                                                         resume="8BSLybntULgrPPm_beehyv.pdf",
-                                                                         selected=True)
-        data['application_id'] = self.placement_application.id
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data['message'], 'Deadline Passed')
-        self.assertEqual(PlacementApplication.objects.filter(
-            id=self.placement_application.id).count(), 1)
 
-    def test_add_application_placement(self):
+    def test_delete_application_placement_notFound(self):
         url = reverse('Delete Application')
         data = {
             'application_id': self.placement_application.id,
             'opening_type': PLACEMENT
         }
+        self.placement_application.delete()
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + self.student_token)
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['message'], 'Application Deleted')
+
+        self.assertEqual(response.status_code,
+                         status.HTTP_404_NOT_FOUND)
+        self.assertEqual(
+            response.data['message'], 'No PlacementApplication matches the given query.')
         self.assertEqual(PlacementApplication.objects.filter(
             id=self.placement_application.id).count(), 0)
+
+    def test_delete_application_placement_deadlinePassed(self):
+        url = reverse('Delete Application')
+        data = {
+            'application_id': self.placement_application.id,
+            'opening_type': PLACEMENT
+        }
+        self.placement.deadline_datetime = timezone.now().replace(
+            hour=0, minute=0, second=0, microsecond=0)
+        self.placement.save()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code,
+                         status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['message'], 'Deadline Passed')
+        self.assertEqual(PlacementApplication.objects.filter(
+            id=self.placement_application.id).count(), 1)
+
+    def test_add_application_placement(self):
+        self.placement.additional_info = ["Test"]
+        self.placement_application.delete()
         # deleted existing application
         url = reverse('Add Application')
         data = {
             OPENING_ID: self.placement.id,
             OPENING_TYPE: PLACEMENT,
-            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf'
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: [{"Test": "Test"}]
         }
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + self.student_token)
@@ -344,19 +299,59 @@ class StudentViewsTestCase(APITestCase):
         self.assertEqual(response.data['message'], 'Application Submitted')
         self.assertEqual(PlacementApplication.objects.filter(
             student=self.student).count(), 1)
+
+    def test_add_application_placement_deadlinePassed(self):
         self.placement.deadline_datetime = timezone.now().replace(
             hour=0, minute=0, second=0, microsecond=0)
         self.placement.save()
+        # deleted existing application
+        self.placement_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.placement.id,
+            OPENING_TYPE: PLACEMENT,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['message'],
+                         'No Placement matches the given query.')
+        self.assertEqual(PlacementApplication.objects.filter(
+            student=self.student, placement=self.placement).count(), 0)
+
+    def test_add_application_placement_alreadyApplied(self):
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.placement.id,
+            OPENING_TYPE: PLACEMENT,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data['message'],
                          'Application is already Submitted')
         self.assertEqual(PlacementApplication.objects.filter(
-            student=self.student).count(), 1)
-        self.placement_application = PlacementApplication.objects.filter(
-            student=self.student)
+            student=self.student, placement=self.placement).count(), 1)
+
+    def test_add_application_placement_notFound(self):
         self.placement_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.placement.id,
+            OPENING_TYPE: PLACEMENT,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+
         data[OPENING_ID] = generateRandomString()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data['message'],
@@ -364,7 +359,124 @@ class StudentViewsTestCase(APITestCase):
         self.assertEqual(PlacementApplication.objects.filter(
             student=self.student).count(), 0)
 
-    def test_dashboard(self):
+    def test_add_application_placement_notApproved(self):
+        self.placement_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.placement.id,
+            OPENING_TYPE: PLACEMENT,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.placement.offer_accepted = False
+        self.placement.save()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['message'],
+                         'Placement Not Approved')
+        self.assertEqual(PlacementApplication.objects.filter(
+            student=self.student, placement=self.placement).count(), 0)
+
+    def test_add_application_placement_notEmailVerified(self):
+        self.placement_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.placement.id,
+            OPENING_TYPE: PLACEMENT,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.placement.email_verified = False
+        self.placement.save()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['message'],
+                         'Placement Not Approved')
+        self.assertEqual(PlacementApplication.objects.filter(
+            student=self.student, placement=self.placement).count(), 0)
+
+    def test_add_application_placement_notRegistered(self):
+        self.placement_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.placement.id,
+            OPENING_TYPE: PLACEMENT,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.student.can_apply = False
+        self.student.save()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'],
+                         "Student Can't Apply")
+        self.assertEqual(PlacementApplication.objects.filter(
+            student=self.student, placement=self.placement).count(), 0)
+
+    def test_add_application_placement_InvalidOpeningtype(self):
+        self.placement_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.placement.id,
+            OPENING_TYPE: "Invalid",
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'],
+                         "Something Went Wrong")
+        self.assertEqual(PlacementApplication.objects.filter(
+            student=self.student, placement=self.placement).count(), 0)
+
+    def test_add_application_placement_InvalidResume(self):
+        self.placement_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.placement.id,
+            OPENING_TYPE: PLACEMENT,
+            RESUME_FILE_NAME: 'Invalid',
+            ADDITIONAL_INFO: []
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['message'],
+                         "resume_file_name Not Found")
+        self.assertEqual(PlacementApplication.objects.filter(
+            student=self.student, placement=self.placement).count(), 0)
+
+    def test_add_application_placement_MissingAdditionalInfo(self):
+        self.placement_application.delete()
+        url = reverse('Add Application')
+        self.placement.additional_info = ["Test"]
+        self.placement.save()
+        data = {
+
+            OPENING_ID: self.placement.id,
+            OPENING_TYPE: PLACEMENT,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'],
+                         "Something Went Wrong")
+        self.assertEqual(PlacementApplication.objects.filter(
+            student=self.student, placement=self.placement).count(), 0)
+
+    def test_getdashboard(self):
         url = reverse('Dashboard')
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + self.student_token)
@@ -381,9 +493,7 @@ class StudentViewsTestCase(APITestCase):
                                                   self.student.branch],
                                               deadline_datetime__gte=datetime.datetime.now(),
                                               offer_accepted=True, email_verified=True)
-      #  self.assertEqual(len(response.data['internships']),len(internships))
-      #  self.assertEqual(PlacementApplicationConditions(self.student,self.placement)[1],"hai")
-      #  self.assertEqual(len(response.data['placements']),len(placements))
+
         filtered_internships = internship_eligibility_filters(
             self.student, internships)
         filtered_placements = placement_eligibility_filters(
@@ -429,3 +539,198 @@ class StudentViewsTestCase(APITestCase):
             opening_id=self.placement.id).count(), 1)
         self.assertEqual(Issues.objects.filter(
             opening_type=PLACEMENT).count(), 1)
+
+    def test_add_application_internship(self):
+        self.internship.additional_info = ["Test"]
+        self.internship_application.delete()
+        # deleted existing application
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.internship.id,
+            OPENING_TYPE: INTERNSHIP,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: [{"Test": "Test"}]
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], 'Application Submitted')
+        self.assertEqual(InternshipApplication.objects.filter(
+            student=self.student).count(), 1)
+
+    def test_add_application_internship_deadlinePassed(self):
+        self.internship.deadline_datetime = timezone.now().replace(
+            hour=0, minute=0, second=0, microsecond=0)
+        self.internship.save()
+        # deleted existing application
+        self.internship_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.internship.id,
+            OPENING_TYPE: INTERNSHIP,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['message'],
+                         'No Internship matches the given query.')
+        self.assertEqual(InternshipApplication.objects.filter(
+            student=self.student, internship=self.internship).count(), 0)
+
+    def test_add_application_internship_alreadyApplied(self):
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.internship.id,
+            OPENING_TYPE: INTERNSHIP,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['message'],
+                         'Application is already Submitted')
+        self.assertEqual(InternshipApplication.objects.filter(
+            student=self.student, internship=self.internship).count(), 1)
+
+    def test_add_application_internship_notFound(self):
+        self.internship_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.internship.id,
+            OPENING_TYPE: INTERNSHIP,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+
+        data[OPENING_ID] = generateRandomString()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['message'],
+                         'No Internship matches the given query.')
+        self.assertEqual(InternshipApplication.objects.filter(
+            student=self.student).count(), 0)
+
+    def test_add_application_internship_notApproved(self):
+        self.internship_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.internship.id,
+            OPENING_TYPE: INTERNSHIP,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.internship.offer_accepted = False
+        self.internship.save()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['message'],
+                         'Internship Not Approved')
+        self.assertEqual(InternshipApplication.objects.filter(
+            student=self.student, internship=self.internship).count(), 0)
+
+    def test_add_application_internship_notEmailVerified(self):
+        self.internship_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.internship.id,
+            OPENING_TYPE: INTERNSHIP,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.internship.email_verified = False
+        self.internship.save()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['message'],
+                         'Internship Not Approved')
+        self.assertEqual(InternshipApplication.objects.filter(
+            student=self.student, internship=self.internship).count(), 0)
+
+    def test_add_application_internship_notRegistered(self):
+        self.internship_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.internship.id,
+            OPENING_TYPE: INTERNSHIP,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.student.can_apply_internship = False
+        self.student.save()
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'],
+                         "Student Can't Apply")
+        self.assertEqual(InternshipApplication.objects.filter(
+            student=self.student, internship=self.internship).count(), 0)
+
+    def test_add_application_internship_InvalidOpeningtype(self):
+        self.internship_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.internship.id,
+            OPENING_TYPE: "Invalid",
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'],
+                         "Something Went Wrong")
+        self.assertEqual(InternshipApplication.objects.filter(
+            student=self.student, internship=self.internship).count(), 0)
+
+    def test_add_application_internship_InvalidResume(self):
+        self.internship_application.delete()
+        url = reverse('Add Application')
+        data = {
+            OPENING_ID: self.internship.id,
+            OPENING_TYPE: INTERNSHIP,
+            RESUME_FILE_NAME: 'Invalid',
+            ADDITIONAL_INFO: []
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['message'],
+                         "resume_file_name Not Found")
+        self.assertEqual(InternshipApplication.objects.filter(
+            student=self.student, internship=self.internship).count(), 0)
+
+    def test_add_application_internship_MissingAdditionalInfo(self):
+        self.internship_application.delete()
+        url = reverse('Add Application')
+        self.internship.additional_info = ["Test"]
+        self.internship.save()
+        data = {
+
+            OPENING_ID: self.internship.id,
+            OPENING_TYPE: INTERNSHIP,
+            RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
+            ADDITIONAL_INFO: []
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'],
+                         "Something Went Wrong")
+        self.assertEqual(InternshipApplication.objects.filter(
+            student=self.student, internship=self.internship).count(), 0)

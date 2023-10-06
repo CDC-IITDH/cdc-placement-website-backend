@@ -170,7 +170,7 @@ def deleteResume(request, id, email, user_type):
 
 @api_view(['POST'])
 @isAuthorized(allowed_users=[STUDENT])
-@precheck(required_data=[OPENING_TYPE, OPENING_ID, RESUME_FILE_NAME,
+@precheck(required_data=[OPENING_TYPE, OPENING_ID, RESUME_FILE_NAME,ADDITIONAL_INFO
                          ])
 def submitApplication(request, id, email, user_type):
     try:
@@ -201,7 +201,7 @@ def submitApplication(request, id, email, user_type):
                 raise PermissionError("Application is already Submitted")
         elif data[OPENING_TYPE] == INTERNSHIP:
             if not student.can_apply_internship:
-                return Response({'action': "Submit Application", 'message': "Student Can't Apply Internship"},
+                return Response({'action': "Submit Application", 'message': "Student Can't Apply"},
                             status=status.HTTP_400_BAD_REQUEST)
             if not len(InternshipApplication.objects.filter(
                     student_id=id, internship_id=data[OPENING_ID])):
@@ -327,7 +327,7 @@ def getContributorStats(request, id, email, user_type):
 def studentAcceptOffer(request, id, email, user_type):
     try:
         company_id = request.data[OPENING_ID]
-        #student_id=request.data['profileInfo']['id']
+        #student_id=request.data['profileInfo']['id']             //check this once
         student_id=id
 
         offer_accepted = request.data['offer_accepted']

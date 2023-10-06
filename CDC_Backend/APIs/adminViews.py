@@ -399,6 +399,9 @@ def submitApplication(request, id, email, user_type):
     except FileNotFoundError as e:
         return Response({'action': "Submit Application", 'message': str(e)},
                         status=status.HTTP_404_NOT_FOUND)
+    except AttributeError as e:
+        return Response({'action': "Submit Application", 'message': str(e)},
+                        status=status.HTTP_400_BAD_REQUEST)
     except:
         logger.warning("Submit Application: " + str(sys.exc_info()))
         return Response({'action': "Submit Application", 'message': "Something Went Wrong"},
@@ -441,7 +444,7 @@ def generateCSV(request, id, email, user_type):
             row_details.append(apl.student.branch)
             row_details.append(apl.student.batch)
             row_details.append(apl.student.cpi)
-            link = LINK_TO_STORAGE_RESUME + urllib.parse.quote(apl.student.id) + "/" + urllib.parse.quote(apl.resume)
+            link = LINK_TO_STORAGE_RESUME + urllib.parse.quote(str(apl.student.id)) + "/" + urllib.parse.quote(str(apl.resume))
             row_details.append(link)
             row_details.append(apl.selected)
 
