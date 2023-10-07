@@ -8,6 +8,7 @@ from django.urls import reverse
 from ..utils import *
 import json
 from django.utils import timezone
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 class StudentViewsTestCase(APITestCase):
@@ -15,12 +16,12 @@ class StudentViewsTestCase(APITestCase):
         self.client = APIClient()
         self.user = User.objects.create(
             email=str(os.environ.get("email")),
-            id=generateRandomString(),
+            id="200010052",
             user_type=[STUDENT])
         self.assertEqual(
             self.user.email, User.objects.get(id=self.user.id).email)
         self.student = Student.objects.create(
-            name="Test Student", id=self.user.id, resumes=["8BSLybntULgrPPm_beehyv.pdf"], roll_no=str(os.environ.get("roll_no")), branch="CSE", batch="2020",  phone_number="1234567890",  changed_by=self.user,  can_apply=True,
+            name="Test Student", id=self.user.id, resumes=["8BSLybntULgrPPm_beehyv.pdf"], roll_no=str(os.environ.get("roll_no")), branch="CSE", batch="2020",  phone_number=1234567890,  changed_by=self.user,  can_apply=True,
             can_apply_internship=True, degree="bTech", cpi=7.95,
         )
         self.assertEqual(self.student.name,
@@ -734,3 +735,102 @@ class StudentViewsTestCase(APITestCase):
                          "Something Went Wrong")
         self.assertEqual(InternshipApplication.objects.filter(
             student=self.student, internship=self.internship).count(), 0)
+
+    def test_getStudentProfile(self):
+        url = reverse('Student Profile')
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], 'Details Found')
+        self.assertEqual(response.data['details']['id'], self.student.id)
+        self.assertEqual(response.data['details']['roll_no'],
+                         self.student.roll_no)
+        self.assertEqual(response.data['details']['name'], self.student.name)
+        self.assertEqual(response.data['details']['batch'], self.student.batch)
+        self.assertEqual(response.data['details']['branch'],
+                         self.student.branch)
+        self.assertEqual(response.data['details']['phone_number'],
+                         self.student.phone_number)
+        self.assertEqual(response.data['details']
+                         ['cpi'], str(self.student.cpi))
+        for i in range(len(response.data['details']['resume_list'])):
+            self.assertIn(
+                response.data['details']['resume_list'][i]['name'], self.student.resumes)
+        for i in range(len(response.data['details']['offers'])):
+            self.assertIn(response.data['details']['offers'][i]
+                          ['application_id'], self.placement_application.id)
+
+    def test_addResume_success(self):
+        pdf = SimpleUploadedFile(
+            'kalera.pdf', b'content', content_type='application/pdf')
+        url = reverse('Upload Resume')
+        files = {'file': pdf}
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, files, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], 'Resume Added')
+
+    def test_add_resume_max_limit_reached(self):
+        pdf = SimpleUploadedFile(
+            'kalera.pdf', b'content', content_type='application/pdf')
+        url = reverse('Upload Resume')
+        files = {'file': pdf}
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        self.student.resumes = ['resume1.pdf', 'resume2.pdf', 'resume3.pdf']
+        self.student.save()
+        response = self.client.post(url, files, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {
+                         'action': 'Upload Resume', 'message': 'Max Number of Resumes limit reached'})
+        self.student.refresh_from_db()
+        self.assertEqual(len(self.student.resumes), 3)
+
+    def test_deleteResume_success(self):
+        destination_path = STORAGE_DESTINATION_RESUMES + \
+            self.student.id+'/'+"8BSLybntULgrPPm_beehyv.pdf"
+        # check it whats this above without this test giving error
+        with open(destination_path, 'w') as f:
+            f.write('test')
+            f.close()
+        # create a file here
+
+        url = reverse('Delete Resume')
+        data = {
+            'resume_file_name': '8BSLybntULgrPPm_beehyv.pdf'
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], 'Resume Deleted')
+        self.student.refresh_from_db()
+        self.assertEqual(self.student.resumes, [])
+        remove(destination_path)
+
+    def test_deleteResume_invalidResume(self):
+        url = reverse('Delete Resume')
+        data = {
+            'resume_file_name': 'Invalid'
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['message'],
+                         'Resume Not Found')
+        self.student.refresh_from_db()
+        self.assertEqual(self.student.resumes, ['8BSLybntULgrPPm_beehyv.pdf'])
+
+    def test_deleteResume_missingResumeinStorage(self):
+        url = reverse('Delete Resume')
+        data = {
+            'resume_file_name': '8BSLybntULgrPPm_beehyv.pdf'
+        }
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Bearer ' + self.student_token)
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['message'], 'File Not Found')
