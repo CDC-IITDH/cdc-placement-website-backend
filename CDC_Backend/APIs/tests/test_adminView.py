@@ -84,10 +84,7 @@ class AdminView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.token = response.data['id_token']
-        # response = self.client.post(reverse('Refresh Token'), {
-        #                             'refresh_token': os.environ.get("s_refresh_token")}, format='json')
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # self.s_token = response.data['id_token']
+       
 
     # def test_get_stats(self):
     #     self.pa1.selected = True
@@ -190,13 +187,7 @@ class AdminView(APITestCase):
     #     self.assertEqual(
     #         student4_stats['second_offer_compensation'], None)
 
-    # def test_get_stats_error(self):
-    #     # Test if an error is returned when an exception is raised
-    #     # by the view function
-    #     self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
-    #     response = self.client.get(reverse('Get Stats'))
-    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    #     self.assertEqual(response.data['message'], 'Something Went Wrong')
+  # logic Issue Fix The Above Function
 
     def test_addPPO(self):  # done
         url = reverse("Add PPO")
@@ -300,9 +291,9 @@ class AdminView(APITestCase):
         self.assertEqual(response.data['message'], 'Application added')
         self.assertEqual(PlacementApplication.objects.filter(
             student=self.student4).count(), 1)
-
-        # handle double creation of application
-
+        ##############################################
+        ### handle double creation of application  ###
+        ##############################################
     def test_submitApplication_without_adinfo(self):
         url = reverse("Submit Application")
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
@@ -1375,7 +1366,9 @@ class AdminView(APITestCase):
         self.assertEqual(InternshipApplication.objects.filter(
             student=self.student4).count(), 1)
 
-        # handle double creation of application
+         ##############################################
+        ### handle double creation of application  ###
+        ##############################################
 
     def test_submitApplication_without_adinfo_internship(self):
         url = reverse("Submit Application")

@@ -322,7 +322,7 @@ def autoFillJnf(request):
                         status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@precheck([PLACEMENT_ID])
+@precheck([INTERNSHIP_ID])
 def autoFillInf(request):
     try:
         data = request.GET
