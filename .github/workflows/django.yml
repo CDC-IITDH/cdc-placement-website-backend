@@ -57,4 +57,7 @@ jobs:
         pip install -r requirements.txt
     - name:  Run Tests
       run:  |
-        cd CDC_Backend && python manage.py test
+        cd CDC_Backend
+        python manage.py makemigrations
+        python manage.py makemigrations APIs
+        python manage.py test
