@@ -18,7 +18,7 @@ class AdminView(APITestCase):
         self.s_admin = User.objects.create(email=str(os.environ.get(
             "s_email")), id=generateRandomString(), user_type=["s_admin"])
         self.user1 = User.objects.create(
-            email="200010030@iitdh.ac.in", id="200010030", user_type=[STUDENT])
+            email="200010032@iitdh.ac.in", id="200010032", user_type=[STUDENT])
         self.user2 = User.objects.create(
             email="200010038@iitdh.ac.in", id="200010038", user_type=[STUDENT])
         self.user3 = User.objects.create(
@@ -26,7 +26,7 @@ class AdminView(APITestCase):
         self.user4 = User.objects.create(
             email="200030058@iitdh.ac.in", id="200030058", user_type=[STUDENT])
         self.student1 = Student.objects.create(
-            name='John Doe', roll_no='200010030', batch='2020', branch='CSE', cpi=9.5, id="200010030", can_apply=True, resumes=["8BSLybntULgrPPm_beehyv.pdf", "8BSLybntULgrPPm_kalera.pdf"], can_apply_internship=True)
+            name='John Doe', roll_no='200010032', batch='2020', branch='CSE', cpi=9.5, id="200010032", can_apply=True, resumes=["8BSLybntULgrPPm_beehyv.pdf", "8BSLybntULgrPPm_kalera.pdf"], can_apply_internship=True)
         self.student2 = Student.objects.create(
             name='Jane Doe', roll_no='200010038', batch='2020', branch='EE', cpi=9.0, id="200010038", can_apply=True, resumes=["8BSLybntULgrPPm_beehyv.pdf"], can_apply_internship=True)
         self.student3 = Student.objects.create(
@@ -84,8 +84,8 @@ class AdminView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.token = response.data['id_token']
-       
 
+    # TODO: logic Issue Fix The Above Function
     # def test_get_stats(self):
     #     self.pa1.selected = True
     #     self.pa1.save()
@@ -187,7 +187,6 @@ class AdminView(APITestCase):
     #     self.assertEqual(
     #         student4_stats['second_offer_compensation'], None)
 
-  # logic Issue Fix The Above Function
 
     def test_addPPO(self):  # done
         url = reverse("Add PPO")
