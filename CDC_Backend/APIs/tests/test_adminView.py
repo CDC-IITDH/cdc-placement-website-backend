@@ -14,7 +14,7 @@ class AdminView(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.admin = User.objects.create(email=str(os.environ.get(
-            "email")), id=generateRandomString(), user_type=[ADMIN])
+            "email_id")), id=generateRandomString(), user_type=[ADMIN])
         self.s_admin = User.objects.create(email=str(os.environ.get(
             "s_email")), id=generateRandomString(), user_type=["s_admin"])
         self.user1 = User.objects.create(
