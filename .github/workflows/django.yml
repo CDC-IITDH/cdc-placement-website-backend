@@ -58,6 +58,7 @@ jobs:
     - name:  Run Tests
       run:  |
         cd CDC_Backend
+        pythom manage.py collectstatic
         python manage.py makemigrations
         python manage.py makemigrations APIs
         python manage.py test
