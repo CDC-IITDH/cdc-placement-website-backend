@@ -425,7 +425,8 @@ def generateCSV(request, id, email, user_type):
             applications = PlacementApplication.objects.filter(placement=opening)
         filename = generateRandomString()
         if not os.path.isdir(STORAGE_DESTINATION_APPLICATION_CSV):
-            os.mkdir(STORAGE_DESTINATION_APPLICATION_CSV)
+            # create directory if not present already even if first directory is not present
+            os.makedirs(STORAGE_DESTINATION_APPLICATION_CSV, exist_ok=True)
         destination_path = STORAGE_DESTINATION_APPLICATION_CSV + filename + ".csv"
         f = open(destination_path, 'w')
         writer = csv.writer(f)
