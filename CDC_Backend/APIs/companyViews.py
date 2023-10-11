@@ -298,7 +298,7 @@ def verifyEmail(request):
                         status=status.HTTP_400_BAD_REQUEST)
     except:
         logger.warning("Verify Email: " + str(sys.exc_info()))
-        return Response({'action': "Verify Email", 'message': "Something went wrong"},
+        return Response({'action': "Verify Email", 'message': "Something went wrong\n"+str(sys.exc_info())},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
