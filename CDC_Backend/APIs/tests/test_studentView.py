@@ -562,8 +562,7 @@ class StudentViewsTestCase(APITestCase):
 
     def test_add_application_internship_deadlinePassed(self):
         # now minus 5 minutes
-        self.internship.deadline_datetime = timezone.now().replace
-        (hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(minutes=5)
+        self.internship.deadline_datetime = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(minutes=5)
         
         self.internship.save()
         # deleted existing application
