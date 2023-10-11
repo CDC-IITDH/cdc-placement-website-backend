@@ -303,7 +303,7 @@ class StudentViewsTestCase(APITestCase):
 
     def test_add_application_placement_deadlinePassed(self):
         self.placement.deadline_datetime = timezone.now().replace(
-            hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(minutes=5)
+            hour=0, minute=0, second=0, microsecond=0)
         self.placement.save()
         # deleted existing application
         self.placement_application.delete()
@@ -561,9 +561,7 @@ class StudentViewsTestCase(APITestCase):
             student=self.student).count(), 1)
 
     def test_add_application_internship_deadlinePassed(self):
-        # now minus 5 minutes
-        self.internship.deadline_datetime = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(minutes=5)
-        
+        self.internship.deadline_datetime = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
         self.internship.save()
         # deleted existing application
         self.internship_application.delete()
