@@ -458,7 +458,7 @@ def generateCSV(request, id, email, user_type):
                         status=status.HTTP_200_OK)
     except:
         logger.warning("Create csv: " + str(sys.exc_info()))
-        return Response({'action': "Create csv", 'message': "Something Went Wrong"},
+        return Response({'action': "Create csv", 'message': "Something Went Wrong"+str(sys.exc_info())},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
