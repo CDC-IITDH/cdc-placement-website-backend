@@ -425,7 +425,6 @@ def generateCSV(request, id, email, user_type):
             applications = PlacementApplication.objects.filter(placement=opening)
         filename = generateRandomString()
         if not os.path.isdir(STORAGE_DESTINATION_APPLICATION_CSV):
-            # create directory if not present already even if first directory is not present
             os.makedirs(STORAGE_DESTINATION_APPLICATION_CSV, exist_ok=True)
         destination_path = STORAGE_DESTINATION_APPLICATION_CSV + filename + ".csv"
         f = open(destination_path, 'w')
@@ -459,7 +458,7 @@ def generateCSV(request, id, email, user_type):
                         status=status.HTTP_200_OK)
     except:
         logger.warning("Create csv: " + str(sys.exc_info()))
-        return Response({'action': "Create csv", 'message': "Something Went Wrong"+str(sys.exc_info())},
+        return Response({'action': "Create csv", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
