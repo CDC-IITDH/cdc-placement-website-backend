@@ -15,7 +15,7 @@ class StudentViewsTestCase(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = User.objects.create(
-            email=str(os.environ.get("EMAIL")),
+            email=str(os.environ.get("EMAIL_ID")),
             id=str(os.environ.get("ROLL_NO")),
             user_type=[STUDENT])
         self.assertEqual(
