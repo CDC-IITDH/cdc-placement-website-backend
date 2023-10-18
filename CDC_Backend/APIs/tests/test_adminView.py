@@ -14,9 +14,7 @@ class AdminView(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.admin = User.objects.create(email=str(os.environ.get(
-            "email_id")), id=generateRandomString(), user_type=[ADMIN])
-        self.s_admin = User.objects.create(email=str(os.environ.get(
-            "s_email")), id=generateRandomString(), user_type=["s_admin"])
+            "EMAIL")), id=generateRandomString(), user_type=[ADMIN])
         self.user1 = User.objects.create(
             email="200010032@iitdh.ac.in", id="200010032", user_type=[STUDENT])
         self.user2 = User.objects.create(
@@ -79,7 +77,7 @@ class AdminView(APITestCase):
             id=generateRandomString(), student=self.student3, internship=self.internship2, resume="8BSLybntULgrPPm_beehyv.pdf")
 
         response = self.client.post(reverse('Refresh Token'), {
-                                    'refresh_token': os.environ.get("refresh_token")}, format='json')
+                                    'refresh_token': os.environ.get("REFRESH_TOKEN")}, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
