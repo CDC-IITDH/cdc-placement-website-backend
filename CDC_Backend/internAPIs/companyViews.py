@@ -1,4 +1,0 @@
-
-
-def addInternship(request):
-    pass

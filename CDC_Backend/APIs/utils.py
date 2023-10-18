@@ -28,7 +28,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from .constants import *
-from .models import User, PrePlacementOffer, PlacementApplication, Placement, Student, Internship
+from .models import User, PrePlacementOffer, PlacementApplication, Placement, Student, Internship,InternshipApplication
 
 logger = logging.getLogger('db')
 
@@ -194,7 +194,7 @@ def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
         else:
             recipient_list = [str(email_to), ]
 
-        msg = EmailMultiAlternatives(subject, text_content, email_from, recipient_list)
+        msg = EmailMultiAlternatives(subject, text_content, email_from,None,bcc=recipient_list)
         msg.attach_alternative(html_content, "text/html")
         if attachment_jnf_response:
             # logger.info(attachment_jnf_response)
@@ -244,6 +244,20 @@ def PlacementApplicationConditions(student, placement):
         return False, e
     except:
         logger.warning("Utils - PlacementApplicationConditions: " + str(sys.exc_info()))
+        return False, "_"
+
+def InternshipApplicationConditions(student, internship):
+    try:
+        selected_companies = InternshipApplication.objects.filter(student=student, selected=True)
+        if len(selected_companies)>=1:
+           # print("selected companies > 1")
+            return False, "You have already secured a Internship"
+        return True, "Conditions Satisfied"
+
+    except PermissionError as e:
+        return False, e
+    except:
+        logger.warning("Utils - InternshipApplicationConditions: " + str(sys.exc_info()))
         return False, "_"
 
 
@@ -370,35 +384,53 @@ def placement_eligibility_filters(student, placements):
     except:
         logger.warning("Utils - placement_eligibility_filters: " + str(sys.exc_info()))
         return placements
+def internship_eligibility_filters(student, internships):
+    try:
+        filtered_internships = []
+        for internship in internships.iterator():
+
+            if InternshipApplicationConditions(student, internship)[0]:
+                filtered_internships.append(internship)
+
+        return filtered_internships
+    except:
+        logger.warning("Utils - internship_eligibility_filters: " + str(sys.exc_info()))
+        return internships
 
 
 @background_task.background(schedule=2)
-def send_opening_notifications(placement_id):
+def send_opening_notifications(opening_id, opening_type=PLACEMENT):
     try:
-        placement = get_object_or_404(Placement, id=placement_id)
+       # print(opening_id, opening_type)
+        if opening_type == PLACEMENT:
+            opening = get_object_or_404(Placement, id=opening_id)
+        else:
+            opening = get_object_or_404(Internship, id=opening_id)
+        emails=[]
         students = Student.objects.all()
         for student in students.iterator():
-            if student.branch in placement.allowed_branch:
-                if student.degree == 'bTech' or placement.rs_eligible is True:
-                    if PlacementApplicationConditions(student, placement)[0]:
+            if student.branch in opening.allowed_branch:
+                if student.degree == 'bTech' or opening.rs_eligible is True:
+                    if (isinstance(opening,Placement) and PlacementApplicationConditions(student, opening)[0]) or (isinstance(opening,Internship) and InternshipApplicationConditions(student, opening)[0]):
                         try:
                             student_user = get_object_or_404(User, id=student.id)
-                            subject = NOTIFY_STUDENTS_OPENING_TEMPLATE_SUBJECT.format(
-                                company_name=placement.company_name)
-                            deadline_datetime = placement.deadline_datetime.astimezone(pytz.timezone('Asia/Kolkata'))
-                            data = {
-                                "company_name": placement.company_name,
-                                "opening_type": 'Placement',
-                                "designation": placement.designation,
-                                "deadline": deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
-                                "link": PLACEMENT_OPENING_URL.format(id=placement.designation)
-                            }
-                            sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
+                            emails.append(student_user.email)
+                            #sendEmail(student_user.email, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE)
                         except Http404:
                             logger.warning('Utils - send_opening_notifications: user not found : ' + student.id)
                         except Exception as e:
                             logger.warning('Utils - send_opening_notifications: For Loop' + str(e))
-
+        subject = NOTIFY_STUDENTS_OPENING_TEMPLATE_SUBJECT.format(
+                                company_name=opening.company_name)
+        deadline_datetime = opening.deadline_datetime.astimezone(pytz.timezone('Asia/Kolkata'))
+        data = {
+            "company_name": opening.company_name,
+            "opening_type": "INTERNSHIP" if isinstance(opening, Internship) else "PLACEMENT",
+            "designation": opening.designation,
+            "deadline": deadline_datetime.strftime("%A, %-d %B %Y, %-I:%M %p"),
+            "link": PLACEMENT_OPENING_URL.format(id=opening.designation) if opening_type == PLACEMENT else INTERNSHIP_OPENING_URL.format(id=opening.designation),
+            }                            
+        sendEmail(emails, subject, data, NOTIFY_STUDENTS_OPENING_TEMPLATE) #handled multiple mailings
     except:
         logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
         return False
@@ -408,11 +440,11 @@ def exception_email(opening):
     opening = opening.dict()
     data = {
         "designation": opening["designation"],
-        "opening_type": PLACEMENT,
+        "opening_type": "INTERNSHIP" if opening["opening_type"] == "INF" else "PLACEMENT",
         "company_name": opening["company_name"],
     }
     pdfhtml = opening_description_table_html(opening)
-    name = opening["company_name"] + '_jnf_response.pdf'
+    name = opening["company_name"] + '_jnf_response.pdf' if opening[OPENING_TYPE]!="INF" else opening["company_name"] + '_inf_response.pdf'
     attachment_jnf_respone = {
         "name": name,
         "html": pdfhtml,
@@ -433,6 +465,10 @@ def store_all_files(request):
             saveFile(file, file_location)
         # compensation details pdf
         for file in files.getlist(COMPENSATION_DETAILS_PDF):
+            file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + "temp" + '/'
+            saveFile(file, file_location)
+        #stipend details pdf for internships
+        for file in files.getlist(STIPEND_DETAILS_PDF):
             file_location = STORAGE_DESTINATION_COMPANY_ATTACHMENTS + "temp" + '/'
             saveFile(file, file_location)
         # selection procedure details pdf

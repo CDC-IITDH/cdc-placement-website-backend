@@ -12,8 +12,14 @@ from .utils import *
 def markStatus(request, id, email, user_type):
     try:
         data = request.data
-        # Getting all application from db for this opening
-        applications = PlacementApplication.objects.filter(placement_id=data[OPENING_ID])
+        if OPENING_TYPE  in data:
+            opening_type= data[OPENING_TYPE] #not to break the code
+        else:
+            opening_type= "Placement"
+        if opening_type == "Internship":
+            applications = InternshipApplication.objects.filter(internship_id=data[OPENING_ID])
+        else:
+            applications = PlacementApplication.objects.filter(placement_id=data[OPENING_ID])
         for i in data[STUDENT_LIST]:
             application = applications.filter(student__roll_no=i[STUDENT_ID])  # Filtering student's application
             if len(application) > 0:
@@ -27,14 +33,23 @@ def markStatus(request, id, email, user_type):
                     raise ValueError("Student already selected")
 
                 email = str(application.student.roll_no) + "@iitdh.ac.in"  # Only allowing for IITDh emails
-                subject = STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT.format(
-                    company_name=application.placement.company_name,
-                    id=application.id)
-                data = {
-                    "company_name": application.placement.company_name,
-                    "designation": application.placement.designation,
-                    "student_name": application.student.name
-                }
+                if opening_type == "Internship":
+                    subject = STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT.format(
+                        company_name=application.internship.company_name,id=application.id)
+                    data = {
+                        "company_name": application.internship.company_name,
+                        "designation": application.internship.designation,
+                        "student_name": application.student.name
+                    }
+                else:
+                    subject = STUDENT_APPLICATION_STATUS_TEMPLATE_SUBJECT.format(
+                        company_name=application.placement.company_name,
+                        id=application.id)
+                    data = {
+                        "company_name": application.placement.company_name,
+                        "designation": application.placement.designation,
+                        "student_name": application.student.name
+                    }
                 if application.selected:  # Sending corresponding email to students
                     sendEmail(email, subject, data, STUDENT_APPLICATION_STATUS_SELECTED_TEMPLATE)
                 else:
@@ -42,7 +57,7 @@ def markStatus(request, id, email, user_type):
                 application.chaged_by = get_object_or_404(User, id=id)
                 application.save()
             else:
-                raise ValueError("Student - " + i[STUDENT_ID] + " didn't apply for this opening")
+                raise ValueError("Student - " + str(i[STUDENT_ID]) + " didn't apply for this opening")
         return Response({'action': "Mark Status", 'message': "Marked Status"},
                         status=status.HTTP_200_OK)
 
@@ -64,13 +79,22 @@ def getDashboard(request, id, email, user_type):
         previous = placements.exclude(deadline_datetime__gt=timezone.now()).filter(
             offer_accepted=True, email_verified=True)
         new = placements.filter(offer_accepted__isnull=True, email_verified=True)
+        internships=Internship.objects.all().order_by('-created_at')
+        ongoing_internships = internships.filter(deadline_datetime__gt=timezone.now(), offer_accepted=True, email_verified=True)
+        previous_internships = internships.exclude(deadline_datetime__gt=timezone.now()).filter(
+            offer_accepted=True, email_verified=True)
+        new_internships = internships.filter(offer_accepted__isnull=True, email_verified=True)
         ongoing = PlacementSerializerForAdmin(ongoing, many=True).data
         previous = PlacementSerializerForAdmin(previous, many=True).data
         new = PlacementSerializerForAdmin(new, many=True).data
+        ongoing_internships = InternshipSerializerForAdmin(ongoing_internships, many=True).data
+        previous_internships = InternshipSerializerForAdmin(previous_internships, many=True).data
+        new_internships = InternshipSerializerForAdmin(new_internships, many=True).data
 
         return Response(
             {'action': "Get Dashboard - Admin", 'message': "Data Found", "ongoing": ongoing, "previous": previous,
-             "new": new},
+             "new": new, "ongoing_internships": ongoing_internships, "previous_internships": previous_internships,
+             "new_internships": new_internships},
             status=status.HTTP_200_OK)
     except Http404:
         return Response({'action': "Get Dashboard - Admin", 'message': 'Student Not Found'},
@@ -87,7 +111,15 @@ def getDashboard(request, id, email, user_type):
 def updateDeadline(request, id, email, user_type):
     try:
         data = request.data
-        opening = get_object_or_404(Placement, pk=data[OPENING_ID])
+        if  OPENING_TYPE  in data:
+            opening_type= data[OPENING_TYPE]
+        else:
+            opening_type= "Placement"
+        if opening_type == "Internship":
+            opening = get_object_or_404(Internship, pk=data[OPENING_ID])
+        else:
+            opening = get_object_or_404(Placement, pk=data[OPENING_ID])
+        
         # Updating deadline date with correct format in datetime field
         opening.deadline_datetime = datetime.datetime.strptime(data[DEADLINE_DATETIME], '%Y-%m-%d %H:%M:%S %z')
         opening.changed_by = get_object_or_404(User, id=id)
@@ -110,13 +142,25 @@ def updateOfferAccepted(request, id, email, user_type):
     try:
         data = request.data
         offer_accepted = data[OFFER_ACCEPTED]
-        opening = get_object_or_404(Placement, pk=data[OPENING_ID])
+        if  OPENING_TYPE  in data:
+            opening_type= data[OPENING_TYPE]
+        else:
+            opening_type= "Placement"
+        if DEADLINE_DATETIME in data:
+            deadline_datetime = datetime.datetime.strptime(data[DEADLINE_DATETIME], '%Y-%m-%d %H:%M:%S %z')
+        else:
+            deadline_datetime = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) + datetime.timedelta(days=2)
+        if opening_type == "Internship":
+            opening = get_object_or_404(Internship, pk=data[OPENING_ID])
+        else:
+            opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         if opening.offer_accepted is None:
             opening.offer_accepted = offer_accepted == "true"
+            opening.deadline_datetime = deadline_datetime
             opening.changed_by = get_object_or_404(User, id=id)
             opening.save()
             if opening.offer_accepted:
-                send_opening_notifications(opening.id)
+                send_opening_notifications(opening.id,opening_type)
         else:
             raise ValueError("Offer Status already updated")
 
@@ -140,7 +184,14 @@ def updateOfferAccepted(request, id, email, user_type):
 def updateEmailVerified(request, id, email, user_type):
     try:
         data = request.data
-        opening = get_object_or_404(Placement, pk=data[OPENING_ID])
+        if  OPENING_TYPE  in data:
+            opening_type= data[OPENING_TYPE]
+        else:
+            opening_type= "Placement"
+        if opening_type == "Internship":
+            opening = get_object_or_404(Internship, pk=data[OPENING_ID])
+        else:
+            opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         opening.email_verified = True if data[EMAIL_VERIFIED] == "true" else False
         opening.changed_by = get_object_or_404(User, id=id)
         opening.save()
@@ -161,7 +212,14 @@ def updateEmailVerified(request, id, email, user_type):
 def deleteAdditionalInfo(request, id, email, user_type):
     try:
         data = request.data
-        opening = get_object_or_404(Placement, pk=data[OPENING_ID])
+        if  OPENING_TYPE  in data:
+            opening_type= data[OPENING_TYPE]
+        else:
+            opening_type= "Placement"
+        if opening_type == "Internship":
+            opening = get_object_or_404(Internship, pk=data[OPENING_ID])
+        else:
+            opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         if data[FIELD] in opening.additional_info:
             opening.additional_info.remove(data[FIELD])
             opening.changed_by = get_object_or_404(User, id=id)
@@ -188,7 +246,14 @@ def deleteAdditionalInfo(request, id, email, user_type):
 def addAdditionalInfo(request, id, email, user_type):
     try:
         data = request.data
-        opening = get_object_or_404(Placement, pk=data[OPENING_ID])
+        if  OPENING_TYPE  in data:
+            opening_type= data[OPENING_TYPE]
+        else:
+            opening_type= "Placement"
+        if opening_type == "Internship":
+            opening = get_object_or_404(Internship, pk=data[OPENING_ID])
+        else:
+            opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         if data[FIELD] not in opening.additional_info:
             opening.additional_info.append(data[FIELD])
             opening.save()
@@ -215,11 +280,20 @@ def addAdditionalInfo(request, id, email, user_type):
 def getApplications(request, id, email, user_type):
     try:
         data = request.GET
-        opening = get_object_or_404(Placement, pk=data[OPENING_ID])
-        applications = PlacementApplication.objects.filter(placement=opening)
-        serializer = PlacementApplicationSerializerForAdmin(applications, many=True)
+        if  OPENING_TYPE  in data:
+            opening_type= data[OPENING_TYPE]
+        else:
+            opening_type= "Placement"
+        if opening_type == "Internship":
+            opening = get_object_or_404(Internship, pk=data[OPENING_ID])
+            applications = InternshipApplication.objects.filter(internship=opening)
+            serializer = InternshipApplicationSerializerForAdmin(applications, many=True)
+        else:
+            opening = get_object_or_404(Placement, pk=data[OPENING_ID])
+            applications = PlacementApplication.objects.filter(placement=opening)
+            serializer = PlacementApplicationSerializerForAdmin(applications, many=True)
         return Response({'action': "Get Applications", 'message': 'Data Found', 'applications': serializer.data},
-                        status=status.HTTP_200_OK)
+                            status=status.HTTP_200_OK)
     except Http404:
         return Response({'action': "Get Applications", 'message': 'Opening Not Found'},
                         status=status.HTTP_404_NOT_FOUND)
@@ -235,13 +309,24 @@ def getApplications(request, id, email, user_type):
 def submitApplication(request, id, email, user_type):
     try:
         data = request.data
+        if OPENING_TYPE  in data:
+            opening_type= data[OPENING_TYPE]
+        else:
+            opening_type= "Placement"
+        if opening_type == "Internship":
+            opening = get_object_or_404(Internship, pk=data[OPENING_ID])
+        else:
+            opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         student = get_object_or_404(Student, pk=data[STUDENT_ID])
-        opening = get_object_or_404(Placement, pk=data[OPENING_ID])
+       # opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         student_user = get_object_or_404(User, id=student.id)
         if data[APPLICATION_ID] == "":
-            application = PlacementApplication()
+            application = PlacementApplication() if opening_type == "Placement" else InternshipApplication()
             application.id = generateRandomString()
-            application.placement = opening
+            if(opening_type == "Placement"):
+                application.placement = opening
+            else:
+                application.internship = opening
             application.student = student
             if data[RESUME_FILE_NAME] in student.resumes:
                 application.resume = data[RESUME_FILE_NAME]
@@ -257,7 +342,7 @@ def submitApplication(request, id, email, user_type):
             data = {
                 "name": student.name,
                 "company_name": opening.company_name,
-                "application_type": "Placement",
+                "application_type": "Placement" if opening_type == "Placement" else "Internship",
                 "additional_info": dict(json.loads(application.additional_info)),
             }
             subject = STUDENT_APPLICATION_SUBMITTED_TEMPLATE_SUBJECT.format(company_name=opening.company_name)
@@ -267,7 +352,10 @@ def submitApplication(request, id, email, user_type):
             return Response({'action': "Add Student Application", 'message': "Application added"},
                             status=status.HTTP_200_OK)
         else:
-            application = get_object_or_404(PlacementApplication, id=data[APPLICATION_ID])
+            if opening_type == "Internship":
+                application = get_object_or_404(InternshipApplication, id=data[APPLICATION_ID])
+            else:
+                application = get_object_or_404(PlacementApplication, id=data[APPLICATION_ID])
             if application:
                 if data[RESUME_FILE_NAME] in student.resumes:
                     application.resume = data[RESUME_FILE_NAME]
@@ -285,7 +373,7 @@ def submitApplication(request, id, email, user_type):
                 data = {
                     "name": student.name,
                     "company_name": opening.company_name,
-                    "application_type": "Placement",
+                    "application_type": "Placement" if opening_type == "Placement" else "Internship",
                     "resume": application.resume[16:],
                     "additional_info_items": dict(json.loads(application.additional_info)),
                 }
@@ -308,11 +396,13 @@ def submitApplication(request, id, email, user_type):
     except FileNotFoundError as e:
         return Response({'action': "Submit Application", 'message': str(e)},
                         status=status.HTTP_404_NOT_FOUND)
+    except AttributeError as e:
+        return Response({'action': "Submit Application", 'message': str(e)},
+                        status=status.HTTP_400_BAD_REQUEST)
     except:
         logger.warning("Submit Application: " + str(sys.exc_info()))
         return Response({'action': "Submit Application", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['POST'])
 @isAuthorized(allowed_users=[ADMIN])
@@ -320,17 +410,25 @@ def submitApplication(request, id, email, user_type):
 def generateCSV(request, id, email, user_type):
     try:
         data = request.data
-        placement = get_object_or_404(Placement, id=data[OPENING_ID])
-        applications = PlacementApplication.objects.filter(placement=placement)
+        if  OPENING_TYPE  in data:
+            opening_type= data[OPENING_TYPE]
+        else:
+            opening_type= "Placement"
+        if opening_type == "Internship":
+            opening = get_object_or_404(Internship, id=data[OPENING_ID])
+            applications = InternshipApplication.objects.filter(internship=opening)
+        else:
+            opening = get_object_or_404(Placement, id=data[OPENING_ID])
+            applications = PlacementApplication.objects.filter(placement=opening)
         filename = generateRandomString()
         if not os.path.isdir(STORAGE_DESTINATION_APPLICATION_CSV):
-            os.mkdir(STORAGE_DESTINATION_APPLICATION_CSV)
+            os.makedirs(STORAGE_DESTINATION_APPLICATION_CSV, exist_ok=True)
         destination_path = STORAGE_DESTINATION_APPLICATION_CSV + filename + ".csv"
         f = open(destination_path, 'w')
         writer = csv.writer(f)
         header_row = APPLICATION_CSV_COL_NAMES.copy()
 
-        header_row.extend(placement.additional_info)
+        header_row.extend(opening.additional_info)
         writer.writerow(header_row)
         for apl in applications:
             row_details = []
@@ -343,11 +441,11 @@ def generateCSV(request, id, email, user_type):
             row_details.append(apl.student.branch)
             row_details.append(apl.student.batch)
             row_details.append(apl.student.cpi)
-            link = LINK_TO_STORAGE_RESUME + urllib.parse.quote(apl.student.id) + "/" + urllib.parse.quote(apl.resume)
+            link = LINK_TO_STORAGE_RESUME + urllib.parse.quote(str(apl.student.id)) + "/" + urllib.parse.quote(str(apl.resume))
             row_details.append(link)
             row_details.append(apl.selected)
 
-            for i in placement.additional_info:
+            for i in opening.additional_info:
                 row_details.append(json.loads(apl.additional_info)[i])
 
             writer.writerow(row_details)
@@ -397,6 +495,10 @@ def addPPO(request, id, email, user_type):
 def getStudentApplication(request, id, email, user_type):
     try:
         data = request.data
+        if  OPENING_TYPE  in data:
+            opening_type= data[OPENING_TYPE]
+        else:
+            opening_type= "Placement"
         student = get_object_or_404(Student, id=data[STUDENT_ID])
         student_serializer = StudentSerializer(student)
         student_details = {
@@ -406,15 +508,29 @@ def getStudentApplication(request, id, email, user_type):
             "resume_list": student_serializer.data['resume_list'],
         }
         # search for the application if there or not
-        application = PlacementApplication.objects.filter(student=student,
+        if opening_type == "Internship":
+            application = InternshipApplication.objects.filter(student=student,
+                                                               internship=get_object_or_404(Internship,
+                                                                                           id=data[OPENING_ID]))
+        else:
+            application = PlacementApplication.objects.filter(student=student,
                                                           placement=get_object_or_404(Placement, id=data[OPENING_ID]))
+        
         if application:
-            serializer = PlacementApplicationSerializer(application[0])
-            application_info = {
-                "id": serializer.data['id'],
-                "additional_info": serializer.data['additional_info'],
-                "resume": serializer.data['resume_link'],
-            }
+            if opening_type == "Internship":
+                serializer = InternshipApplicationSerializer(application[0])
+                application_info = {
+                    "id": serializer.data['id'],
+                    "additional_info": serializer.data['additional_info'],
+                    "resume": serializer.data['resume_link'],
+                }
+            else:
+                serializer = PlacementApplicationSerializer(application[0])
+                application_info = {
+                    "id": serializer.data['id'],
+                    "additional_info": serializer.data['additional_info'],
+                    "resume": serializer.data['resume_link'],
+                }
             return Response(
                 {'action': "Get Student Application", 'application_found': "true", "application_info": application_info,
                  "student_details": student_details}, status=status.HTTP_200_OK)
@@ -446,6 +562,7 @@ def getStats(request, id, email, user_type):
                 "5":0,
                 "6":0,
                 "7":0,
+                "8":0,
                 "psu":0,
             },
             "EE": {
@@ -466,6 +583,7 @@ def getStats(request, id, email, user_type):
                 "5":0,
                 "6":0,
                 "7":0,
+                "8":0,
                 "psu":0,
 
             },
@@ -477,6 +595,7 @@ def getStats(request, id, email, user_type):
                 "5":0,
                 "6":0,
                 "7":0,
+                "8":0,
                 "psu":0,
             },
         }

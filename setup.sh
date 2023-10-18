@@ -3,7 +3,7 @@ echo "Environment setup complete"
 cd CDC_Backend
 
 python3 manage.py flush --no-input
-python3 manage.py makemigrations
+python3 manage.py makemigrations APIs
 python3 manage.py migrate
 echo "Migrations complete"
 

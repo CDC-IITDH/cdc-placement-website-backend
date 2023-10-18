@@ -21,6 +21,12 @@ BRANCHES = [
     "CHEMICAL",
     "BSMS",
 ]
+BATCHES = [    #change it accordingly
+    "2023",
+    "2022",
+    "2021",
+    "2020",
+]
 BATCH_CHOICES = [
     ["2022", "2022"],
     ["2021", "2021"],
@@ -66,6 +72,10 @@ CDC_REPS_EMAILS = [
     "dhriti.ghosh@iitdh.ac.in",
     "suvamay.jana@iitdh.ac.in",
     "ramesh.nayaka@iitdh.ac.in"
+]
+CDC_REPS_EMAILS_FOR_ISSUE=[  #add reps emails 
+    "cdc.support@iitdh.ac.in",
+    "cdc@iitdh.ac.in"
 ]
 
 # To be Configured Properly
@@ -201,7 +211,9 @@ APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone N
                              'Resume', 'Selected', ]
 
 
-
+ISSUE_SUBMITTED_TEMPLATE_SUBJECT = 'CDC - Issue Submitted'
+STUDENT_ISSUE_SUBMITTED_TEMPLATE = 'student_issue_submitted.html'
+REPS_ISSUE_SUBMITTED_TEMPLATE = 'reps_issue_submitted.html'
 # Internships
 INTERNSHIP = 'Internship'
 INTERNSHIP_ID = 'internship_id'
@@ -218,6 +230,8 @@ STIPEND = 'stipend'
 FACILITIES = 'facilities'
 OTHER_FACILITIES = 'other_facilities'
 STIPEND_DETAILS_PDF = 'compensation_details_pdf'
+STIPEND_DETAILS_PDF_NAMES = 'stipend_description_pdf_names'
+INTERNSHIP_OPENING_URL = "https://cdc.iitdh.ac.in/portal/student/dashboard/internships/{id}"  # On frontend, this is the URL to be opened
 
 SEASONS = (
     'Summer',

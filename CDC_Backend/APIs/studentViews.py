@@ -48,6 +48,7 @@ def refresh(request):
 @isAuthorized(allowed_users=[STUDENT])
 def studentProfile(request, id, email, user_type):
     try:
+        #print(id)
         studentDetails = get_object_or_404(Student, id=id)
 
         data = StudentSerializer(studentDetails).data
@@ -110,9 +111,19 @@ def getDashboard(request, id, email, user_type):
 
         placementApplications = PlacementApplication.objects.filter(student_id=id)
         placementApplications = PlacementApplicationSerializer(placementApplications, many=True).data
+        internships = Internship.objects.filter(allowed_batch__contains=[studentDetails.batch],
+                                              allowed_branch__contains=[studentDetails.branch],
+                                              deadline_datetime__gte=datetime.datetime.now(),
+                                              offer_accepted=True, email_verified=True).order_by('deadline_datetime')
+        
+        filtered_internships = internship_eligibility_filters(studentDetails, internships)
+        internshipsdata = InternshipSerializerForStudent(filtered_internships, many=True).data
+
+        internshipApplications = InternshipApplication.objects.filter(student_id=id)
+        internshipApplications = InternshipApplicationSerializer(internshipApplications, many=True).data
         return Response(
             {'action': "Get Dashboard - Student", 'message': "Data Found", "placements": placementsdata,
-             'placementApplication': placementApplications},
+             'placementApplication': placementApplications, 'internships':internshipsdata,'internshipApplication':internshipApplications},
             status=status.HTTP_200_OK)
     except Http404:
         return Response({'action': "Get Dashboard - Student", 'message': 'Student Not Found'},
@@ -159,24 +170,25 @@ def deleteResume(request, id, email, user_type):
 
 @api_view(['POST'])
 @isAuthorized(allowed_users=[STUDENT])
-@precheck(required_data=[OPENING_TYPE, OPENING_ID, RESUME_FILE_NAME,
+@precheck(required_data=[OPENING_TYPE, OPENING_ID, RESUME_FILE_NAME,ADDITIONAL_INFO
                          ])
 def submitApplication(request, id, email, user_type):
     try:
-        data = request.data
+        data = request.data 
         student = get_object_or_404(Student, id=id)
-        if not student.can_apply:
-            return Response({'action': "Submit Application", 'message': "Student Can't Apply"},
-                            status=status.HTTP_400_BAD_REQUEST)
+        
         # Only Allowing Applications for Placements
         if data[OPENING_TYPE] == PLACEMENT:
+            if not student.can_apply:
+                return Response({'action': "Submit Application", 'message': "Student Can't Apply"},
+                            status=status.HTTP_400_BAD_REQUEST)
             if not len(PlacementApplication.objects.filter(
                     student_id=id, placement_id=data[OPENING_ID])):
                 application = PlacementApplication()
                 opening = get_object_or_404(Placement, id=data[OPENING_ID],
                                             allowed_batch__contains=[student.batch],
                                             allowed_branch__contains=[student.branch],
-                                            deadline_datetime__gte=datetime.datetime.now().date()
+                                            deadline_datetime__gte=timezone.now()
                                             )
                 if not opening.offer_accepted or not opening.email_verified:
                     raise PermissionError("Placement Not Approved")
@@ -185,6 +197,27 @@ def submitApplication(request, id, email, user_type):
                 if not cond_stat:
                     raise PermissionError(cond_msg)
                 application.placement = opening
+            else:
+                raise PermissionError("Application is already Submitted")
+        elif data[OPENING_TYPE] == INTERNSHIP:
+            if not student.can_apply_internship:
+                return Response({'action': "Submit Application", 'message': "Student Can't Apply"},
+                            status=status.HTTP_400_BAD_REQUEST)
+            if not len(InternshipApplication.objects.filter(
+                    student_id=id, internship_id=data[OPENING_ID])):
+                application = InternshipApplication()
+                opening = get_object_or_404(Internship, id=data[OPENING_ID],
+                                            allowed_batch__contains=[student.batch],
+                                            allowed_branch__contains=[student.branch],
+                                            deadline_datetime__gte=timezone.now()
+                                            )
+                if not opening.offer_accepted or not opening.email_verified:
+                    raise PermissionError("Internship Not Approved")
+
+                cond_stat, cond_msg = InternshipApplicationConditions(student, opening)
+                if not cond_stat:
+                    raise PermissionError(cond_msg)
+                application.internship = opening
             else:
                 raise PermissionError("Application is already Submitted")
         else:
@@ -239,10 +272,22 @@ def submitApplication(request, id, email, user_type):
 def deleteApplication(request, id, email, user_type):
     try:
         data = request.data
-        application = get_object_or_404(PlacementApplication, id=data[APPLICATION_ID],
+        if OPENING_TYPE in request.data:
+            opening_type = request.data[OPENING_TYPE]
+        else:
+            opening_type = PLACEMENT
+        if opening_type==INTERNSHIP: #check whether it has header or not
+            application = get_object_or_404(InternshipApplication, id=data[APPLICATION_ID],
                                         student_id=id)
-        if application.placement.deadline_datetime < timezone.now():
-            raise PermissionError("Deadline Passed")
+            if application.internship.deadline_datetime < timezone.now():
+                raise PermissionError("Deadline Passed")
+        else:
+            application = get_object_or_404(PlacementApplication, id=data[APPLICATION_ID],
+                                        student_id=id)
+            if application.placement.deadline_datetime < timezone.now():
+                raise PermissionError("Deadline Passed")
+        
+
 
         application.delete()
         return Response({'action': "Delete Application", 'message': "Application Deleted"},
@@ -277,19 +322,86 @@ def getContributorStats(request, id, email, user_type):
         
 #view for sudentAcceptOffer
 @api_view(['POST'])
+@precheck(required_data=[OPENING_ID,"offer_accepted"])  
 @isAuthorized(allowed_users=[STUDENT])
 def studentAcceptOffer(request, id, email, user_type):
     try:
-        company_id = request.data['id']
-        student_id=request.data['profileInfo']['id']
-        offer_status = request.data['offerStatus']
-        placement_application=PlacementApplication.objects.get(placement=company_id,student=student_id)
-        placement_application.offer_accepted=offer_status
-        placement_application.save()
-        return Response({'action': "Accept Offer", 'message': "Updated Offer Status"},
+        company_id = request.data[OPENING_ID]
+        #student_id=request.data['profileInfo']['id']             //check this once
+        student_id=id
+
+        offer_accepted = request.data['offer_accepted']
+        if OPENING_TYPE in request.data:
+            opening_type = request.data[OPENING_TYPE]
+        else:
+            opening_type = PLACEMENT
+        if opening_type==INTERNSHIP:
+            application=InternshipApplication.objects.filter(internship=company_id,student=student_id,selected=True) 
+        else:
+            application=PlacementApplication.objects.filter(placement=company_id,student=student_id,selected=True)
+
+        if len(application):
+            application[0].offer_accepted=offer_accepted
+            application[0].save()
+            return Response({'action': "Accept Offer", 'message': "Updated Offer Status"},
                         status=status.HTTP_200_OK)
+        else:
+            return Response({'action': "Accept Offer", 'message': "Offer Not Found"},
+                        status=status.HTTP_404_NOT_FOUND)
+            
+
+        
     except:
         logger.warning("Accept Offer: " + str(sys.exc_info()))
 
         return Response({'action': "Accept Offer", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+#view for addIssue
+
+@api_view(['POST'])
+@isAuthorized(allowed_users=[STUDENT])
+@precheck(required_data=["Title","Description","opening_id","opening_type"])
+def addIssue(request, id, email, user_type):
+    try:
+        data = request.data
+        student = get_object_or_404(Student, id=id)
+        issue = Issues()
+        issue.student = student
+        issue.title = data["Title"]
+        issue.description = data["Description"]
+        issue.opening_id = data["opening_id"]
+        issue.opening_type = data["opening_type"]
+        try:
+            if data["opening_type"]==PLACEMENT:
+                opening=get_object_or_404(Placement, id=data["opening_id"])
+            else:
+                opening=get_object_or_404(Internship, id=data["opening_id"])
+        except:
+            return Response({'action': "Add Issue", 'message': "Opening Not Found"},
+                        status=status.HTTP_400_BAD_REQUEST)
+        issue.save()
+        subject=ISSUE_SUBMITTED_TEMPLATE_SUBJECT
+        data={
+            "name":student.name,
+            "application_type":issue.opening_type,
+            "company_name":opening.company_name,
+            "additional_info":{
+                "Abstract":issue.title,
+                "Description":issue.description
+            },
+            "email":email
+            }
+        sendEmail(email, subject, data, STUDENT_ISSUE_SUBMITTED_TEMPLATE)
+        #send_mail_to reps
+        sendEmail(CDC_REPS_EMAILS_FOR_ISSUE,"Issue Raised",data,REPS_ISSUE_SUBMITTED_TEMPLATE)
+        return Response({'action': "Add Issue", 'message': "Issue Added"},
+                        status=status.HTTP_200_OK)
+    except Http404:
+        return Response({'action': "Add Issue", 'message': 'Student Not Found'},
+                        status=status.HTTP_404_NOT_FOUND)
+    except:
+        logger.warning("Add Issue: " + str(sys.exc_info()))
+        return Response({'action': "Add Issue", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)

@@ -321,6 +321,24 @@ def autoFillJnf(request):
         return Response({'action': "Get AutoFill", 'message': "Something went wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET'])
+@precheck([INTERNSHIP_ID])
+def autoFillInf(request):
+    try:
+        data = request.GET
+        internship_id = data.get(INTERNSHIP_ID)
+        opening = get_object_or_404(Internship, id=internship_id)
+        serializer = AutofillSerializersInternship(opening)
+        return Response({'action': "Get AutoFill ", 'message': 'Data Found', 'internship_data': serializer.data},
+                        status=status.HTTP_200_OK)
+    except Http404:
+        return Response({'action': "Get AutoFill", 'message': 'Internship Not Found'},
+                        status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        traceback_str = traceback.format_exc()
+        logger.warning("Get AutoFill: " + traceback_str)
+        return Response({'action': "Get AutoFill", 'message': "Something went wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 ## Internships ## 
 
@@ -397,6 +415,14 @@ def addInternship(request):
             internship.is_work_from_home = True
         else:
             internship.is_work_from_home = False
+        
+        if data[ALLOWED_BATCH] is None or json.loads(data[ALLOWED_BATCH]) == "":
+            raise ValueError('Allowed Branch cannot be empty')
+        elif set(json.loads(data[ALLOWED_BATCH])).issubset(BATCHES):
+            internship.allowed_batch = json.loads(data[ALLOWED_BATCH])
+        else:
+            raise ValueError('Allowed Batch must be a subset of ' + str(BATCHES))
+        
         if data[ALLOWED_BRANCH] is None or json.loads(data[ALLOWED_BRANCH]) == "":
             raise ValueError('Allowed Branch cannot be empty')
         elif set(json.loads(data[ALLOWED_BRANCH])).issubset(BRANCHES):
@@ -468,6 +494,11 @@ def addInternship(request):
             internship.selection_procedure_details_pdf_names = selection_procedure_details_pdf
         
         internship.additional_facilities = data[OTHER_FACILITIES]
+        #add additional info
+        # Only Allowing Fourth Year for Placement
+        
+        
+
         internship.academic_requirements = data[OTHER_REQUIREMENTS]
 
 
