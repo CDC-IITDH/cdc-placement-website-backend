@@ -15,13 +15,13 @@ class StudentViewsTestCase(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = User.objects.create(
-            email=str(os.environ.get("email_id")),
-            id=str(os.environ.get("roll_no")),
+            email=str(os.environ.get("EMAIL")),
+            id=str(os.environ.get("ROLL_NO")),
             user_type=[STUDENT])
         self.assertEqual(
             self.user.email, User.objects.get(id=self.user.id).email)
         self.student = Student.objects.create(
-            name="Test Student", id=self.user.id, resumes=["8BSLybntULgrPPm_beehyv.pdf"], roll_no=str(os.environ.get("roll_no")), branch="CSE", batch="2020",  phone_number=1234567890,  changed_by=self.user,  can_apply=True,
+            name="Test Student", id=self.user.id, resumes=["8BSLybntULgrPPm_beehyv.pdf"], roll_no=str(os.environ.get("ROLL_NO")), branch="CSE", batch="2020",  phone_number=1234567890,  changed_by=self.user,  can_apply=True,
             can_apply_internship=True, degree="bTech", cpi=7.95,
         )
         self.assertEqual(self.student.name,
@@ -61,7 +61,7 @@ class StudentViewsTestCase(APITestCase):
 
         # get token from google OAuth API
         response = self.client.post(reverse('Refresh Token'), {
-                                    'refresh_token': os.environ.get("refresh_token")}, format='json')
+                                    'refresh_token': os.environ.get("REFRESH_TOKEN")}, format='json')
         self.student_token = response.data['id_token']
 
     def test_student_accept_offer_internship(self):
