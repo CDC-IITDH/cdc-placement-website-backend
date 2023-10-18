@@ -20,10 +20,7 @@ def markStatus(request, id, email, user_type):
             applications = InternshipApplication.objects.filter(internship_id=data[OPENING_ID])
         else:
             applications = PlacementApplication.objects.filter(placement_id=data[OPENING_ID])
-        # Getting all application from db for this opening
-        # applications = PlacementApplication.objects.filter(placement_id=data[OPENING_ID])
         for i in data[STUDENT_LIST]:
-           # print(i[STUDENT_ID])   issue is using student id instead of roll no both may not be same                #remember this
             application = applications.filter(student__roll_no=i[STUDENT_ID])  # Filtering student's application
             if len(application) > 0:
                 application = application[0]
@@ -565,6 +562,7 @@ def getStats(request, id, email, user_type):
                 "5":0,
                 "6":0,
                 "7":0,
+                "8":0,
                 "psu":0,
             },
             "EE": {
@@ -585,6 +583,7 @@ def getStats(request, id, email, user_type):
                 "5":0,
                 "6":0,
                 "7":0,
+                "8":0,
                 "psu":0,
 
             },
@@ -596,6 +595,7 @@ def getStats(request, id, email, user_type):
                 "5":0,
                 "6":0,
                 "7":0,
+                "8":0,
                 "psu":0,
             },
         }

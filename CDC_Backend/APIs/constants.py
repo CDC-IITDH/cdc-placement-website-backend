@@ -74,8 +74,8 @@ CDC_REPS_EMAILS = [
     "ramesh.nayaka@iitdh.ac.in"
 ]
 CDC_REPS_EMAILS_FOR_ISSUE=[  #add reps emails 
-    "support.cdc@iitdh.ac.in"
-    "irontwist00@gmail.com"
+    "cdc.support@iitdh.ac.in",
+    "cdc@iitdh.ac.in"
 ]
 
 # To be Configured Properly

@@ -112,12 +112,10 @@ def isAuthorized(allowed_users=None):
         def wrapper_func(request, *args, **kwargs):
             try:
                 headers = request.META
-                #print(headers)
                 if 'HTTP_AUTHORIZATION' in headers:
                     token_id = headers['HTTP_AUTHORIZATION'][7:]
                     idinfo = id_token.verify_oauth2_token(token_id, requests.Request(), CLIENT_ID)
                     email = idinfo[EMAIL]
-      #              print(idinfo)
                     user = get_object_or_404(User, email=email)
                     if user:
                         user.last_login_time = timezone.now()
@@ -168,8 +166,6 @@ def saveFile(file, location):
     file_name = prefix + "_" + file.name.strip()
 
     file_name = re.sub(r'[\\/:*?"<>|]', '_', file_name)
-
- #   print("Inside saveFile: " + str(file_name))
 
     if not path.isdir(location):
         os.makedirs(location)

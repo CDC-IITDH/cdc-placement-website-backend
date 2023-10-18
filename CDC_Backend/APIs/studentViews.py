@@ -179,7 +179,7 @@ def submitApplication(request, id, email, user_type):
         
         # Only Allowing Applications for Placements
         if data[OPENING_TYPE] == PLACEMENT:
-            if not student.can_apply: #why not checking in admin
+            if not student.can_apply:
                 return Response({'action': "Submit Application", 'message': "Student Can't Apply"},
                             status=status.HTTP_400_BAD_REQUEST)
             if not len(PlacementApplication.objects.filter(
