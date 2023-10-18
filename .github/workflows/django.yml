@@ -20,10 +20,9 @@ env:
   GOOGLE_OAUTH_CLIENT_ID: 628308091838-nvfn455vabbq7j0odd797sls8itpplmr.apps.googleusercontent.com
   SECRET_KEY: 9%2e!&f6(ib^690y48z)&w6fczhwukzzp@3y*^*7u+7%4s-mie
   GOOGLE_OAUTH_CLIENT_SECRET: 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
-  refresh_token: 1//0gCf5fxAgSqNcCgYIARAAGBASNwF-L9IrIWxWwqmboeJkEzVn0sqxbaeyWXODE5s24V7pSdiAzFM2cxOUC9XT_xp7t_60o3JMfOg
-  email_id: 200010030@iitdh.ac.in
-  s_email: 200010024@iitdh.ac.in
-  roll_no: 200010030
+  REFRESH_TOKEN: 1//0gCf5fxAgSqNcCgYIARAAGBASNwF-L9IrIWxWwqmboeJkEzVn0sqxbaeyWXODE5s24V7pSdiAzFM2cxOUC9XT_xp7t_60o3JMfOg
+  EMAIL_ID: 200010030@iitdh.ac.in
+  ROLL_NO: 200010030
 
 jobs: 
   build: 

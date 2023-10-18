@@ -149,8 +149,8 @@ class InternshipApplicationAdmin(ExportMixin, SimpleHistoryAdmin):
 @admin.register(PlacementApplication)
 class PlacementApplication(PlacementAdmin):
     list_display = ('id', 'Placement', 'Student', 'selected')
-    search_fields = ('id','Placement', 'Student')
-    ordering = ('id','Placement', 'Student')
+    search_fields = ('id',)
+    ordering = ('id',)
     list_filter = ('selected',)
 
     def Placement(self, obj):
@@ -161,8 +161,8 @@ class PlacementApplication(PlacementAdmin):
 @admin.register(InternshipApplication)
 class InternshipApplication(InternshipApplicationAdmin):
     list_display = ('id', 'Internship', 'Student', 'selected')
-    search_fields = ('id', 'Internship', 'Student')
-    ordering = ('id', 'Internship', 'Student')
+    search_fields = ('id',)
+    ordering = ('id',)
     list_filter = ('selected',)
 
     def Internship(self, obj):
