@@ -754,3 +754,28 @@ def getStats(request, id, email, user_type):
         print(sys.exc_info())
         return Response({'action': "Get Stats", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@isAuthorizedService()
+@precheck(required_data=[OPENING_ID])
+def get_eligible_students(request):
+    try:
+        data = request.GET
+        opening_id = data[OPENING_ID]
+        if  OPENING_TYPE  in data:
+            opening_type= data[OPENING_TYPE]
+        else:
+            opening_type= "Placement"
+        eligible_students=get_eligible_emails(opening_id=opening_id, opening_type=opening_type)
+        return Response({'action': "Get Eligible Students", 'message': "Eligible Students Fetched",
+                         'eligible_students': eligible_students},
+                        status=status.HTTP_200_OK)
+    except Http404:
+        return Response({'action': "Get Eligible Students", 'message': "Opening Not Found"},
+                        status=status.HTTP_404_NOT_FOUND)
+    except:
+        logger.warning("Get Eligible Students: " + str(sys.exc_info()))
+        return Response({'action': "Get Eligible Students", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+    

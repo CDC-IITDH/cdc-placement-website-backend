@@ -100,6 +100,7 @@ EMAIL = "email"
 STUDENT = 'student'
 ADMIN = 'admin'
 SUPER_ADMIN = 's_admin'
+SERVICE= 'service'
 COMPANY = 'company'
 TIER = 'tier'
 # To be Configured Properly
