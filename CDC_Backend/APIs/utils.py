@@ -562,3 +562,22 @@ def send_email_for_opening(opening):
         print("An error occurred while sending the email:", e)
 
 
+@background_task.background(schedule=2)
+def send_opening_to_notifications_service(id,name,deadline,role):
+    data={
+        "id":id,
+        "company":name,
+        "deadline":deadline,
+        "role":role
+    }
+    encoded=jwt.encode(data,os.environ.get("JWT_SECRET_KEY"),algorithm="HS256")
+    data_={
+        "token":encoded,
+    }
+    resp=rq.post(url=os.environ.get("PUSH_API_URL")+"addopening/",data=data_)
+    if resp.status_code==200:
+        print("Notification Sent")
+    else:
+        print("Notification Failed")
+        logger.warning("Utils - send_opening_to_notifications_service: " + str(resp) + "data sent:"+str(data))
+
