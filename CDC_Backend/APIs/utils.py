@@ -158,7 +158,7 @@ def isAuthorizedService():
                 headers = request.META
                 if 'HTTP_AUTHORIZATION' in headers:
                     token_id = headers['HTTP_AUTHORIZATION'][7:]
-                    jwt.decode(token_id, os.environ.get("SERVICE_SECRET_KEY"), algorithms="HS256")
+                    jwt.decode(token_id, os.environ.get("JWT_SECRET_KEY"), algorithms="HS256")
                     return view_func(request, *args, **kwargs)
                 else:
                     raise PermissionError("Authorization Header Not Found")
