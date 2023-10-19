@@ -151,6 +151,26 @@ def isAuthorized(allowed_users=None):
 
     return decorator
 
+def isAuthorizedService():
+    def decorator(view_func):
+        def wrapper_func(request, *args, **kwargs):
+            try:
+                headers = request.META
+                if 'HTTP_AUTHORIZATION' in headers:
+                    token_id = headers['HTTP_AUTHORIZATION'][7:]
+                    jwt.decode(token_id, os.environ.get("SERVICE_SECRET_KEY"), algorithms="HS256")
+                    return view_func(request, *args, **kwargs)
+                else:
+                    raise PermissionError("Authorization Header Not Found")
+            except:
+                logger.warning("Is Authorized? " + str(sys.exc_info()))
+                return Response(
+                    {'action': "Is Authorized?", 'message': "Something went wrong. Contact CDC for more details"},
+                    status=status.HTTP_400_BAD_REQUEST)
+        return wrapper_func
+
+    return decorator
+
 
 def generateRandomString():
     try:
@@ -435,6 +455,37 @@ def send_opening_notifications(opening_id, opening_type=PLACEMENT):
         logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
         return False
 
+def get_eligible_emails(opening_id, opening_type=PLACEMENT):
+    try:
+       # print(opening_id, opening_type)
+        if opening_type == PLACEMENT:
+            opening = get_object_or_404(Placement, id=opening_id)
+        else:
+            opening = get_object_or_404(Internship, id=opening_id)
+        emails=[]
+        students = Student.objects.all()
+        for student in students.iterator():
+            if student.branch in opening.allowed_branch:
+                if student.degree == 'bTech' or opening.rs_eligible is True:
+                    if (isinstance(opening,Placement) and PlacementApplicationConditions(student, opening)[0]) or (
+                        isinstance(opening,Internship) and InternshipApplicationConditions(student, opening)[0]):
+                        try:
+                            student_user = get_object_or_404(User, id=student.id)
+                            # check if he applied
+                            if opening_type == PLACEMENT:
+                                if PlacementApplication.objects.filter(student=student, placement=opening).exists():
+                                    continue
+                            else:
+                                if InternshipApplication.objects.filter(student=student, internship=opening).exists():
+                                    continue
+                            emails.append(student_user.email)
+                        except Exception as e:
+                            logger.warning('Utils - send_opening_notifications: For Loop' + str(e))
+                            return False
+        return True, emails
+    except:
+        logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
+        return False
 
 def exception_email(opening):
     opening = opening.dict()

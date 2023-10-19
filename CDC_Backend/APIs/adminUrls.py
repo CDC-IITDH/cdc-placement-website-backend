@@ -16,4 +16,5 @@ urlpatterns = [
     path('addPPO/', adminViews.addPPO, name="Add PPO"),
     path('getStudentApplication/', adminViews.getStudentApplication, name="Get student application"),
     path('getStats/', adminViews.getStats, name="Get Stats"),
+    path('getEligibleStudents/', adminViews.get_eligible_students, name="Get Eligible Students"),
 ]
