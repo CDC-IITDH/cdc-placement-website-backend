@@ -481,11 +481,11 @@ def get_eligible_emails(opening_id, opening_type=PLACEMENT):
                             emails.append(student_user.email)
                         except Exception as e:
                             logger.warning('Utils - send_opening_notifications: For Loop' + str(e))
-                            return False
+                            return False, []
         return True, emails
     except:
         logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
-        return False
+        return False, []
 
 def exception_email(opening):
     opening = opening.dict()
