@@ -4,7 +4,6 @@ from rest_framework.decorators import api_view
 
 from .serializers import *
 from .utils import *
-import pytz
 
 
 @api_view(['POST'])
@@ -125,8 +124,7 @@ def updateDeadline(request, id, email, user_type):
         opening.deadline_datetime = datetime.datetime.strptime(data[DEADLINE_DATETIME], '%Y-%m-%d %H:%M:%S %z')
         opening.changed_by = get_object_or_404(User, id=id)
         opening.save()
-        deadline=opening.deadline_datetime.strftime('%Y-%m-%d %H:%M:%S %z')
-        send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=deadline,role=opening.designation)
+        send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=data[DEADLINE_DATETIME],role=opening.designation)
         return Response({'action': "Update Deadline", 'message': "Deadline Updated"},
                         status=status.HTTP_200_OK)
     except Http404:
@@ -163,8 +161,7 @@ def updateOfferAccepted(request, id, email, user_type):
             opening.changed_by = get_object_or_404(User, id=id)
             opening.save()
             if opening.offer_accepted:
-                deadline=deadline_datetime.strftime('%Y-%m-%d %H:%M:%S %z')
-                send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=deadline,role=opening.designation)
+                send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=data[DEADLINE_DATETIME],role=opening.designation)
                 send_opening_notifications(opening.id,opening_type)
         else:
             raise ValueError("Offer Status already updated")
