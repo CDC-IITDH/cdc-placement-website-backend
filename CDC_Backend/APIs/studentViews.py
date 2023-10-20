@@ -109,7 +109,7 @@ def getDashboard(request, id, email, user_type):
 
         placementsdata = PlacementSerializerForStudent(filtered_placements, many=True).data
 
-        placementApplications = PlacementApplication.objects.filter(student_id=id)
+        placementApplications = PlacementApplication.objects.filter(student_id=id).order_by('-updated_at')
         placementApplications = PlacementApplicationSerializer(placementApplications, many=True).data
         internships = Internship.objects.filter(allowed_batch__contains=[studentDetails.batch],
                                               allowed_branch__contains=[studentDetails.branch],
@@ -119,7 +119,7 @@ def getDashboard(request, id, email, user_type):
         filtered_internships = internship_eligibility_filters(studentDetails, internships)
         internshipsdata = InternshipSerializerForStudent(filtered_internships, many=True).data
 
-        internshipApplications = InternshipApplication.objects.filter(student_id=id)
+        internshipApplications = InternshipApplication.objects.filter(student_id=id).order_by('-updated_at')
         internshipApplications = InternshipApplicationSerializer(internshipApplications, many=True).data
         return Response(
             {'action': "Get Dashboard - Student", 'message': "Data Found", "placements": placementsdata,
