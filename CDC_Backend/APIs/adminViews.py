@@ -161,7 +161,8 @@ def updateOfferAccepted(request, id, email, user_type):
             opening.changed_by = get_object_or_404(User, id=id)
             opening.save()
             if opening.offer_accepted:
-                send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=data[DEADLINE_DATETIME],role=opening.designation)
+                deadline=deadline_datetime.strftime('%Y-%m-%d %H:%M:%S %z')
+                send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=deadline,role=opening.designation)
                 send_opening_notifications(opening.id,opening_type)
         else:
             raise ValueError("Offer Status already updated")
