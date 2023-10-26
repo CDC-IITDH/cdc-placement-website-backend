@@ -129,6 +129,11 @@ class Placement(models.Model):
         size=TOTAL_BATCHES,
         default=list
     )
+    allowed_degree = ArrayField(
+        models.CharField(max_length=10,choices=DEGREE_CHOICES),
+        size=len(DEGREE_CHOICES),
+        default=list
+    )
 
     allowed_branch = ArrayField(
         models.CharField(choices=BRANCH_CHOICES, blank=False, max_length=10),
