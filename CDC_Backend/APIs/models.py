@@ -31,7 +31,7 @@ class Student(models.Model):
     resumes = ArrayField(models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=10,
                          default=list, blank=True)
     cpi = models.DecimalField(decimal_places=2, max_digits=4)
-    can_apply = models.BooleanField(default=True, verbose_name='Registered')
+    can_apply_placements = models.BooleanField(default=True, verbose_name='Placement_Registered')
     can_apply_internship = models.BooleanField(default=True, verbose_name='Internship Registered') #added for internship
     changed_by = models.ForeignKey(User, blank=True, on_delete=models.RESTRICT, default=None, null=True)
     degree = models.CharField(choices=DEGREE_CHOICES, blank=False, max_length=10, default=DEGREE_CHOICES[0][0])
