@@ -214,14 +214,16 @@ def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
         else:
             recipient_list = [str(email_to), ]
 
-        msg = EmailMultiAlternatives(subject, text_content, email_from,None,bcc=recipient_list)
-        msg.attach_alternative(html_content, "text/html")
-        if attachment_jnf_response:
-            # logger.info(attachment_jnf_response)
-            pdf = pdfkit.from_string(attachment_jnf_response['html'], False,
-                                     options={"--enable-local-file-access": "", '--dpi': '96'})
-            msg.attach(attachment_jnf_response['name'], pdf, 'application/pdf')
-        msg.send()
+    #batch 100 ppl to send as bcc
+        for i in range(0,len(recipient_list),100):
+            msg = EmailMultiAlternatives(subject, text_content, email_from,None,bcc=recipient_list[i:i+100])
+            msg.attach_alternative(html_content, "text/html")
+            if attachment_jnf_response:
+                # logger.info(attachment_jnf_response)
+                pdf = pdfkit.from_string(attachment_jnf_response['html'], False,
+                                        options={"--enable-local-file-access": "", '--dpi': '96'})
+                msg.attach(attachment_jnf_response['name'], pdf, 'application/pdf')
+            msg.send()
         return True
     except:
         logger.error("Send Email: " + str(sys.exc_info()))
