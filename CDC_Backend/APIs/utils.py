@@ -457,7 +457,7 @@ def send_opening_notifications(opening_id, opening_type=PLACEMENT):
         logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
         return False
 
-def get_eligible_emails(opening_id, opening_type=PLACEMENT):
+def get_eligible_emails(opening_id, opening_type=PLACEMENT,send_all=False):
     try:
        # print(opening_id, opening_type)
         if opening_type == PLACEMENT:
@@ -473,6 +473,10 @@ def get_eligible_emails(opening_id, opening_type=PLACEMENT):
                         isinstance(opening,Internship) and InternshipApplicationConditions(student, opening)[0]):
                         try:
                             student_user = get_object_or_404(User, id=student.id)
+                            #if send_all True send all students eligible for the opening
+                            if send_all:
+                                emails.append(student_user.email)
+                                continue
                             # check if he applied
                             if opening_type == PLACEMENT:
                                 if PlacementApplication.objects.filter(student=student, placement=opening).exists():
@@ -565,12 +569,13 @@ def send_email_for_opening(opening):
 
 
 @background_task.background(schedule=2)
-def send_opening_to_notifications_service(id,name,deadline,role):
+def send_opening_to_notifications_service(id,name,deadline,role,opening_type=PLACEMENT):
     data={
         "id":id,
         "company":name,
         "deadline":deadline,
-        "role":role
+        "role":role,
+        "opening_type":opening_type
     }
     encoded=jwt.encode(data,os.environ.get("JWT_SECRET_KEY"),algorithm="HS256")
     data_={
