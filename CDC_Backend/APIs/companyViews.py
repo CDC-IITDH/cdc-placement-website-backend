@@ -418,13 +418,14 @@ def addInternship(request):
             internship.is_work_from_home = True
         else:
             internship.is_work_from_home = False
-        
-        if ALLOWED_BATCH in data[ALLOWED_BATCH] and data[ALLOWED_BATCH] is None or json.loads(data[ALLOWED_BATCH]) == "":
+
+        if ALLOWED_BATCH in data and (data[ALLOWED_BATCH] is None or json.loads(data[ALLOWED_BATCH]) == ""):
             raise ValueError('Allowed Batches cannot be empty')
-        elif ALLOWED_BATCH in data[ALLOWED_BATCH] and set(json.loads(data[ALLOWED_BATCH])).issubset(BATCHES):
+        elif ALLOWED_BATCH in data and set(json.loads(data[ALLOWED_BATCH])).issubset(BATCHES):
             internship.allowed_batch = json.loads(data[ALLOWED_BATCH])
         else:
             internship.allowed_batch = ['2021']
+
         
         if data[ALLOWED_BRANCH] is None or json.loads(data[ALLOWED_BRANCH]) == "":
             raise ValueError('Allowed Branch cannot be empty')
