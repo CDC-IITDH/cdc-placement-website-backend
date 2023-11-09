@@ -17,6 +17,8 @@ logger = logging.getLogger('db')
            RECAPTCHA_VALUE, JOB_LOCATION
            ])
 def addPlacement(request):
+    logger.info("INF filled by " + str(request.data['email']))
+    logger.info(json.dumps(request.data))
     try:
         data = request.data
         files = request.FILES
@@ -353,6 +355,7 @@ def autoFillInf(request):
           CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, RECAPTCHA_VALUE])
 def addInternship(request):
     logger.info("INF filled by " + str(request.data['email']))
+    logger.info(json.dumps(request.data))
     try:
         data = request.data
         files = request.FILES
@@ -416,12 +419,12 @@ def addInternship(request):
         else:
             internship.is_work_from_home = False
         
-        if data[ALLOWED_BATCH] is None or json.loads(data[ALLOWED_BATCH]) == "":
+        if ALLOWED_BATCH in data[ALLOWED_BATCH] and data[ALLOWED_BATCH] is None or json.loads(data[ALLOWED_BATCH]) == "":
             raise ValueError('Allowed Branch cannot be empty')
-        elif set(json.loads(data[ALLOWED_BATCH])).issubset(BATCHES):
+        elif ALLOWED_BATCH in data[ALLOWED_BATCH] and set(json.loads(data[ALLOWED_BATCH])).issubset(BATCHES):
             internship.allowed_batch = json.loads(data[ALLOWED_BATCH])
         else:
-            raise ValueError('Allowed Batch must be a subset of ' + str(BATCHES))
+            internship.allowed_batch = ['2021']
         
         if data[ALLOWED_BRANCH] is None or json.loads(data[ALLOWED_BRANCH]) == "":
             raise ValueError('Allowed Branch cannot be empty')
