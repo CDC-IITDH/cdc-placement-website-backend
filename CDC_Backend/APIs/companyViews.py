@@ -17,7 +17,7 @@ logger = logging.getLogger('db')
            RECAPTCHA_VALUE, JOB_LOCATION
            ])
 def addPlacement(request):
-    logger.info("INF filled by " + str(request.data['email']))
+    logger.info("JNF filled by " + str(request.data['email']))
     logger.info(json.dumps(request.data))
     try:
         data = request.data
