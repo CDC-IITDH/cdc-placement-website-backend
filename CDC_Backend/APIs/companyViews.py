@@ -18,7 +18,7 @@ logger = logging.getLogger('db')
            ])
 def addPlacement(request):
     logger.info("JNF filled by " + str(request.data['email']))
-    logger.info(json.dumps(request.data))
+    logger.info(request.data)
     try:
         data = request.data
         files = request.FILES
@@ -355,7 +355,7 @@ def autoFillInf(request):
           CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, RECAPTCHA_VALUE])
 def addInternship(request):
     logger.info("INF filled by " + str(request.data['email']))
-    logger.info(json.dumps(request.data))
+    logger.info(request.data)
     try:
         data = request.data
         files = request.FILES
