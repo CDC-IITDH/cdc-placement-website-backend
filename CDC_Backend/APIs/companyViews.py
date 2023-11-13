@@ -235,14 +235,14 @@ def addPlacement(request):
 
     except ValueError as e:
         store_all_files(request)
-        exception_email(data)
+        #exception_email(data)
         logger.warning("ValueError in addPlacement: " + str(e))
         logger.warning(traceback.format_exc())
         return Response({'action': "Add Placement", 'message': str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
     except:
         store_all_files(request)
-        exception_email(data)
+        #exception_email(data)
         logger.warning("Add New Placement: " + str(sys.exc_info()))
         logger.warning(traceback.format_exc())
         return Response({'action': "Add Placement", 'message': "Something went wrong"},

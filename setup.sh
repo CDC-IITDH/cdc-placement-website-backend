@@ -8,7 +8,7 @@ python3 manage.py migrate
 echo "Migrations complete"
 
 python3 manage.py collectstatic --noinput
-
+python3 manage.py crontab add
 DIR="./Storage"
 if [ -d "$DIR" ]; then
   ### Take action if $DIR exists ###
