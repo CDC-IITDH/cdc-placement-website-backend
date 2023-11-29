@@ -252,9 +252,13 @@ def PlacementApplicationConditions(student, placement):
         for i in selected_companies:
             if int(i.placement.tier) != 1 and int(i.placement.tier) <= int(placement.tier):
                 return False, "Can't apply for this tier"
+            elif int(i.placement.tier) == 1 and int(placement.tier) != 1:
+                return False, "Can't apply for this tier"
 
         for i in PPO:
             if int(i.tier) != 1 and int(i.tier) <= int(placement.tier):
+                return False, "Can't apply for this tier"
+            elif int(i.tier) == 1 and int(placement.tier) != 1:
                 return False, "Can't apply for this tier"
 
         if student.degree != 'bTech' and not placement.rs_eligible:
