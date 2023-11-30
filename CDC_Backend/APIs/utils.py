@@ -214,14 +214,16 @@ def sendEmail(email_to, subject, data, template, attachment_jnf_response=None):
         else:
             recipient_list = [str(email_to), ]
 
-        msg = EmailMultiAlternatives(subject, text_content, email_from,None,bcc=recipient_list)
-        msg.attach_alternative(html_content, "text/html")
-        if attachment_jnf_response:
-            # logger.info(attachment_jnf_response)
-            pdf = pdfkit.from_string(attachment_jnf_response['html'], False,
-                                     options={"--enable-local-file-access": "", '--dpi': '96'})
-            msg.attach(attachment_jnf_response['name'], pdf, 'application/pdf')
-        msg.send()
+    #batch 100 ppl to send as bcc
+        for i in range(0,len(recipient_list),100):
+            msg = EmailMultiAlternatives(subject, text_content, email_from,None,bcc=recipient_list[i:i+100])
+            msg.attach_alternative(html_content, "text/html")
+            if attachment_jnf_response:
+                # logger.info(attachment_jnf_response)
+                pdf = pdfkit.from_string(attachment_jnf_response['html'], False,
+                                        options={"--enable-local-file-access": "", '--dpi': '96'})
+                msg.attach(attachment_jnf_response['name'], pdf, 'application/pdf')
+            msg.send()
         return True
     except:
         logger.error("Send Email: " + str(sys.exc_info()))
@@ -248,11 +250,15 @@ def PlacementApplicationConditions(student, placement):
             return True, "Conditions Satisfied"
 
         for i in selected_companies:
-            if int(i.placement.tier) < int(placement.tier):
+            if int(i.placement.tier) != 1 and int(i.placement.tier) <= int(placement.tier):
+                return False, "Can't apply for this tier"
+            elif int(i.placement.tier) == 1 and int(placement.tier) != 1:
                 return False, "Can't apply for this tier"
 
         for i in PPO:
-            if int(i.tier) < int(placement.tier):
+            if int(i.tier) != 1 and int(i.tier) <= int(placement.tier):
+                return False, "Can't apply for this tier"
+            elif int(i.tier) == 1 and int(placement.tier) != 1:
                 return False, "Can't apply for this tier"
 
         if student.degree != 'bTech' and not placement.rs_eligible:
@@ -455,7 +461,7 @@ def send_opening_notifications(opening_id, opening_type=PLACEMENT):
         logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
         return False
 
-def get_eligible_emails(opening_id, opening_type=PLACEMENT):
+def get_eligible_emails(opening_id, opening_type=PLACEMENT,send_all=False):
     try:
        # print(opening_id, opening_type)
         if opening_type == PLACEMENT:
@@ -471,6 +477,10 @@ def get_eligible_emails(opening_id, opening_type=PLACEMENT):
                         isinstance(opening,Internship) and InternshipApplicationConditions(student, opening)[0]):
                         try:
                             student_user = get_object_or_404(User, id=student.id)
+                            #if send_all True send all students eligible for the opening
+                            if send_all:
+                                emails.append(student_user.email)
+                                continue
                             # check if he applied
                             if opening_type == PLACEMENT:
                                 if PlacementApplication.objects.filter(student=student, placement=opening).exists():
@@ -563,12 +573,13 @@ def send_email_for_opening(opening):
 
 
 @background_task.background(schedule=2)
-def send_opening_to_notifications_service(id,name,deadline,role):
+def send_opening_to_notifications_service(id,name,deadline,role,opening_type=PLACEMENT):
     data={
         "id":id,
         "company":name,
         "deadline":deadline,
-        "role":role
+        "role":role,
+        "opening_type":opening_type
     }
     encoded=jwt.encode(data,os.environ.get("JWT_SECRET_KEY"),algorithm="HS256")
     data_={

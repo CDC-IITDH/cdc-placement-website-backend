@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'background_task',
     'simple_history',
     'import_export',
-    'django_extensions'
+    'django_extensions',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -203,3 +204,7 @@ LOGGING = {
 }
 
 # django_heroku.settings(locals())
+
+CRONJOBS = [
+    ('0 8,20 * * *', 'APIs.cron.clean_up_tests')
+]

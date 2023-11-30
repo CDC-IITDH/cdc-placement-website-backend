@@ -17,6 +17,8 @@ logger = logging.getLogger('db')
            RECAPTCHA_VALUE, JOB_LOCATION
            ])
 def addPlacement(request):
+    logger.info("JNF filled by " + str(request.data['email']))
+    logger.info(request.data)
     try:
         data = request.data
         files = request.FILES
@@ -233,14 +235,14 @@ def addPlacement(request):
 
     except ValueError as e:
         store_all_files(request)
-        exception_email(data)
+        #exception_email(data)
         logger.warning("ValueError in addPlacement: " + str(e))
         logger.warning(traceback.format_exc())
         return Response({'action': "Add Placement", 'message': str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
     except:
         store_all_files(request)
-        exception_email(data)
+        #exception_email(data)
         logger.warning("Add New Placement: " + str(sys.exc_info()))
         logger.warning(traceback.format_exc())
         return Response({'action': "Add Placement", 'message': "Something went wrong"},
@@ -353,6 +355,7 @@ def autoFillInf(request):
           CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, RECAPTCHA_VALUE])
 def addInternship(request):
     logger.info("INF filled by " + str(request.data['email']))
+    logger.info(request.data)
     try:
         data = request.data
         files = request.FILES
@@ -415,13 +418,14 @@ def addInternship(request):
             internship.is_work_from_home = True
         else:
             internship.is_work_from_home = False
-        
-        if data[ALLOWED_BATCH] is None or json.loads(data[ALLOWED_BATCH]) == "":
-            raise ValueError('Allowed Branch cannot be empty')
-        elif set(json.loads(data[ALLOWED_BATCH])).issubset(BATCHES):
+
+        if ALLOWED_BATCH in data and (data[ALLOWED_BATCH] is None or json.loads(data[ALLOWED_BATCH]) == ""):
+            raise ValueError('Allowed Batches cannot be empty')
+        elif ALLOWED_BATCH in data and set(json.loads(data[ALLOWED_BATCH])).issubset(BATCHES):
             internship.allowed_batch = json.loads(data[ALLOWED_BATCH])
         else:
-            raise ValueError('Allowed Batch must be a subset of ' + str(BATCHES))
+            internship.allowed_batch = ['2021']
+
         
         if data[ALLOWED_BRANCH] is None or json.loads(data[ALLOWED_BRANCH]) == "":
             raise ValueError('Allowed Branch cannot be empty')

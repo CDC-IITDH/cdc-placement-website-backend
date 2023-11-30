@@ -124,7 +124,7 @@ def updateDeadline(request, id, email, user_type):
         opening.deadline_datetime = datetime.datetime.strptime(data[DEADLINE_DATETIME], '%Y-%m-%d %H:%M:%S %z')
         opening.changed_by = get_object_or_404(User, id=id)
         opening.save()
-        send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=data[DEADLINE_DATETIME],role=opening.designation)
+        send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=data[DEADLINE_DATETIME],role=opening.designation,opening_type=opening_type)
         return Response({'action': "Update Deadline", 'message': "Deadline Updated"},
                         status=status.HTTP_200_OK)
     except Http404:
@@ -162,7 +162,7 @@ def updateOfferAccepted(request, id, email, user_type):
             opening.save()
             if opening.offer_accepted:
                 deadline=deadline_datetime.strftime('%Y-%m-%d %H:%M:%S %z')
-                send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=deadline,role=opening.designation)
+                send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=deadline,role=opening.designation,opening_type=opening_type)
                 send_opening_notifications(opening.id,opening_type)
         else:
             raise ValueError("Offer Status already updated")
@@ -767,7 +767,11 @@ def get_eligible_students(request):
             opening_type= data[OPENING_TYPE]
         else:
             opening_type= "Placement"
-        eligible_students=get_eligible_emails(opening_id=opening_id, opening_type=opening_type)
+        if "send_all" in data:
+            send_all = "True"==data["send_all"]
+        else:
+            send_all = False
+        eligible_students=get_eligible_emails(opening_id=opening_id, opening_type=opening_type, send_all=send_all)
         return Response({'action': "Get Eligible Students", 'message': "Eligible Students Fetched",
                          'eligible_students': eligible_students},
                         status=status.HTTP_200_OK)
