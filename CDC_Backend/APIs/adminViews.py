@@ -124,7 +124,8 @@ def updateDeadline(request, id, email, user_type):
         opening.deadline_datetime = datetime.datetime.strptime(data[DEADLINE_DATETIME], '%Y-%m-%d %H:%M:%S %z')
         opening.changed_by = get_object_or_404(User, id=id)
         opening.save()
-        send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=data[DEADLINE_DATETIME],role=opening.designation,opening_type=opening_type)
+        if opening.offer_accepted:
+            send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=data[DEADLINE_DATETIME],role=opening.designation,opening_type=opening_type)
         return Response({'action': "Update Deadline", 'message': "Deadline Updated"},
                         status=status.HTTP_200_OK)
     except Http404:
@@ -147,22 +148,16 @@ def updateOfferAccepted(request, id, email, user_type):
             opening_type= data[OPENING_TYPE]
         else:
             opening_type= "Placement"
-        if DEADLINE_DATETIME in data:
-            deadline_datetime = datetime.datetime.strptime(data[DEADLINE_DATETIME], '%Y-%m-%d %H:%M:%S %z')
-        else:
-            deadline_datetime = timezone.localtime(timezone.now()).replace(hour=0, minute=0, second=0, microsecond=0) + datetime.timedelta(days=2)
         if opening_type == "Internship":
             opening = get_object_or_404(Internship, pk=data[OPENING_ID])
         else:
             opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         if opening.offer_accepted is None:
             opening.offer_accepted = offer_accepted == "true"
-            opening.deadline_datetime = deadline_datetime
             opening.changed_by = get_object_or_404(User, id=id)
             opening.save()
             if opening.offer_accepted:
-                deadline=deadline_datetime.strftime('%Y-%m-%d %H:%M:%S %z')
-                send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=deadline,role=opening.designation,opening_type=opening_type)
+                send_opening_to_notifications_service(id=opening.id,name=opening.company_name,deadline=opening.deadline_datetime,role=opening.designation,opening_type=opening_type)
                 send_opening_notifications(opening.id,opening_type)
         else:
             raise ValueError("Offer Status already updated")
