@@ -64,7 +64,7 @@ class StudentAdmin(ImportExportMixin, SimpleHistoryAdmin):
 
 @admin.register(Student)
 class Student(StudentAdmin):
-    list_display = ("roll_no", "name", "batch", "branch", "phone_number", 'can_apply')
+    list_display = ("roll_no", "name", "batch", "branch", "phone_number", 'can_apply_placements')
     search_fields = ("roll_no", "name", "phone_number")
     ordering = ("roll_no", "name", "batch", "branch", "phone_number")
     list_filter = ("batch", "branch")
@@ -72,12 +72,12 @@ class Student(StudentAdmin):
 
     @admin.action(description="Deregister students")
     def mark_can_apply_as_no(self, request, queryset):
-        queryset.update(can_apply=False)
+        queryset.update(can_apply_placements=False)
         self.message_user(request, "Deregistered the users")
 
     @admin.action(description="Register students")
     def mark_can_apply_as_yes(self, request, queryset):
-        queryset.update(can_apply=True)
+        queryset.update(can_apply_placements=True)
         self.message_user(request, "Registered the users")
 
 class PlacementResources(resources.ModelResource):
