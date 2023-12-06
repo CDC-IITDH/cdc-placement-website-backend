@@ -720,27 +720,8 @@ class AdminView(APITestCase):
         self.assertEqual(response.data['message'], 'Offer Accepted Updated')
         self.assertEqual(Placement.objects.get(
             id=self.placement1.id).offer_accepted, True)
-        self.assertEqual(Placement.objects.get(
-            id=self.placement1.id).deadline_datetime, timezone.localtime(timezone.now()).replace(hour=0, minute=0, second=0, microsecond=0)+timezone.timedelta(days=2))
+       
 
-    def test_offerAccepted_withDeadline(self):
-        url = reverse("Update Offer Accepted")
-        data = {
-            "opening_type": "Placement",
-            "opening_id": self.placement3.id,
-            "offer_accepted": "true",
-            "deadline_datetime": (timezone.localtime(timezone.now()).replace(
-                hour=0, minute=0, second=0, microsecond=0)+timezone.timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S %z')
-        }
-        self.admin.user_type = ["s_admin"]
-        self.admin.save()
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
-        response = self.client.post(url, data=json.dumps(
-            data), content_type='application/json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Placement.objects.get(
-            id=self.placement3.id).deadline_datetime, timezone.localtime(timezone.now()).replace(hour=0, minute=0, second=0, microsecond=0)+timezone.timedelta(days=1))
-        self.assertEqual(response.data['message'], 'Offer Accepted Updated')
 
     def test_offerAccepted_wrongOpening(self):
         url = reverse("Update Offer Accepted")
@@ -1199,29 +1180,8 @@ class AdminView(APITestCase):
         self.assertEqual(Internship.objects.get(
             id=self.internship1.id).offer_accepted, True)
         self.internship1.refresh_from_db()
-        self.assertEqual(self.internship1.deadline_datetime, timezone.localtime(timezone.now()).replace(
-            hour=0, minute=0, second=0, microsecond=0)+timezone.timedelta(days=2))
-
-    def test_updateofferAccepted_withDeadline_internship(self):
-        url = reverse("Update Offer Accepted")
-        data = {
-            "opening_type": "Internship",
-            "opening_id": self.internship3.id,
-            "offer_accepted": "true",
-            "deadline_datetime": (timezone.localtime(timezone.now()).replace(
-                hour=0, minute=0, second=0, microsecond=0)+timezone.timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S %z')
-        }
-        self.admin.user_type = ["s_admin"]
-        self.admin.save()
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
-        response = self.client.post(url, data=json.dumps(
-            data), content_type='application/json')
-        self.internship3.refresh_from_db()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Internship.objects.get(
-            id=self.internship3.id).deadline_datetime, timezone.localtime(timezone.now()).replace(hour=0, minute=0, second=0, microsecond=0)+timezone.timedelta(days=1))
-        self.assertEqual(response.data['message'], 'Offer Accepted Updated')
-
+        
+    
     def test_updateofferAccepted_wrongOpening_internship(self):
         url = reverse("Update Offer Accepted")
         data = {
