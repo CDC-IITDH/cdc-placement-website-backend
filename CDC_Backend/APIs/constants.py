@@ -65,7 +65,6 @@ TOTAL_BATCHES = 6  # Total No of Batches
 CDC_REPS_EMAILS = [
     "cdc@iitdh.ac.in",
     "cdcfic@iitdh.ac.in",
-    "priyanka.naga@iitdh.ac.in",
     "vandana@iitdh.ac.in",
     "sairam@iitdh.ac.in",
     "satyapriya.gupta@iitdh.ac.in",
@@ -104,7 +103,7 @@ SERVICE= 'service'
 COMPANY = 'company'
 TIER = 'tier'
 # To be Configured Properly
-FOURTH_YEAR = '2020'
+FOURTH_YEAR = '2021'
 MAX_OFFERS_PER_STUDENT = 2
 MAX_RESUMES_PER_STUDENT = 3
 EMAIL_VERIFICATION_TOKEN_TTL = 48  # in hours
