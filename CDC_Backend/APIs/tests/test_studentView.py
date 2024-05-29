@@ -21,7 +21,7 @@ class StudentViewsTestCase(APITestCase):
         self.assertEqual(
             self.user.email, User.objects.get(id=self.user.id).email)
         self.student = Student.objects.create(
-            name="Test Student", id=self.user.id, resumes=["8BSLybntULgrPPm_beehyv.pdf"], roll_no=str(os.environ.get("ROLL_NO")), branch="CSE", batch="2020",  phone_number=1234567890,  changed_by=self.user,  can_apply=True,
+            name="Test Student", id=self.user.id, resumes=["8BSLybntULgrPPm_beehyv.pdf"], roll_no=str(os.environ.get("ROLL_NO")), branch="CSE", batch="2020",  phone_number=1234567890,  changed_by=self.user,  can_apply_placements=True,
             can_apply_internship=True, degree="bTech", cpi=7.95,
         )
         self.assertEqual(self.student.name,
@@ -409,7 +409,7 @@ class StudentViewsTestCase(APITestCase):
             RESUME_FILE_NAME: '8BSLybntULgrPPm_beehyv.pdf',
             ADDITIONAL_INFO: []
         }
-        self.student.can_apply = False
+        self.student.can_apply_placements = False
         self.student.save()
         self.client.credentials(
             HTTP_AUTHORIZATION='Bearer ' + self.student_token)

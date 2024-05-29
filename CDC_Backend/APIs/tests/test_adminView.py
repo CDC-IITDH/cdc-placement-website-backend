@@ -24,13 +24,13 @@ class AdminView(APITestCase):
         self.user4 = User.objects.create(
             email="200030058@iitdh.ac.in", id="200030058", user_type=[STUDENT])
         self.student1 = Student.objects.create(
-            name='John Doe', roll_no='200010032', batch='2020', branch='CSE', cpi=9.5, id="200010032", can_apply=True, resumes=["8BSLybntULgrPPm_beehyv.pdf", "8BSLybntULgrPPm_kalera.pdf"], can_apply_internship=True)
+            name='John Doe', roll_no='200010032', batch='2020', branch='CSE', cpi=9.5, id="200010032", can_apply_placements=True, resumes=["8BSLybntULgrPPm_beehyv.pdf", "8BSLybntULgrPPm_kalera.pdf"], can_apply_internship=True)
         self.student2 = Student.objects.create(
-            name='Jane Doe', roll_no='200010038', batch='2020', branch='EE', cpi=9.0, id="200010038", can_apply=True, resumes=["8BSLybntULgrPPm_beehyv.pdf"], can_apply_internship=True)
+            name='Jane Doe', roll_no='200010038', batch='2020', branch='EE', cpi=9.0, id="200010038", can_apply_placements=True, resumes=["8BSLybntULgrPPm_beehyv.pdf"], can_apply_internship=True)
         self.student3 = Student.objects.create(
-            name='Bob Smith', roll_no='200010054', batch='2020', branch='CSE', cpi=8.5, id="200010054", can_apply=True, resumes=["8BSLybntULgrPPm_beehyv.pdf"], can_apply_internship=True)
+            name='Bob Smith', roll_no='200010054', batch='2020', branch='CSE', cpi=8.5, id="200010054", can_apply_placements=True, resumes=["8BSLybntULgrPPm_beehyv.pdf"], can_apply_internship=True)
         self.student4 = Student.objects.create(
-            name='Bob Marley', roll_no='200030058', batch='2020', branch='CSE', cpi=8.5, id="200030058", can_apply=True, resumes=["8BSLybntULgrPPm_beehyv.pdf"], can_apply_internship=True)
+            name='Bob Marley', roll_no='200030058', batch='2020', branch='CSE', cpi=8.5, id="200030058", can_apply_placements=True, resumes=["8BSLybntULgrPPm_beehyv.pdf"], can_apply_internship=True)
 
         self.placement1 = Placement.objects.create(
             company_name='ABC Corp', compensation_CTC=1000000, tier='1', id=generateRandomString(), allowed_branch=["CSE", "EE"], allowed_batch=["2020"], contact_person_name="test", phone_number="1234567890", email="test1@test.com", email_verified=True, offer_accepted=True)

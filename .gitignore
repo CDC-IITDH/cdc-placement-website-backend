@@ -133,9 +133,6 @@ dmypy.json
 ./CDC_Backend/Storage
 /CDC_Backend/CDC_Backend/__pycache__/
 /CDC_Backend/APIs/__pycache__/
-/CDC_Backend/APIs/migrations/
-/CDC_Backend/internAPIs/__pycache__/
-/CDC_Backend/internAPIs/migrations/
 /CDC_Backend/static/
 /CDC_Backend/Storage/
 .idea

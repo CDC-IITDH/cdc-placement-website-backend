@@ -261,7 +261,22 @@ def PlacementApplicationConditions(student, placement):
             elif int(i.tier) == 1 and int(placement.tier) != 1:
                 return False, "Can't apply for this tier"
 
-        if student.degree != 'bTech' and not placement.rs_eligible:
+        if student.degree == 'bTech' and not placement.btech_allowed:
+            raise PermissionError("Can't apply for this placement")
+        if student.degree == 'mTech' and not placement.mtech_allowed:
+            raise PermissionError("Can't apply for this placement")
+        if student.degree == 'ms' and not placement.ms_allowed:
+            raise PermissionError("Can't apply for this placement")
+        if student.degree == 'phd' and not placement.phd_allowed:
+            raise PermissionError("Can't apply for this placement")
+        
+        if student.degree == 'bTech' and student.branch not in placement.btech_allowed_branch:
+            raise PermissionError("Can't apply for this placement")
+        if student.degree == 'mTech' and student.branch not in placement.mtech_allowed_branch:
+            raise PermissionError("Can't apply for this placement")
+        if student.degree == 'ms' and student.branch not in placement.ms_allowed_branch:
+            raise PermissionError("Can't apply for this placement")
+        if student.degree == 'phd' and student.branch not in placement.phd_allowed_branch:
             raise PermissionError("Can't apply for this placement")
 
         return True, "Conditions Satisfied"

@@ -162,7 +162,15 @@ COMPENSATION_DETAILS_PDF = 'compensation_details_pdf'
 COMPENSATION_DETAILS_PDF_NAMES = 'compensation_details_pdf_names'
 IS_COMPENSATION_DETAILS_PDF = 'is_compensation_details_pdf'
 ALLOWED_BATCH = 'allowed_batch'
-ALLOWED_BRANCH = 'allowed_branch'
+BTECH_ALLOWED = 'btech_allowed'
+MTECH_ALLOWED = 'mtech_allowed'
+MS_ALLOWED = 'ms_allowed'
+PHD_ALLOWED = 'phd_allowed'
+BTECH_BRANCH = 'btech_branches'
+MTECH_BRANCH = 'mtech_branches'
+MS_BRANCH = 'ms_branches'
+PHD_BRANCH = 'phd_branches'
+ALLOWED_BRANCH = 'allowed_batch'
 RS_ELIGIBLE = 'rs_eligible'
 BOND_DETAILS = 'bond_details'
 SELECTION_PROCEDURE_ROUNDS = 'selection_procedure_rounds'
@@ -207,7 +215,7 @@ COMPANY_EMAIL_VERIFICATION_TEMPLATE = 'company_email_verification.html'
 COMPANY_JNF_RESPONSE_TEMPLATE = 'company_jnf_response.html'
 NOTIFY_STUDENTS_OPENING_TEMPLATE = 'notify_students_new_opening.html'
 REMINDER_STUDENTS_OPENING_TEMPLATE = 'students_opening_reminder.html'
-APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'CPI',
+APPLICATION_CSV_COL_NAMES = ['Applied At', 'Roll No.', 'Name', 'Email', 'Phone Number', 'Branch', 'Batch', 'Degree', 'CPI',
                              'Resume', 'Selected', ]
 
 

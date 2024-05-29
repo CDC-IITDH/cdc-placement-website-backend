@@ -101,10 +101,28 @@ def getDashboard(request, id, email, user_type):
     try:
         studentDetails = get_object_or_404(Student, id=id)
 
-        placements = Placement.objects.filter(allowed_batch__contains=[studentDetails.batch],
-                                              allowed_branch__contains=[studentDetails.branch],
+        placements = []
+        if studentDetails.degree == 'bTech':
+            placements = Placement.objects.filter(btech_allowed = True,
+                                                  btech_allowed_branch__contains=[studentDetails.branch],
                                               deadline_datetime__gte=datetime.datetime.now(),
                                               offer_accepted=True, email_verified=True).order_by('deadline_datetime')
+        elif studentDetails.degree == 'mTech':
+            placements = Placement.objects.filter(mtech_allowed = True,
+                                                  mtech_allowed_branch__contains=[studentDetails.branch],
+                                              deadline_datetime__gte=datetime.datetime.now(),
+                                              offer_accepted=True, email_verified=True).order_by('deadline_datetime')
+        elif studentDetails.degree == 'ms':
+            placements = Placement.objects.filter(ms_allowed = True,
+                                                    ms_allowed_branch__contains=[studentDetails.branch],
+                                                deadline_datetime__gte=datetime.datetime.now(),
+                                                offer_accepted=True, email_verified=True).order_by('deadline_datetime')
+        elif studentDetails.degree == 'phd':
+            placements = Placement.objects.filter(phd_allowed = True,
+                                                    phd_allowed_branch__contains=[studentDetails.branch],
+                                                deadline_datetime__gte=datetime.datetime.now(),
+                                                offer_accepted=True, email_verified=True).order_by('deadline_datetime')
+
         filtered_placements = placement_eligibility_filters(studentDetails, placements)
 
         placementsdata = PlacementSerializerForStudent(filtered_placements, many=True).data
@@ -179,7 +197,7 @@ def submitApplication(request, id, email, user_type):
         
         # Only Allowing Applications for Placements
         if data[OPENING_TYPE] == PLACEMENT:
-            if not student.can_apply:
+            if not student.can_apply_placements:
                 return Response({'action': "Submit Application", 'message': "Student Can't Apply"},
                             status=status.HTTP_400_BAD_REQUEST)
             if not len(PlacementApplication.objects.filter(
@@ -187,7 +205,6 @@ def submitApplication(request, id, email, user_type):
                 application = PlacementApplication()
                 opening = get_object_or_404(Placement, id=data[OPENING_ID],
                                             allowed_batch__contains=[student.batch],
-                                            allowed_branch__contains=[student.branch],
                                             deadline_datetime__gte=timezone.now()
                                             )
                 if not opening.offer_accepted or not opening.email_verified:
