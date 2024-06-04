@@ -83,7 +83,7 @@ class Student(StudentAdmin):
 class PlacementResources(resources.ModelResource):
     class Meta:
         model = Placement
-        exclude = ('id','changed_by', 'is_company_details_pdf', 'is_description_pdf',
+        exclude = ('changed_by', 'is_company_details_pdf', 'is_description_pdf',
          'is_compensation_details_pdf', 'is_selection_procedure_details_pdf')
 class AdminAdmin(ExportMixin, SimpleHistoryAdmin):
     resource_class = PlacementResources
@@ -92,7 +92,7 @@ class AdminAdmin(ExportMixin, SimpleHistoryAdmin):
 class PlacementResources(resources.ModelResource):
     class Meta:
         model = Placement
-        exclude = ('id', 'changed_by', 'is_company_details_pdf', 'is_description_pdf',
+        exclude = ( 'changed_by', 'is_company_details_pdf', 'is_description_pdf',
                    'is_compensation_details_pdf', 'is_selection_procedure_details_pdf')
 
 
@@ -103,7 +103,7 @@ class AdminAdmin(ExportMixin, SimpleHistoryAdmin):
 class PlacementResources(resources.ModelResource):
     class Meta:
         model = Placement
-        exclude = ('id', 'changed_by', 'is_company_details_pdf', 'is_description_pdf',
+        exclude = ('changed_by', 'is_company_details_pdf', 'is_description_pdf',
                    'is_compensation_details_pdf', 'is_selection_procedure_details_pdf')
 
 
