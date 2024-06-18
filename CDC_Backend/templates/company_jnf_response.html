@@ -5,69 +5,188 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        #details_table tr:nth-child(even) {
-            background: #FFF
+        body, table, td, div, p, h1 {
+            font-family: 'Roboto', sans-serif;
         }
-
-        #details_table tr:nth-child(odd) {
-            background: #bfe3f3
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #e1e4e8; /* Outer background color */
         }
-
-        #details_table td {
-            padding: 10px;
-            width: 50%;
+        .email-wrapper {
+            padding: 20px;
+            background-color: #e1e4e8; /* Outer background color */
         }
-
+        .email-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #eff7ff; /* Outer box background color */
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .email-header, .email-footer {
+            padding: 40px 0;
+            text-align: center;
+            color: #ffffff;
+        }
+        .email-header img {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 500;
+        }
+        .inner-container {
+            background-color: #ffffff; /* Inner box background color */
+            border-radius: 8px;
+            margin: 0 20px;
+        }
+        .inner-container .email-body {
+            padding: 36px 30px;
+        }
+        .inner-container .email-body h2 {
+            margin-bottom: 24px;
+            font-size: 24px;
+            color: black;
+            font-weight: 500;
+        }
+        .inner-container .email-body p {
+            margin-bottom: 16px;
+            font-size: 16px;
+            line-height: 24px;
+            color: #555555;
+        }
+        .email-footer {
+            padding: 20px 30px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .email-footer p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 20px;
+        }
         #details_table {
-            border: #334878 1px solid;
+            width: 100%;
             border-collapse: collapse;
-            width: 80%;
-            margin: auto;
+            margin: 20px auto;
+            font-size: 16px;
+        }
+        #details_table th, #details_table td {
+            padding: 10px;
+            border: 1px solid #dddddd;
+            text-align: left;
+        }
+        #details_table th {
+            background-color: #ff7350;
+            color: #ffffff;
+        }
+        #details_table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        #details_table tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+        #details_table ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+        #details_table a {
+            color: #334878;
+            text-decoration: none;
+        }
+        .social-icons img {
+            width: 24px;
+            height: 24px;
+            margin: 0 5px;
+        }
+        @media only screen and (max-width: 600px) {
+            .inner-container .email-body, .email-footer {
+                padding: 20px !important;
+            }
         }
     </style>
-    <title>Document</title>
+    <title>Notification</title>
 </head>
-<body style="margin: 0;font-family: sans-serif;">
+<body>
 
-<header style="background-color: #334878;"><img style="height: 3cm; margin: auto; display: block; padding: 0.5cm;"
-                                                src='{{ imgpath }}' alt="cdc logo"></header>
-<h1 style="text-align: center;"> {{type}} Notification Form Response</h1>
-<table id="details_table">
-    {% for key, value in data.items %}
-        <tr>
-            <td>
-                {{ key }}
-            </td>
-            <td>
-                {% if 'list' in  value.type %}
+    <div class="email-wrapper">
+        <div class="email-container">
 
-                    {% for item in value.details %}
-                        <li>
-                            {% if 'link' in value.type and value.link %}
-                                <a href="{{ value.link|add:item}}">{{ item|slice:"16:" }}</a>
-                            {% elif 'link' in value.type %}
-                                <a href="{{ item }}">{{ item }}</a>
-                            {% else %}
-                                {{ item }}
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                {% else %}
-                    {% if 'link' in value.type %}
-                        <a href="{{ value.details }}">{{ value.details }}</a>
-                    {% else %}
-                        {{ value }}
-                    {% endif %}
-                {% endif %}
+            <div class="email-header">
+                <img src="./images/CDC-Logo.png" alt="CDC Logo" style="width: 35%; height: auto; display: block; margin: 0 auto;" />
+            </div>
 
-            </td>
-        </tr>
-    {% endfor %}
-</table>
-<p style="margin-left: 10%;">In case of any descripency regarding above details, please contact <a
-        href="mailto:cdc@iitdh.ac.in">cdc@iitdh.ac.in</a>
+            <div class="inner-container">
+                <div class="email-body">
+                    <img src="./images/email_2058176.png" alt="Notification Logo" style="width: 20%; height: auto; display: block; margin: 0 auto;" />
+                    <h2 style="text-align: center;">{{type}} Notification Form Response</h2>
+                    <p style="text-align: center;">
+                        <table id="details_table">
+                            <thead>
+                                <tr>
+                                    <th>Key</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, value in data.items %}
+                                    <tr>
+                                        <td>{{ key }}</td>
+                                        <td>
+                                            {% if 'list' in value.type %}
+                                                <ul>
+                                                    {% for item in value.details %}
+                                                        <li>
+                                                            {% if 'link' in value.type and value.link %}
+                                                                <a href="{{ value.link|add:item }}" target="_blank">{{ item|slice:"16:" }}</a>
+                                                            {% elif 'link' in value.type %}
+                                                                <a href="{{ item }}" target="_blank">{{ item }}</a>
+                                                            {% else %}
+                                                                {{ item }}
+                                                            {% endif %}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                {% if 'link' in value.type %}
+                                                    <a href="{{ value.details }}" target="_blank">{{ value.details }}</a>
+                                                {% else %}
+                                                    {{ value }}
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        In case of any discrepancy regarding the above details, please contact <a href="mailto:cdc@iitdh.ac.in">cdc@iitdh.ac.in</a>.
+                    </p>
+                </div>
+            </div>
 
-</p>
+            <div class="email-footer">
+                <p style="margin-bottom: 16px; color: #555555;">Follow us on:</p>
+                <div class="social-icons">
+                    <a href="https://twitter.com/cdc_iitdh" style="margin-right: 10px; color: #eff7ff">
+                        <img src="./images/twitter.png" alt="Twitter">
+                    </a>
+                    <a href="https://www.instagram.com/cdc.iitdh/?hl=en" style="margin-right: 10px; color: #eff7ff">
+                        <img src="./images/Instagram_icon.png" alt="Instagram">
+                    </a>
+                    <a href="https://www.linkedin.com/company/cdciitdharwad/?originalSubdomain=in" style="margin-right: 10px; color: #eff7ff">
+                        <img src="./images/LinkedIn_logo_initials.png" alt="LinkedIn">
+                    </a>
+                </div>
+                <p style="color: #555555;">&copy; 2024 CDC, all rights reserved</p>
+            </div>
+
+        </div>
+    </div>
 
 </body>
 </html>
