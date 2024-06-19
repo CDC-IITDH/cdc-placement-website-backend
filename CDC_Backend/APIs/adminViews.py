@@ -480,9 +480,9 @@ def downloadResume(request, id, email, user_type):
             os.makedirs(STORAGE_DESTINATION_RESUME_ZIP, exist_ok=True)
         resumes = {}
         for apl in applications:
-            resumes[apl.student.roll_no] = STORAGE_DESTINATION_RESUMES + apl.student.id + '/' + apl.resume   # Check if the folder name is student id or user id
+            if apl.selected:
+                resumes[apl.student.roll_no] = STORAGE_DESTINATION_RESUMES + apl.student.id + '/' + apl.resume   # Check if the folder name is student id or user id
         
-        print("Resumes: ", resumes)
         with zipfile.ZipFile(STORAGE_DESTINATION_RESUME_ZIP + zip_filename, 'w', zipfile.ZIP_DEFLATED) as zip_file:
             for student_roll_no, resume_path in resumes.items():
                 zip_file.write(resume_path, os.path.basename(str(student_roll_no) + ".pdf"))
