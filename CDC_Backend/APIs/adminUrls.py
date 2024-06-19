@@ -13,6 +13,7 @@ urlpatterns = [
     path('getApplications/', adminViews.getApplications, name="Get Applications"),
     path("submitApplication/", adminViews.submitApplication, name="Submit Application"),
     path('generateCSV/', adminViews.generateCSV, name="Generate CSV"),
+    path('downloadResume/', adminViews.downloadResume, name="Download Resume"),
     path('addPPO/', adminViews.addPPO, name="Add PPO"),
     path('getStudentApplication/', adminViews.getStudentApplication, name="Get student application"),
     path('getStats/', adminViews.getStats, name="Get Stats"),
