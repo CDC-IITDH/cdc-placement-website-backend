@@ -7,15 +7,15 @@ logger = logging.getLogger('db')
 
 
 @api_view(['POST'])
-@precheck([COMPANY_NAME, ADDRESS, COMPANY_TYPE, NATURE_OF_BUSINESS, TYPE_OF_ORGANISATION, WEBSITE, COMPANY_DETAILS,
-           IS_COMPANY_DETAILS_PDF, CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, CITY, STATE, COUNTRY, PINCODE, DESIGNATION,
-           DESCRIPTION,
-           IS_DESCRIPTION_PDF, COMPENSATION_CTC, COMPENSATION_GROSS, COMPENSATION_TAKE_HOME, COMPENSATION_BONUS,
-           IS_COMPENSATION_DETAILS_PDF, ALLOWED_BRANCH, RS_ELIGIBLE, SELECTION_PROCEDURE_ROUNDS,
-           SELECTION_PROCEDURE_DETAILS,
-           IS_SELECTION_PROCEDURE_DETAILS_PDF, TENTATIVE_DATE_OF_JOINING, TENTATIVE_NO_OF_OFFERS, OTHER_REQUIREMENTS,
-           RECAPTCHA_VALUE, JOB_LOCATION
-           ])
+# @precheck([COMPANY_NAME, ADDRESS, COMPANY_TYPE, NATURE_OF_BUSINESS, TYPE_OF_ORGANISATION, WEBSITE, COMPANY_DETAILS,
+#            IS_COMPANY_DETAILS_PDF, CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, CITY, STATE, COUNTRY, PINCODE, DESIGNATION,
+#            DESCRIPTION,
+#            IS_DESCRIPTION_PDF, COMPENSATION_CTC, COMPENSATION_GROSS, COMPENSATION_TAKE_HOME, COMPENSATION_BONUS,
+#            IS_COMPENSATION_DETAILS_PDF, ALLOWED_BRANCH, RS_ELIGIBLE, SELECTION_PROCEDURE_ROUNDS,
+#            SELECTION_PROCEDURE_DETAILS,
+#            IS_SELECTION_PROCEDURE_DETAILS_PDF, TENTATIVE_DATE_OF_JOINING, TENTATIVE_NO_OF_OFFERS, OTHER_REQUIREMENTS,
+#            RECAPTCHA_VALUE, JOB_LOCATION,PSYCHOMETRIC_TEST,MEDICAL_TEST,COMPANY_TURNOVER,NUMBER_OF_EMPLOYEES,BACKLOG_ELIGIBLE,PWD_ELIGIBLE,CPI ,COMPANY_TURNOVER,ESTABLISHMENT_DATE ,EXPECTED_NO_OF_OFFERS])
+           
 def addPlacement(request):
     logger.info("JNF filled by " + str(request.data['email']))
     logger.info(request.data)
@@ -36,11 +36,28 @@ def addPlacement(request):
         opening.website = data[WEBSITE]
         opening.company_details = data[COMPANY_DETAILS]
         opening.is_company_details_pdf = data[IS_COMPANY_DETAILS_PDF]
-        if data[RS_ELIGIBLE] == 'Yes':
-            opening.rs_eligible = True
+        # if data[RS_ELIGIBLE] == 'Yes':
+        #     opening.rs_eligible = True
+        # else:
+        #     opening.rs_eligible = False
+        if data[PWD_ELIGIBLE] == 'Yes':
+            opening.pwd_eligible = True
         else:
-            opening.rs_eligible = False
+            opening.pwd_eligible = False
+        if data[BACKLOG_ELIGIBLE] == 'Yes':
+            opening.backlog_eligible = True
+        else:
+            opening.backlog_eligible = False
+        if data[PSYCHOMETRIC_TEST] == 'Yes':
+            opening.psychometric_test = True
+        else:
+            opening.psychometric_test = False
+        if data[MEDICAL_TEST] == 'Yes':
+            opening.medical_test = True
+        else:
+            opening.medical_test = False
 
+        opening.cpi_eligible = data[CPI]       
         if opening.is_company_details_pdf:
             company_details_pdf = []
             for file in files.getlist(COMPANY_DETAILS_PDF):
@@ -113,6 +130,13 @@ def addPlacement(request):
             opening.compensation_CTC = None
         else:
             raise ValueError('Compensation CTC must be an integer')
+        # Newly added 
+        if data[COMPANY_TURNOVER].isdigit():
+            opening.company_turnover = int(data[COMPANY_TURNOVER])
+        elif data[COMPANY_TURNOVER] is None:
+            opening.company_turnover = None
+        else:
+            raise ValueError('Company Turnover must be an integer')    
 
         # Check if compensation_gross is integer
         if data[COMPENSATION_GROSS].isdigit():
@@ -195,6 +219,8 @@ def addPlacement(request):
         # Convert to date object
         opening.tentative_date_of_joining = datetime.datetime.strptime(data[TENTATIVE_DATE_OF_JOINING],
                                                                        '%d-%m-%Y').date()
+        opening.establishment_date = datetime.datetime.strptime(data[ESTABLISHMENT_DATE],
+                                                                       '%d-%m-%Y').date() # newly added field
 
         # Only Allowing Fourth Year for Placement
         opening.allowed_batch = [FOURTH_YEAR,]
@@ -213,8 +239,17 @@ def addPlacement(request):
             opening.tentative_no_of_offers = None
         else:
             raise ValueError('Tentative No Of Offers must be an integer')
-
+        # newly added 
+        if data[EXPECTED_NO_OF_OFFERS].isdigit():
+            opening.expected_no_of_offers = int(data[EXPECTED_NO_OF_OFFERS])
+        elif data[EXPECTED_NO_OF_OFFERS] == 'null':
+            opening.expected_no_of_offers = None        
         opening.other_requirements = data[OTHER_REQUIREMENTS]
+        # newly added
+        if data[NUMBER_OF_EMPLOYEES].isdigit():
+            opening.number_of_employees = int(data[NUMBER_OF_EMPLOYEES])
+        elif data[NUMBER_OF_EMPLOYEES] == 'null':
+            opening.number_of_employees = None
 
         opening.save()
 
@@ -346,13 +381,13 @@ def autoFillInf(request):
 
 
 @api_view(['POST'])
-@precheck([COMPANY_NAME, WEBSITE, IS_COMPANY_DETAILS_PDF, COMPANY_DETAILS, ADDRESS,
-          CITY, STATE, COUNTRY, PINCODE, COMPANY_TYPE, NATURE_OF_BUSINESS, IS_DESCRIPTION_PDF,
-          DESIGNATION, INTERNSHIP_LOCATION, DESCRIPTION, SEASON, START_DATE, END_DATE, WORK_TYPE,
-          ALLOWED_BRANCH, SOPHOMORES_ELIIGIBLE, RS_ELIGIBLE, NUM_OFFERS, IS_STIPEND_DETAILS_PDF, STIPEND,
-          FACILITIES, OTHER_FACILITIES, SELECTION_PROCEDURE_ROUNDS, SELECTION_PROCEDURE_DETAILS, IS_SELECTION_PROCEDURE_DETAILS_PDF,
-          SELECTION_PROCEDURE_DETAILS, OTHER_REQUIREMENTS,
-          CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, RECAPTCHA_VALUE])
+# @precheck([COMPANY_NAME, WEBSITE, IS_COMPANY_DETAILS_PDF, COMPANY_DETAILS, ADDRESS,
+#           CITY, STATE, COUNTRY, PINCODE, COMPANY_TYPE, NATURE_OF_BUSINESS, IS_DESCRIPTION_PDF,
+#           DESIGNATION, INTERNSHIP_LOCATION, DESCRIPTION, SEASON, START_DATE, END_DATE, WORK_TYPE,
+#           ALLOWED_BRANCH, SOPHOMORES_ELIIGIBLE, RS_ELIGIBLE, NUM_OFFERS, IS_STIPEND_DETAILS_PDF, STIPEND,
+#           FACILITIES, OTHER_FACILITIES, SELECTION_PROCEDURE_ROUNDS, SELECTION_PROCEDURE_DETAILS, IS_SELECTION_PROCEDURE_DETAILS_PDF,
+#           SELECTION_PROCEDURE_DETAILS, OTHER_REQUIREMENTS,
+#           CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, RECAPTCHA_VALUE])
 def addInternship(request):
     logger.info("INF filled by " + str(request.data['email']))
     logger.info(request.data)
@@ -413,7 +448,7 @@ def addInternship(request):
             raise ValueError('Season must be a subset of ' + str(SEASONS))
         internship.interning_period_from = datetime.datetime.strptime(data[START_DATE], '%d-%m-%Y').date()
         internship.interning_period_to = datetime.datetime.strptime(data[END_DATE], '%d-%m-%Y').date()
-
+        internship.establishment_date = datetime.datetime.strptime(data[ESTABLISHMENT_DATE],                                                                       '%d-%m-%Y').date() # newly added field
         if data[WORK_TYPE] == 'Work from home':
             internship.is_work_from_home = True
         else:
@@ -434,14 +469,32 @@ def addInternship(request):
         else:
             raise ValueError('Allowed Branch must be a subset of ' + str(BRANCHES))
 
-        if data[SOPHOMORES_ELIIGIBLE] == 'Yes':
-            internship.sophomore_eligible = True
+        # if data[SOPHOMORES_ELIIGIBLE] == 'Yes':
+        #     internship.sophomore_eligible = True
+        # else:
+        #     internship.sophomore_eligible = False
+        # if data[RS_ELIGIBLE] == 'Yes':
+        #     internship.rs_eligible = True
+        # else:
+        #     internship.rs_eligible = False
+        if data[PWD_ELIGIBLE] == 'Yes':
+            internship.pwd_eligible = True
         else:
-            internship.sophomore_eligible = False
-        if data[RS_ELIGIBLE] == 'Yes':
-            internship.rs_eligible = True
+            internship.pwd_eligible = False
+        if data[BACKLOG_ELIGIBLE] == 'Yes':
+            internship.backlog_eligible = True
         else:
-            internship.rs_eligible = False
+            internship.backlog_eligible = False
+        if data[PSYCHOMETRIC_TEST] == 'Yes':
+            internship.psychometric_test = True
+        else:
+            internship.psychometric_test = False
+        if data[MEDICAL_TEST] == 'Yes':
+            internship.medical_test = True
+        else:
+            internship.medical_test = False
+
+        internship.cpi_eligible = data[CPI]       
         if data[NUM_OFFERS].isdigit():
             internship.tentative_no_of_offers = int(data[NUM_OFFERS])
         else:
@@ -463,6 +516,24 @@ def addInternship(request):
             internship.stipend = int(data[STIPEND])
         else:
             raise ValueError('Stipend must be an integer')
+        # Newly added 
+        if data[COMPANY_TURNOVER].isdigit():
+            internship.company_turnover = int(data[COMPANY_TURNOVER])
+        elif data[COMPANY_TURNOVER] is None:
+            internship.company_turnover = None
+        else:
+            raise ValueError('Company Turnover must be an integer')
+        # newly added 
+        if data[EXPECTED_NO_OF_OFFERS].isdigit():
+            internship.expected_no_of_offers = int(data[EXPECTED_NO_OF_OFFERS])
+        elif data[EXPECTED_NO_OF_OFFERS] == 'null':
+            internship.expected_no_of_offers = None        
+            internship.other_requirements = data[OTHER_REQUIREMENTS]
+        # newly added
+        if data[NUMBER_OF_EMPLOYEES].isdigit():
+            internship.number_of_employees = int(data[NUMBER_OF_EMPLOYEES])
+        elif data[NUMBER_OF_EMPLOYEES] == 'null':
+            internship.number_of_employees = None
         if data[FACILITIES] != "" :
             if json.loads(data[FACILITIES]) == "":
                 internship.facilities_provided = []
