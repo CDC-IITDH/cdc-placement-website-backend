@@ -18,101 +18,145 @@
     <link rel="shortcut icon" href="favicon.ico"/>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
     <style>
-        table, td, div, h1, p {
+       body, table, td, div, p, h1 {
             font-family: 'Roboto', sans-serif;
         }
-
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #e1e4e8; /* Outer background color */
+        }
+        .email-wrapper {
+            padding: 20px;
+            background-color: #e1e4e8; /* Outer background color */
+        }
+        .email-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #eff7ff; /* Outer box background color */
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .email-header, .email-footer {
+            padding: 40px 0;
+            text-align: center;
+            color: #ffffff;
+        }
+        .email-header img {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 500;
+        }
+        .inner-container {
+            background-color: #ffffff; /* Inner box background color */
+            border-radius: 8px;
+            margin: 0 20px;
+        }
+        .inner-container .email-body {
+            padding: 36px 30px;
+        }
+        .inner-container .email-body h2 {
+            margin-bottom: 24px;
+            font-size: 24px;
+            color: black;
+            font-weight: 500;
+        }
+        .inner-container .email-body p {
+            margin-bottom: 16px;
+            font-size: 16px;
+            line-height: 24px;
+            color: #555555;
+        }
+        .email-footer {
+            padding: 20px 30px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .email-footer p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 20px 0;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #ff7350;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+        @media only screen and (max-width: 600px) {
+            .inner-container .email-body, .email-footer {
+                padding: 20px !important;
+            }
+        }
     </style>
 </head>
-<body style="margin:0;padding:0;">
-<table role="presentation" style="width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#ffffff;">
+<body>
+    <div class="email-wrapper">
+<table role="presentation" class="email-container">
     <tr>
-        <td align="center" style="padding:0;">
-            <table role="presentation"
-                   style="width:602px;border-collapse:collapse;border:1px solid #334878;border-spacing:0;text-align:left;">
-                <tr>
-                    <td align="center" style="padding:40px 0 30px 0;background:#334878;">
-                        <img src="https://drive.google.com/uc?id=1QTA6dB7jnsZfU1kzyUqfD_2V5xODpWFt" alt="" width="200"
-                             style="height:auto;display:block;"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:36px 30px 42px 30px;">
-                        <table role="presentation"
-                               style="width:100%;border-collapse:collapse;border:0;border-spacing:0;">
-                            <tr>
-                                <td style="padding:0 0 36px 0;color:#153643;">
-                                    <h1 style="font-size:24px;margin:0 0 20px 0;font-family: 'Roboto', sans-serif;
-">Hello, {{ name }}</h1>
-                                    <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family: 'Roboto', sans-serif;">
-                                        We have received your issue regarding a <b>{{ application_type }}</b> opening at
-                                        <b>
-                                            {{ company_name }}</b>.
-                                        {% if additional_info %}
-                                            We received these additional details
-                                            <br>
-                                            <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:
-                                        'Roboto', sans-serif;text-align: center">
-
-                                            <table style="border:solid 1px; margin: auto; text-align: center;width: 80%;
-                                border-radius:15px; background-color: #e0e3ee">
-
-                                                {% for i,j in additional_info.items %}
-
-                                                    <tr>
-                                                        <td style="padding:8px 10px;color:#153643; ">{{ i }}:</td>
-                                                        <td style="padding:8px 10px;color:#153643;">{{ j }}</td>
-                                                    </tr>
-                                                {% endfor %}
-                                            </table>
-                                        {% endif %}
-
-                                    </p>
-                                    </p>
-                                    <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family: 'Roboto', sans-serif;">
-                                        We will get back to you if we find it legitimate. If you have any queries, please
-                                        feel to
-                                        write to
-                                        <nobr><u>cdc.support@iitdh.ac.in</u></nobr>
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding:0;">
-                                    <table role="presentation"
-                                           style="width:100%;border-collapse:collapse;border:0;border-spacing:0;">
-                                        <tr>
-                                            <td style="width:260px;padding:0;vertical-align:top;color:#334878;">
-
-
-                                            </td>
-                                        </tr>
-                                    </table>
+        <td >
+            <div class="email-header">
+                <img src="./images/CDC-Logo.png" alt="CDC Logo" style="width: 35%; height: auto; display: block; margin: 0 auto;" />
+            </div>
+            <div class="inner-container">
+                <div class="email-body">
+                    <img src="./images/tracking.png" alt="verify Logo" style="width: 35%; height: auto; display: block; margin: 0 auto;" />
+                    <h2 style="text-align: center;"
+                    >Hello, {{ name }}</h1>
+                                                        <p style="text-align:center;">
+                                                            We have received your issue regarding a <b>{{ application_type }}</b> opening at
+                                                            <b>
+                                                                {{ company_name }}</b>.
+                                                            {% if additional_info %}
+                                                                We received these additional details
+                                                                <br>
+                    
+                                                                <!-- <table style="border:solid 1px; margin: auto; text-align: center;width: 80%;
+                                                    border-radius:15px; background-color: #e0e3ee"> -->
+                    
+                                                                    {% for i,j in additional_info.items %}
+                    
+                                                                        <!-- <tr>
+                                                                            <td style="padding:8px 10px;color:#153643; ">{{ i }}:</td>
+                                                                            <td style="padding:8px 10px;color:#153643;">{{ j }}</td>
+                                                                        </tr> -->
+                                                                    {% endfor %}
+                                                                <!-- </table> -->
+                                                            {% endif %}
+                                                            We will get back to you if we find it legitimate. If you have any queries, please
+                                                            feel to
+                                                            write to
+                                                            <nobr><u>cdc.support@iitdh.ac.in</u></nobr>
+                                    </p></div></div>
+                                    <div class="email-footer">
+                                        <p style="margin-bottom: 16px; color: #555555;">Follow us on:</p>
+                                        
+                                            <a href="https://twitter.com/cdc_iitdh" style="margin-right: 10px; color: #eff7ff">
+                                                <img src="./images/twitter.png" alt="Twitter" style="width: 24px; height: 24px;">
+                                            </a>
+                                            <a href="https://www.instagram.com/cdc.iitdh/?hl=en" style="margin-right: 10px; color: #eff7ff;">
+                                                <img src="./images/Instagram_icon.png" alt="Instagram" style="width: 24px; height: 24px;">
+                                            </a>
+                                            <a href="https://www.linkedin.com/company/cdciitdharwad/?originalSubdomain=in">
+                                                <img src="./images/LinkedIn_logo_initials.png" alt="LinkedIn" style="width: 24px; height: 24px;">
+                                            </a>
+                                        <p style="color: #555555;">copy right &copy; 2024 CDC, all rights reserved</p>
+                                    
+                                    </div>
                                 </td>
                             </tr>
                         </table>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:30px;background:#334878;">
-                        <table role="presentation"
-                               style="width:100%;border-collapse:collapse;border:0;border-spacing:0;font-size:9px;font-family: 'Roboto', sans-serif;">
-                            <tr>
-                                <td style="padding:0;width:50%;" align="left">
-                                    <p style="margin:0;font-size:14px;line-height:16px;font-family: 'Roboto', sans-serif;color:#ffffff;">
-                                        &reg; CDC,IIT Dharwad,2021<br/>
-                                    </p>
-                                </td>
-
-
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
+                    </div>
 </body>
 </html>
