@@ -81,22 +81,22 @@ def precheck(required_data=None):
                     request_data = request.data
                     if not len(request_data):
                         request_data = request.POST
-                if len(request_data):
+                
+                if request_data and len(request_data):
                     for i in required_data:
-                        # print(i)
                         if i not in request_data:
                             return Response({'action': "Pre check", 'message': str(i) + " Not Found"},
                                             status=status.HTTP_400_BAD_REQUEST)
                 else:
                     return Response({'action': "Pre check", 'message': "Message Data not Found"},
                                     status=status.HTTP_400_BAD_REQUEST)
-                # print("Pre check: " + str(request_data))
+                
                 return view_func(request, *args, **kwargs)
-            except:
-                # print what exception is
-                print(traceback.format_exc())
-                logger.warning("Pre check: " + str(sys.exc_info()))
-                return Response({'action': "Pre check", 'message': "Something went wrong"},
+            
+            except Exception as e:
+                # Log the full traceback for debugging purposes
+                logger.error("Pre check error: %s", traceback.format_exc())
+                return Response({'action': "Pre check", 'message': "Something went wrong: " + str(e)},
                                 status=status.HTTP_400_BAD_REQUEST)
 
         return wrapper_func

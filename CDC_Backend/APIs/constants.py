@@ -12,6 +12,12 @@ BRANCH_CHOICES = [
     ['CHEMICAL', 'CHEMICAL'],
     ['BSMS', 'BSMS'],
 ]
+ELIGIBLE_CHOICES = [
+    ["Btech", "Btech"],
+    ["MS", "MS"],
+    ["MTech", "MTech"],
+    ["PHD", "PHD"],
+]
 BRANCHES = [
     "CSE",
     "EE",
@@ -20,6 +26,12 @@ BRANCHES = [
     "CIVIL",
     "CHEMICAL",
     "BSMS",
+]
+ELIGIBLE =[
+    "Btech",
+    "MS",
+    "MTech",
+    "PHD",
 ]
 BATCHES = [    #change it accordingly
     "2023",
@@ -164,7 +176,8 @@ COMPENSATION_DETAILS_PDF_NAMES = 'compensation_details_pdf_names'
 IS_COMPENSATION_DETAILS_PDF = 'is_compensation_details_pdf'
 ALLOWED_BATCH = 'allowed_batch'
 ALLOWED_BRANCH = 'allowed_branch'
-RS_ELIGIBLE = 'rs_eligible'
+# RS_ELIGIBLE = 'rs_eligible' removed
+ELIGIBLESTUDENTS= 'eligiblestudents'# newly adde field
 PWD_ELIGIBLE = 'pwd_eligible' # newly added field
 BACKLOG_ELIGIBLE = 'backlog_eligible' # newly added field
 PSYCHOMETRIC_TEST = 'pyschometric_test' # newly added field

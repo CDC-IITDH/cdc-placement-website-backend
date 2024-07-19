@@ -142,6 +142,11 @@ class Placement(models.Model):
     expected_no_of_offers = models.IntegerField(blank=False , default=None , null=True) # newly added
     number_of_employees = models.IntegerField(blank=False, default=None, null=True) # newly added field
     rs_eligible = models.BooleanField(blank=True, default=False) # needs to be deleted
+    eligiblestudents = ArrayField(
+        models.CharField(choices=ELIGIBLE_CHOICES, blank=False, max_length=10),
+        size=10,
+        default=list
+    )
     pwd_eligible = models.BooleanField(blank=True, default=False) #newly added field
     backlog_eligible = models.BooleanField(blank=True, default=False) #newly added field
     psychometric_test = models.BooleanField(blank=True, default=False) #newly added field
@@ -334,7 +339,12 @@ class Internship(models.Model):
         default=list
     )
     sophomore_eligible = models.BooleanField(blank=False, default=False)
-    rs_eligible = models.BooleanField(blank=False, default=False)
+    rs_eligible = models.BooleanField(blank=False, default=False) # needs to be deleted
+    eligiblestudents = ArrayField(
+        models.CharField(choices=ELIGIBLE_CHOICES, blank=False, max_length=10),
+        size=10,
+        default=list
+    )
     tentative_no_of_offers = models.IntegerField(blank=False, default=None, null=True)  
     company_turnover = models.IntegerField(blank=True, default=None, null=True) # newly added field
     establishment_date = models.DateField(blank=True, default=None, null=True) # newly added field 

@@ -7,14 +7,14 @@ logger = logging.getLogger('db')
 
 
 @api_view(['POST'])
-# @precheck([COMPANY_NAME, ADDRESS, COMPANY_TYPE, NATURE_OF_BUSINESS, TYPE_OF_ORGANISATION, WEBSITE, COMPANY_DETAILS,
-#            IS_COMPANY_DETAILS_PDF, CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, CITY, STATE, COUNTRY, PINCODE, DESIGNATION,
-#            DESCRIPTION,
-#            IS_DESCRIPTION_PDF, COMPENSATION_CTC, COMPENSATION_GROSS, COMPENSATION_TAKE_HOME, COMPENSATION_BONUS,
-#            IS_COMPENSATION_DETAILS_PDF, ALLOWED_BRANCH, RS_ELIGIBLE, SELECTION_PROCEDURE_ROUNDS,
-#            SELECTION_PROCEDURE_DETAILS,
-#            IS_SELECTION_PROCEDURE_DETAILS_PDF, TENTATIVE_DATE_OF_JOINING, TENTATIVE_NO_OF_OFFERS, OTHER_REQUIREMENTS,
-#            RECAPTCHA_VALUE, JOB_LOCATION,PSYCHOMETRIC_TEST,MEDICAL_TEST,COMPANY_TURNOVER,NUMBER_OF_EMPLOYEES,BACKLOG_ELIGIBLE,PWD_ELIGIBLE,CPI ,COMPANY_TURNOVER,ESTABLISHMENT_DATE ,EXPECTED_NO_OF_OFFERS])
+@precheck([COMPANY_NAME, ADDRESS, COMPANY_TYPE, NATURE_OF_BUSINESS, TYPE_OF_ORGANISATION, WEBSITE, COMPANY_DETAILS,
+           IS_COMPANY_DETAILS_PDF, CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, CITY, STATE, COUNTRY, PINCODE, DESIGNATION,
+           DESCRIPTION,
+           IS_DESCRIPTION_PDF, COMPENSATION_CTC, COMPENSATION_GROSS, COMPENSATION_TAKE_HOME, COMPENSATION_BONUS,
+           IS_COMPENSATION_DETAILS_PDF, ALLOWED_BRANCH, ELIGIBLESTUDENTS, SELECTION_PROCEDURE_ROUNDS,
+           SELECTION_PROCEDURE_DETAILS,
+           IS_SELECTION_PROCEDURE_DETAILS_PDF, TENTATIVE_DATE_OF_JOINING, TENTATIVE_NO_OF_OFFERS, OTHER_REQUIREMENTS,
+           RECAPTCHA_VALUE, JOB_LOCATION,PSYCHOMETRIC_TEST,MEDICAL_TEST,COMPANY_TURNOVER,NUMBER_OF_EMPLOYEES,BACKLOG_ELIGIBLE,PWD_ELIGIBLE,CPI ,COMPANY_TURNOVER,ESTABLISHMENT_DATE ,EXPECTED_NO_OF_OFFERS])
            
 def addPlacement(request):
     logger.info("JNF filled by " + str(request.data['email']))
@@ -40,6 +40,14 @@ def addPlacement(request):
         #     opening.rs_eligible = True
         # else:
         #     opening.rs_eligible = False
+        print(data[ELIGIBLESTUDENTS])
+        if data[ELIGIBLESTUDENTS] is None:
+            raise ValueError('Eligible Students cannot be empty')
+        elif set(json.loads(data[ELIGIBLESTUDENTS])).issubset(ELIGIBLE):
+            opening.eligiblestudents = json.loads(data[ELIGIBLESTUDENTS])
+        else:
+            raise ValueError('Allowed Branch must be a subset of ' + str(ELIGIBLE))
+        print(opening.eligiblestudents)
         if data[PWD_ELIGIBLE] == 'Yes':
             opening.pwd_eligible = True
         else:
@@ -270,18 +278,17 @@ def addPlacement(request):
 
     except ValueError as e:
         store_all_files(request)
-        #exception_email(data)
         logger.warning("ValueError in addPlacement: " + str(e))
         logger.warning(traceback.format_exc())
         return Response({'action': "Add Placement", 'message': str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
-    except:
+    except Exception as e:
         store_all_files(request)
-        #exception_email(data)
-        logger.warning("Add New Placement: " + str(sys.exc_info()))
+        logger.warning("Add New Placement: " + str(e))
         logger.warning(traceback.format_exc())
-        return Response({'action': "Add Placement", 'message': "Something went wrong"},
+        return Response({'action': "Add Placement", 'message': "Something went wrong: " + str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(['POST'])
@@ -381,13 +388,13 @@ def autoFillInf(request):
 
 
 @api_view(['POST'])
-# @precheck([COMPANY_NAME, WEBSITE, IS_COMPANY_DETAILS_PDF, COMPANY_DETAILS, ADDRESS,
-#           CITY, STATE, COUNTRY, PINCODE, COMPANY_TYPE, NATURE_OF_BUSINESS, IS_DESCRIPTION_PDF,
-#           DESIGNATION, INTERNSHIP_LOCATION, DESCRIPTION, SEASON, START_DATE, END_DATE, WORK_TYPE,
-#           ALLOWED_BRANCH, SOPHOMORES_ELIIGIBLE, RS_ELIGIBLE, NUM_OFFERS, IS_STIPEND_DETAILS_PDF, STIPEND,
-#           FACILITIES, OTHER_FACILITIES, SELECTION_PROCEDURE_ROUNDS, SELECTION_PROCEDURE_DETAILS, IS_SELECTION_PROCEDURE_DETAILS_PDF,
-#           SELECTION_PROCEDURE_DETAILS, OTHER_REQUIREMENTS,
-#           CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, RECAPTCHA_VALUE])
+@precheck([COMPANY_NAME, WEBSITE, IS_COMPANY_DETAILS_PDF, COMPANY_DETAILS, ADDRESS,
+          CITY, STATE, COUNTRY, PINCODE, COMPANY_TYPE, NATURE_OF_BUSINESS, IS_DESCRIPTION_PDF,
+          DESIGNATION, INTERNSHIP_LOCATION, DESCRIPTION, SEASON, START_DATE, END_DATE, WORK_TYPE,
+          ALLOWED_BRANCH, ELIGIBLESTUDENTS, NUM_OFFERS, IS_STIPEND_DETAILS_PDF, STIPEND,
+          FACILITIES, OTHER_FACILITIES, SELECTION_PROCEDURE_ROUNDS, SELECTION_PROCEDURE_DETAILS, IS_SELECTION_PROCEDURE_DETAILS_PDF,
+          SELECTION_PROCEDURE_DETAILS, OTHER_REQUIREMENTS,
+          CONTACT_PERSON_NAME, PHONE_NUMBER, EMAIL, RECAPTCHA_VALUE ,ESTABLISHMENT_DATE,PWD_ELIGIBLE,BACKLOG_ELIGIBLE,PSYCHOMETRIC_TEST,MEDICAL_TEST,CPI,EXPECTED_NO_OF_OFFERS,NUMBER_OF_EMPLOYEES,COMPANY_TURNOVER])
 def addInternship(request):
     logger.info("INF filled by " + str(request.data['email']))
     logger.info(request.data)
@@ -473,10 +480,13 @@ def addInternship(request):
         #     internship.sophomore_eligible = True
         # else:
         #     internship.sophomore_eligible = False
-        # if data[RS_ELIGIBLE] == 'Yes':
-        #     internship.rs_eligible = True
-        # else:
-        #     internship.rs_eligible = False
+        if data[ELIGIBLESTUDENTS] is None:
+            raise ValueError('Eligible Students cannot be empty')
+        elif set(json.loads(data[ELIGIBLESTUDENTS])).issubset(ELIGIBLE):
+            internship.eligiblestudents = json.loads(data[ELIGIBLESTUDENTS])
+        else:
+            raise ValueError('Allowed Branch must be a subset of ' + str(ELIGIBLE))
+        print(internship.eligiblestudents)
         if data[PWD_ELIGIBLE] == 'Yes':
             internship.pwd_eligible = True
         else:
@@ -598,15 +608,15 @@ def addInternship(request):
                         status=status.HTTP_200_OK)
     except ValueError as e:
         store_all_files(request)
-        # exception_email(data)
         logger.warning("ValueError in addInternship: " + str(e))
         logger.warning(traceback.format_exc())
         return Response({'action': "Add Internship", 'message': str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
-    except:
+    except Exception as e:
         store_all_files(request)
-        # exception_email(data)
-        logger.warning("Add New Internship: " + str(sys.exc_info()))
+        logger.warning("Add New Internship: " + str(e))
         logger.warning(traceback.format_exc())
-        return Response({'action': "Add Internship", 'message': "Something went wrong"},
+        return Response({'action': "Add Internship", 'message': "Something went wrong: " + str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
+
+    
