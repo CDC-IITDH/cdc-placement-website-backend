@@ -12,6 +12,12 @@ BRANCH_CHOICES = [
     ['CHEMICAL', 'CHEMICAL'],
     ['BSMS', 'BSMS'],
 ]
+ELIGIBLE_CHOICES = [
+    ["Btech", "Btech"],
+    ["MS", "MS"],
+    ["MTech", "MTech"],
+    ["PHD", "PHD"],
+]
 BRANCHES = [
     "CSE",
     "EE",
@@ -20,6 +26,12 @@ BRANCHES = [
     "CIVIL",
     "CHEMICAL",
     "BSMS",
+]
+ELIGIBLE =[
+    "Btech",
+    "MS",
+    "MTech",
+    "PHD",
 ]
 BATCHES = [    #change it accordingly
     "2023",
@@ -156,6 +168,7 @@ IS_DESCRIPTION_PDF = 'is_description_pdf'
 OPENING_TYPE = 'opening_type'
 JOB_LOCATION = 'job_location'
 COMPENSATION_CTC = 'compensation_ctc'
+COMPANY_TURNOVER = 'company_turnover' # newly added field
 COMPENSATION_GROSS = 'compensation_gross'
 COMPENSATION_TAKE_HOME = 'compensation_take_home'
 COMPENSATION_BONUS = 'compensation_bonus'
@@ -165,7 +178,13 @@ COMPENSATION_DETAILS_PDF_NAMES = 'compensation_details_pdf_names'
 IS_COMPENSATION_DETAILS_PDF = 'is_compensation_details_pdf'
 ALLOWED_BATCH = 'allowed_batch'
 ALLOWED_BRANCH = 'allowed_branch'
-RS_ELIGIBLE = 'rs_eligible'
+# RS_ELIGIBLE = 'rs_eligible' removed
+ELIGIBLESTUDENTS= 'eligiblestudents'# newly adde field
+PWD_ELIGIBLE = 'pwd_eligible' # newly added field
+BACKLOG_ELIGIBLE = 'backlog_eligible' # newly added field
+PSYCHOMETRIC_TEST = 'pyschometric_test' # newly added field
+MEDICAL_TEST = 'medical_test' # newly added field
+CPI = 'cpi' # newly added field
 BOND_DETAILS = 'bond_details'
 SELECTION_PROCEDURE_ROUNDS = 'selection_procedure_rounds'
 SELECTION_PROCEDURE_DETAILS = 'selection_procedure_details'
@@ -173,7 +192,10 @@ SELECTION_PROCEDURE_DETAILS_PDF = 'selection_procedure_details_pdf'
 SELECTION_PROCEDURE_DETAILS_PDF_NAMES = 'selection_procedure_details_pdf_names'
 IS_SELECTION_PROCEDURE_DETAILS_PDF = 'is_selection_procedure_details_pdf'
 TENTATIVE_DATE_OF_JOINING = 'tentative_date_of_joining'
+ESTABLISHMENT_DATE = 'establishment_date' # newly added field
 TENTATIVE_NO_OF_OFFERS = 'tentative_no_of_offers'
+EXPECTED_NO_OF_OFFERS = 'expected_no_of_offers' # newly added field
+NUMBER_OF_EMPLOYEES = 'number_of_employees' # newly added field
 OTHER_REQUIREMENTS = 'other_requirements'
 DEADLINE_DATETIME = 'deadline_datetime'
 OFFER_ACCEPTED = 'offer_accepted'

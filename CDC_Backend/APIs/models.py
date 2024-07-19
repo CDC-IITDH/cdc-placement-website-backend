@@ -97,6 +97,7 @@ class Placement(models.Model):
     country = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
     pin_code = models.IntegerField(blank=False, default=None, null=True)
     city_type = models.CharField(blank=False, max_length=15, choices=OFFER_CITY_TYPE)
+    cpi_eligible = models.DecimalField(decimal_places=2, default=0.00, max_digits=4) #newly added field
     # Job Details
     designation = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT, default=None, null=True)
     description = models.CharField(blank=False, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default=None, null=True)
@@ -106,6 +107,7 @@ class Placement(models.Model):
         blank=True)
     is_description_pdf = models.BooleanField(blank=False, default=False)
     compensation_CTC = models.IntegerField(blank=False, default=None, null=True)  # Job - Per Year
+    company_turnover = models.IntegerField(blank=False, default=None, null=True) # newly added field
     compensation_gross = models.IntegerField(blank=False, default=None, null=True)
     compensation_take_home = models.IntegerField(blank=False, default=None, null=True)
     compensation_bonus = models.IntegerField(blank=True, default=None, null=True)
@@ -124,6 +126,7 @@ class Placement(models.Model):
     is_selection_procedure_details_pdf = models.BooleanField(blank=False, default=False)
     tier = models.CharField(blank=False, choices=TIERS, max_length=10, default=None, null=True)
     tentative_date_of_joining = models.DateField(blank=False, verbose_name="Tentative Date", default=timezone.now)
+    establishment_date = models.DateField(blank=True, default=None, null=True) # newly added field 
     allowed_batch = ArrayField(
         models.CharField(max_length=10, choices=BATCH_CHOICES),
         size=TOTAL_BATCHES,
@@ -136,7 +139,18 @@ class Placement(models.Model):
         default=list
     )
     tentative_no_of_offers = models.IntegerField(blank=False, default=None, null=True)
-    rs_eligible = models.BooleanField(blank=False, default=False)
+    expected_no_of_offers = models.IntegerField(blank=False , default=None , null=True) # newly added
+    number_of_employees = models.IntegerField(blank=False, default=None, null=True) # newly added field
+    rs_eligible = models.BooleanField(blank=True, default=False) # needs to be deleted
+    eligiblestudents = ArrayField(
+        models.CharField(choices=ELIGIBLE_CHOICES, blank=False, max_length=10),
+        size=10,
+        default=list
+    )
+    pwd_eligible = models.BooleanField(blank=True, default=False) #newly added field
+    backlog_eligible = models.BooleanField(blank=True, default=False) #newly added field
+    psychometric_test = models.BooleanField(blank=True, default=False) #newly added field
+    medical_test = models.BooleanField(blank=True, default=False) #newly added field
     other_requirements = models.CharField(blank=True, max_length=JNF_TEXTAREA_MAX_CHARACTER_COUNT, default="")
     additional_info = ArrayField(models.CharField(blank=True, max_length=JNF_TEXTMEDIUM_MAX_CHARACTER_COUNT), size=15,
                                  default=list, blank=True)
@@ -325,8 +339,22 @@ class Internship(models.Model):
         default=list
     )
     sophomore_eligible = models.BooleanField(blank=False, default=False)
-    rs_eligible = models.BooleanField(blank=False, default=False)
-    tentative_no_of_offers = models.IntegerField(blank=False, default=None, null=True)
+    rs_eligible = models.BooleanField(blank=False, default=False) # needs to be deleted
+    eligiblestudents = ArrayField(
+        models.CharField(choices=ELIGIBLE_CHOICES, blank=False, max_length=10),
+        size=10,
+        default=list
+    )
+    tentative_no_of_offers = models.IntegerField(blank=False, default=None, null=True)  
+    company_turnover = models.IntegerField(blank=True, default=None, null=True) # newly added field
+    establishment_date = models.DateField(blank=True, default=None, null=True) # newly added field 
+    expected_no_of_offers = models.IntegerField(blank=True , default=None , null=True) # newly added
+    number_of_employees = models.IntegerField(blank=True, default=None, null=True) # newly added field 
+    pwd_eligible = models.BooleanField(blank=True, default=False) #newly added field
+    backlog_eligible = models.BooleanField(blank=True, default=False) #newly added field
+    psychometric_test = models.BooleanField(blank=True, default=False) #newly added field
+    medical_test = models.BooleanField(blank=True, default=False) #newly added field
+    cpi_eligible = models.DecimalField(decimal_places=2, default=0.00, max_digits=4) #newly added field
     is_stipend_description_pdf = models.BooleanField(blank=False, default=False)
     stipend_description_pdf_names=ArrayField(
         models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=5, default=list,
