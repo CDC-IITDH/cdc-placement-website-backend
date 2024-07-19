@@ -100,6 +100,7 @@ PLACEMENT_OPENING_URL = "https://cdc.iitdh.ac.in/portal/student/dashboard/placem
 LINK_TO_STORAGE_COMPANY_ATTACHMENT = "https://cdc.iitdh.ac.in/storage/Company_Attachments/"
 LINK_TO_STORAGE_RESUME = "https://cdc.iitdh.ac.in/storage/Resumes/"
 LINK_TO_APPLICATIONS_CSV = "https://cdc.iitdh.ac.in/storage/Application_CSV/"
+LINK_TO_RESUMES_ZIP = "https://cdc.iitdh.ac.in/storage/Resume_Zips/"
 LINK_TO_EMAIl_VERIFICATION_API = "https://cdc.iitdh.ac.in/portal/company/verifyEmail?token={token}"
 PDF_FILES_SERVING_ENDPOINT = 'https://cdc.iitdh.ac.in/storage/Company_Attachments/'  # TODO: Change this to actual URL
 
@@ -127,6 +128,7 @@ JNF_SMALLTEXT_MAX_CHARACTER_COUNT = 50
 STORAGE_DESTINATION_RESUMES = "./Storage/Resumes/"
 STORAGE_DESTINATION_COMPANY_ATTACHMENTS = './Storage/Company_Attachments/'
 STORAGE_DESTINATION_APPLICATION_CSV = './Storage/Application_CSV/'
+STORAGE_DESTINATION_RESUME_ZIP = './Storage/Resume_Zips/'
 
 TOKEN = 'token'
 RESUME_FILE_NAME = 'resume_file_name'

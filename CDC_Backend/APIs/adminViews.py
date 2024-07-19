@@ -1,4 +1,5 @@
 import csv
+import zipfile
 
 from rest_framework.decorators import api_view
 
@@ -451,6 +452,43 @@ def generateCSV(request, id, email, user_type):
         f.close()
         file_path = LINK_TO_APPLICATIONS_CSV + urllib.parse.quote_plus(filename + ".csv")
         return Response({'action': "Create csv", 'message': "CSV created", 'file': file_path},
+                        status=status.HTTP_200_OK)
+    except:
+        logger.warning("Create csv: " + str(sys.exc_info()))
+        return Response({'action': "Create csv", 'message': "Something Went Wrong"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@isAuthorized(allowed_users=[ADMIN])
+@precheck(required_data=[OPENING_ID])
+def downloadResume(request, id, email, user_type):
+    try:
+        data = request.data
+        if  OPENING_TYPE  in data:
+            opening_type= data[OPENING_TYPE]
+        else:
+            opening_type= "Placement"
+        if opening_type == "Internship":
+            opening = get_object_or_404(Internship, id=data[OPENING_ID])
+            applications = InternshipApplication.objects.filter(internship=opening)
+        else:
+            opening = get_object_or_404(Placement, id=data[OPENING_ID])
+            applications = PlacementApplication.objects.filter(placement=opening)
+        zip_filename = generateRandomString() + ".zip"
+        if not os.path.isdir(STORAGE_DESTINATION_RESUME_ZIP):
+            os.makedirs(STORAGE_DESTINATION_RESUME_ZIP, exist_ok=True)
+        resumes = {}
+        for apl in applications:
+            if apl.selected:
+                resumes[apl.student.roll_no] = STORAGE_DESTINATION_RESUMES + apl.student.id + '/' + apl.resume   # Check if the folder name is student id or user id
+        
+        with zipfile.ZipFile(STORAGE_DESTINATION_RESUME_ZIP + zip_filename, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            for student_roll_no, resume_path in resumes.items():
+                zip_file.write(resume_path, os.path.basename(str(student_roll_no) + ".pdf"))
+
+        file_path = LINK_TO_RESUMES_ZIP + urllib.parse.quote_plus(zip_filename)
+        return Response({'action': "Download resumes", 'message': "Resumes zip created", 'file': file_path},
                         status=status.HTTP_200_OK)
     except:
         logger.warning("Create csv: " + str(sys.exc_info()))
