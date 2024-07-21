@@ -40,7 +40,7 @@ def addPlacement(request):
         #     opening.rs_eligible = True
         # else:
         #     opening.rs_eligible = False
-        print(data[ELIGIBLESTUDENTS])
+       
         if data[ELIGIBLESTUDENTS] is None:
             raise ValueError('Eligible Students cannot be empty')
         elif set(json.loads(data[ELIGIBLESTUDENTS])).issubset(ELIGIBLE):
@@ -486,7 +486,7 @@ def addInternship(request):
             internship.eligiblestudents = json.loads(data[ELIGIBLESTUDENTS])
         else:
             raise ValueError('Allowed Branch must be a subset of ' + str(ELIGIBLE))
-        print(internship.eligiblestudents)
+        
         if data[PWD_ELIGIBLE] == 'Yes':
             internship.pwd_eligible = True
         else:
