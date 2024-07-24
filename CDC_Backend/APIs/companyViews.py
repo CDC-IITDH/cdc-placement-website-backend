@@ -14,7 +14,7 @@ logger = logging.getLogger('db')
            IS_COMPENSATION_DETAILS_PDF, ALLOWED_BRANCH, ELIGIBLESTUDENTS, SELECTION_PROCEDURE_ROUNDS,
            SELECTION_PROCEDURE_DETAILS,
            IS_SELECTION_PROCEDURE_DETAILS_PDF, TENTATIVE_DATE_OF_JOINING, TENTATIVE_NO_OF_OFFERS, OTHER_REQUIREMENTS,
-           RECAPTCHA_VALUE, JOB_LOCATION,PSYCHOMETRIC_TEST,MEDICAL_TEST,COMPANY_TURNOVER,NUMBER_OF_EMPLOYEES,BACKLOG_ELIGIBLE,PWD_ELIGIBLE,CPI ,COMPANY_TURNOVER,ESTABLISHMENT_DATE ,EXPECTED_NO_OF_OFFERS])
+           RECAPTCHA_VALUE, JOB_LOCATION,PSYCHOMETRIC_TEST,MEDICAL_TEST,NUMBER_OF_EMPLOYEES,BACKLOG_ELIGIBLE,PWD_ELIGIBLE,CPI,EXPECTED_NO_OF_OFFERS])
            
 def addPlacement(request):
     logger.info("JNF filled by " + str(request.data['email']))
@@ -139,12 +139,17 @@ def addPlacement(request):
         else:
             raise ValueError('Compensation CTC must be an integer')
         # Newly added 
+        
         if data[COMPANY_TURNOVER].isdigit():
             opening.company_turnover = int(data[COMPANY_TURNOVER])
-        elif data[COMPANY_TURNOVER] is None:
+        elif data[COMPANY_TURNOVER] is None or data[COMPANY_TURNOVER] == '':
             opening.company_turnover = None
         else:
-            raise ValueError('Company Turnover must be an integer')    
+    # Handle the case where the data is not a valid number or None/empty
+    # You can raise an error, set a default value, or log a warning
+            opening.company_turnover = None  # Or some default value or error handling
+
+           
 
         # Check if compensation_gross is integer
         if data[COMPENSATION_GROSS].isdigit():
@@ -455,7 +460,14 @@ def addInternship(request):
             raise ValueError('Season must be a subset of ' + str(SEASONS))
         internship.interning_period_from = datetime.datetime.strptime(data[START_DATE], '%d-%m-%Y').date()
         internship.interning_period_to = datetime.datetime.strptime(data[END_DATE], '%d-%m-%Y').date()
-        internship.establishment_date = datetime.datetime.strptime(data[ESTABLISHMENT_DATE],                                                                       '%d-%m-%Y').date() # newly added field
+        establishment_date_str = data.get('ESTABLISHMENT_DATE', '')
+        if establishment_date_str:
+            try:
+                internship.establishment_date = datetime.datetime.strptime(establishment_date_str, '%d-%m-%Y').date()
+            except ValueError:
+                internship.establishment_date = None
+        else:
+            internship.establishment_date = None
         if data[WORK_TYPE] == 'Work from home':
             internship.is_work_from_home = True
         else:
@@ -529,10 +541,12 @@ def addInternship(request):
         # Newly added 
         if data[COMPANY_TURNOVER].isdigit():
             internship.company_turnover = int(data[COMPANY_TURNOVER])
-        elif data[COMPANY_TURNOVER] is None:
+        elif data[COMPANY_TURNOVER] is None or data[COMPANY_TURNOVER] == '':
             internship.company_turnover = None
         else:
-            raise ValueError('Company Turnover must be an integer')
+    # Handle the case where the data is not a valid number or None/empty
+    # You can raise an error, set a default value, or log a warning
+            internship.company_turnover = None  # Or some default value or error handling
         # newly added 
         if data[EXPECTED_NO_OF_OFFERS].isdigit():
             internship.expected_no_of_offers = int(data[EXPECTED_NO_OF_OFFERS])

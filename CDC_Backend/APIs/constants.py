@@ -32,6 +32,7 @@ ELIGIBLE =[
     "MS",
     "MTech",
     "PHD",
+    "BSMS",
 ]
 BATCHES = [    #change it accordingly
     "2023",
