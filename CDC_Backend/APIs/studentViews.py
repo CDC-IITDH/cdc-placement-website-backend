@@ -1,4 +1,5 @@
 from rest_framework.decorators import api_view
+from django.db.models import Q
 
 from .serializers import *
 from .utils import *
@@ -48,7 +49,6 @@ def refresh(request):
 @isAuthorized(allowed_users=[STUDENT])
 def studentProfile(request, id, email, user_type):
     try:
-        #print(id)
         studentDetails = get_object_or_404(Student, id=id)
 
         data = StudentSerializer(studentDetails).data
@@ -101,10 +101,18 @@ def getDashboard(request, id, email, user_type):
     try:
         studentDetails = get_object_or_404(Student, id=id)
 
-        placements = Placement.objects.filter(allowed_batch__contains=[studentDetails.batch],
-                                              allowed_branch__contains=[studentDetails.branch],
-                                              deadline_datetime__gte=datetime.datetime.now(),
-                                              offer_accepted=True, email_verified=True).order_by('deadline_datetime')
+        filters = Q(
+            allowed_branch__contains=[studentDetails.branch],
+            eligiblestudents__contains=[studentDetails.degree],
+            deadline_datetime__gte=datetime.now(),
+            offer_accepted=True,
+            email_verified=True
+        )
+
+        if studentDetails.degree == 'Btech':
+            filters &= Q(allowed_batch__contains=[studentDetails.batch])
+
+        placements = Placement.objects.filter(filters).order_by('deadline_datetime')
         filtered_placements = placement_eligibility_filters(studentDetails, placements)
 
         placementsdata = PlacementSerializerForStudent(filtered_placements, many=True).data

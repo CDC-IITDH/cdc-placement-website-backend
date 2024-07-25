@@ -65,6 +65,7 @@ TIERS = [
     ['8', 'Open Tier'],
 ]
 
+# not being used anywhere
 DEGREE_CHOICES = [
     ['bTech', 'B.Tech'],
     ['ms/phd', 'MS/ PhD'],

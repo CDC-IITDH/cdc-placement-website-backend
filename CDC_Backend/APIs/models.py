@@ -32,9 +32,9 @@ class Student(models.Model):
                          default=list, blank=True)
     cpi = models.DecimalField(decimal_places=2, max_digits=4)
     can_apply = models.BooleanField(default=True, verbose_name='Registered')
-    can_apply_internship = models.BooleanField(default=True, verbose_name='Internship Registered') #added for internship
+    can_apply_internship = models.BooleanField(default=True, verbose_name='Internship Registered') 
     changed_by = models.ForeignKey(User, blank=True, on_delete=models.RESTRICT, default=None, null=True)
-    degree = models.CharField(choices=DEGREE_CHOICES, blank=False, max_length=10, default=DEGREE_CHOICES[0][0])
+    degree = models.CharField(choices=ELIGIBLE_CHOICES, blank=False, max_length=10, default=ELIGIBLE_CHOICES[0][0]) # should be ELIGIBLE_CHOICES
     isPwd = models.BooleanField(default=False, verbose_name='Person with Disability')
     isBacklog = models.BooleanField(default=False, verbose_name='Has Backlog')
     history = HistoricalRecords(user_model=User)
