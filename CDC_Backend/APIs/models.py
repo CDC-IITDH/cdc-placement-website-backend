@@ -109,7 +109,7 @@ class Placement(models.Model):
         blank=True)
     is_description_pdf = models.BooleanField(blank=False, default=False)
     compensation_CTC = models.IntegerField(blank=False, default=None, null=True)  # Job - Per Year
-    company_turnover = models.IntegerField(blank=False, default=None, null=True) # newly added field
+    company_turnover = models.IntegerField(blank=True, default=None, null=True) # newly added field
     compensation_gross = models.IntegerField(blank=False, default=None, null=True)
     compensation_take_home = models.IntegerField(blank=False, default=None, null=True)
     compensation_bonus = models.IntegerField(blank=True, default=None, null=True)
@@ -142,7 +142,7 @@ class Placement(models.Model):
     )
     tentative_no_of_offers = models.IntegerField(blank=False, default=None, null=True)
     expected_no_of_offers = models.IntegerField(blank=False , default=None , null=True) # newly added
-    number_of_employees = models.IntegerField(blank=False, default=None, null=True) # newly added field
+    number_of_employees = models.IntegerField(blank=True, default=None, null=True) # newly added field
     eligiblestudents = ArrayField(
         models.CharField(choices=ELIGIBLE_CHOICES, blank=False, max_length=10),
         size=10,
