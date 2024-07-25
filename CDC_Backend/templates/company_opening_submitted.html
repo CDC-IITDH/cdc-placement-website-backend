@@ -1,126 +1,155 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="x-apple-disable-message-reformatting">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="x-apple-disable-message-reformatting" />
     <title></title>
     <!--[if mso]>
-    <noscript>
+      <noscript>
         <xml>
-            <o:OfficeDocumentSettings>
-                <o:PixelsPerInch>96</o:PixelsPerInch>
-            </o:OfficeDocumentSettings>
+          <o:OfficeDocumentSettings>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+          </o:OfficeDocumentSettings>
         </xml>
-    </noscript>
+      </noscript>
     <![endif]-->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link rel="shortcut icon" href="favicon.ico"/>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body, table, td, div, h1, p {
-            font-family: 'Roboto', sans-serif;
-        }
+      body,
+      table,
+      td,
+      div,
+      h1,
+      p {
+        font-family: "Roboto", sans-serif;
+      }
 
-        body {
-            margin: 0;
-            padding: 0;
-        }
+      body {
+        margin: 0;
+        padding: 0;
+      }
 
-        .email-wrapper {
-            width: 100%;
-            background-color: #ffffff;
-            padding: 0;
-            margin: 0;
-        }
+      .email-wrapper {
+        width: 100%;
+        background-color: #ffffff;
+        padding: 0;
+        margin: 0;
+      }
 
-        .email-container {
-            max-width: 600px;
-            width: 100%;
-            margin: 0 auto;
-            border: 8 px;
-            border-collapse: collapse;
-            background-color: #eff7ff;
-            overflow: hidden;
-        }
+      .email-container {
+        max-width: 600px;
+        width: 100%;
+        margin: 0 auto;
+        border: 8 px;
+        border-collapse: collapse;
+        background-color: #eff7ff;
+        overflow: hidden;
+      }
 
-        .email-header, .email-footer {
-            
-            padding: 40px 0;
-            text-align: center;
-        }
+      .email-header,
+      .email-footer {
+        padding: 40px 0;
+        text-align: center;
+      }
 
-        .email-header img {
-            width: 200px;
-            height: auto;
-        }
-        .inner-container {
-            background-color: #ffffff; /* Inner box background color */
-            border-radius: 8px;
-            margin: 0 20px;
-        }
-        .inner-container .email-body {
-            padding: 36px 30px 42px 30px;
-        }
+      .email-header img {
+        width: 200px;
+        height: auto;
+      }
+      .inner-container {
+        background-color: #ffffff; /* Inner box background color */
+        border-radius: 8px;
+        margin: 0 20px;
+      }
+      .inner-container .email-body {
+        padding: 36px 30px 42px 30px;
+      }
 
-        .inner-container .email-body h2 {
-            font-size: 24px;
-            margin: 0 0 20px 0;
-            color: #153643;
-        }
+      .inner-container .email-body h2 {
+        font-size: 24px;
+        margin: 0 0 20px 0;
+        color: #153643;
+      }
 
-        .inner-container .email-body p {
-            margin: 0 0 12px 0;
-            font-size: 16px;
-            line-height: 24px;
-            color: #153643;
-        }
+      .inner-container .email-body p {
+        margin: 0 0 12px 0;
+        font-size: 16px;
+        line-height: 24px;
+        color: #153643;
+      }
 
-        #details_table {
-            width: 100%;
-            border: 1px solid #334878;
-            border-collapse: collapse;
-        }
+      #details_table {
+        width: 100%;
+        border: 1px solid #334878;
+        border-collapse: collapse;
+      }
 
-        #details_table td {
-            padding: 10px;
-            color: #153643;
-            border: 1px solid #334878;
-        }
+      #details_table td {
+        padding: 10px;
+        color: #153643;
+        border: 1px solid #334878;
+      }
 
+      .email-footer {
+        padding: 20px 30px;
+        text-align: center;
+        color: #ffffff;
+      }
+      .email-footer p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 20px;
+      }
+      @media only screen and (max-width: 600px) {
+        .inner-container .email-body,
         .email-footer {
-            padding: 20px 30px;
-            text-align: center;
-            color: #ffffff;
+          padding: 20px !important;
         }
-        .email-footer p {
-            margin: 0;
-            font-size: 14px;
-            line-height: 20px;
-        }
-        @media only screen and (max-width: 600px) {
-            .inner-container .email-body, .email-footer {
-                padding: 20px !important;
-            }
-        }
+      }
     </style>
-</head>
-<body>
-<div class="email-wrapper">
-    <table role="presentation" class="email-container">
+  </head>
+  <body>
+    <div class="email-wrapper">
+      <table role="presentation" class="email-container">
         <tr>
-            <td>
-                <div class="email-header">
-                    <img src="./images/CDC-Logo.png" alt="CDC Logo" style="width: 35%; height: auto; display: block; margin: 0 auto;" />
-                </div>
-                <div class="inner-container">
-                <div class="email-body">
-                    
-                    <img src="./images/Confirmed.png" alt="verify Logo" style="width: 30%; height: auto; display: block; margin: 0 auto;" />
-                    <h2 style="text-align: center;">Thank You For Filling The Form</h2>
-                    <p style="text-align: center;">We have received your <b>{{ opening_type }}</b> notification for a <b>{{ designation }}</b> offer at <b>{{ company_name }}</b>.
-                    We will keep you informed with the updates. If you have any queries, please feel free to write to <nobr><u>cdc@iitdh.ac.in</u></nobr>.</p>
-                    <!-- <table id="details_table">
+          <td>
+            <div class="email-header">
+              <img
+                src="https://cdc.iitdh.ac.in/storage/Images/CDC-Logo.png"
+                alt="CDC Logo"
+                style="width: 35%; height: auto; display: block; margin: 0 auto"
+              />
+            </div>
+            <div class="inner-container">
+              <div class="email-body">
+                <img
+                  src="https://cdc.iitdh.ac.in/storage/Images/Confirmed.png"
+                  alt="verify Logo"
+                  style="
+                    width: 30%;
+                    height: auto;
+                    display: block;
+                    margin: 0 auto;
+                  "
+                />
+                <h2 style="text-align: center">
+                  Thank You For Filling The Form
+                </h2>
+                <p style="text-align: center">
+                  We have received your <b>{{ opening_type }}</b> notification
+                  for a <b>{{ designation }}</b> offer at
+                  <b>{{ company_name }}</b>. We will keep you informed with the
+                  updates. If you have any queries, please feel free to write to
+                  <nobr><u>cdc@iitdh.ac.in</u></nobr
+                  >.
+                </p>
+                <!-- <table id="details_table">
                         {% for key, value in data.items %}
                         <tr>
                             <td>{{ key }}</td>
@@ -138,26 +167,47 @@
                         </tr>
                         {% endfor %}
                     </table> -->
-                </div>
-                </div>
-                <div class="email-footer">
-                    <p style="margin-bottom: 16px; color: #555555;">Follow us on:</p>
-                    
-                        <a href="https://twitter.com/cdc_iitdh" style="margin-right: 10px; color: #eff7ff">
-                            <img src="./images/twitter.png" alt="Twitter" style="width: 24px; height: 24px;">
-                        </a>
-                        <a href="https://www.instagram.com/cdc.iitdh/?hl=en" style="margin-right: 10px; color: #eff7ff;">
-                            <img src="./images/Instagram_icon.png" alt="Instagram" style="width: 24px; height: 24px;">
-                        </a>
-                        <a href="https://www.linkedin.com/company/cdciitdharwad/?originalSubdomain=in">
-                            <img src="./images/LinkedIn_logo_initials.png" alt="LinkedIn" style="width: 24px; height: 24px;">
-                        </a>
-                    <p style="color: #555555;">copy right &copy; 2024 CDC, all rights reserved</p>
-                
-                </div>
-            </td>
+              </div>
+            </div>
+            <div class="email-footer">
+              <p style="margin-bottom: 16px; color: #555555">Follow us on:</p>
+
+              <a
+                href="https://twitter.com/cdc_iitdh"
+                style="margin-right: 10px; color: #eff7ff"
+              >
+                <img
+                  src="https://cdc.iitdh.ac.in/storage/Images/twitter.png"
+                  alt="Twitter"
+                  style="width: 24px; height: 24px"
+                />
+              </a>
+              <a
+                href="https://www.instagram.com/cdc.iitdh/?hl=en"
+                style="margin-right: 10px; color: #eff7ff"
+              >
+                <img
+                  src="https://cdc.iitdh.ac.in/storage/Images/Instagram_icon.png"
+                  alt="Instagram"
+                  style="width: 24px; height: 24px"
+                />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/cdciitdharwad/?originalSubdomain=in"
+              >
+                <img
+                  src="https://cdc.iitdh.ac.in/storage/Images/LinkedIn_logo_initials.png"
+                  alt="LinkedIn"
+                  style="width: 24px; height: 24px"
+                />
+              </a>
+              <p style="color: #555555">
+                copy right &copy; 2024 CDC, all rights reserved
+              </p>
+            </div>
+          </td>
         </tr>
-    </table>
-</div>
-</body>
+      </table>
+    </div>
+  </body>
 </html>

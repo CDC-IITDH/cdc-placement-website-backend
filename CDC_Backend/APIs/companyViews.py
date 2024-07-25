@@ -232,8 +232,14 @@ def addPlacement(request):
         # Convert to date object
         opening.tentative_date_of_joining = datetime.datetime.strptime(data[TENTATIVE_DATE_OF_JOINING],
                                                                        '%d-%m-%Y').date()
-        opening.establishment_date = datetime.datetime.strptime(data[ESTABLISHMENT_DATE],
-                                                                       '%d-%m-%Y').date() # newly added field
+        establishment_date_str = data.get('ESTABLISHMENT_DATE', '')
+        if establishment_date_str:
+            try:
+                opening.establishment_date = datetime.datetime.strptime(establishment_date_str, '%d-%m-%Y').date()
+            except ValueError:
+                opening.establishment_date = None
+        else:
+            opening.establishment_date = None
 
         # Only Allowing Fourth Year for Placement
         opening.allowed_batch = [FOURTH_YEAR,]
@@ -471,8 +477,7 @@ def addInternship(request):
         if data[WORK_TYPE] == 'Work from home':
             internship.is_work_from_home = True
         else:
-            internship.is_work_from_home = False
-
+            internship.is_work_from_home = False        
         if ALLOWED_BATCH in data and (data[ALLOWED_BATCH] is None or json.loads(data[ALLOWED_BATCH]) == ""):
             raise ValueError('Allowed Batches cannot be empty')
         elif ALLOWED_BATCH in data and set(json.loads(data[ALLOWED_BATCH])).issubset(BATCHES):
