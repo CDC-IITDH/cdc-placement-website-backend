@@ -264,6 +264,12 @@ def PlacementApplicationConditions(student, placement):
             raise PermissionError("Can't apply for this placement")
         if student.can_apply == False:
             raise PermissionError("Can't apply for this placement")
+        if student.isBacklog == True and placement.backlog_eligible == False:
+            raise PermissionError("Can't apply for this placement")
+        if student.isPwd == True and placement.pwd_eligible == False:
+            raise PermissionError("Can't apply for this placement") 
+        if placement.cpi_eligible > student.cpi:
+            raise PermissionError("Can't apply for this placement")
 
         return True, "Conditions Satisfied"
 
@@ -285,6 +291,12 @@ def InternshipApplicationConditions(student, internship):
         if student.degree == 'bTech' and student.batch not in internship.allowed_batch:
             raise PermissionError("Can't apply for this Internship")
         if student.can_apply_internship == False:
+            raise PermissionError("Can't apply for this Internship")
+        if student.isBacklog == True and internship.backlog_eligible == False:
+            raise PermissionError("Can't apply for this Internship")
+        if student.isPwd == True and internship.pwd_eligible == False:
+            raise PermissionError("Can't apply for this Internship")
+        if internship.cpi_eligible > student.cpi:
             raise PermissionError("Can't apply for this Internship")
         
         return True, "Conditions Satisfied"
