@@ -10,13 +10,13 @@ BRANCH_CHOICES = [
     ['EP', 'EP'],
     ['CIVIL', 'CIVIL'],
     ['CHEMICAL', 'CHEMICAL'],
-    ['BSMS', 'BSMS'],
 ]
 ELIGIBLE_CHOICES = [
     ["Btech", "Btech"],
     ["MS", "MS"],
     ["MTech", "MTech"],
     ["PHD", "PHD"],
+    ["BSMS", "BSMS"],
 ]
 BRANCHES = [
     "CSE",
@@ -25,13 +25,14 @@ BRANCHES = [
     "EP",
     "CIVIL",
     "CHEMICAL",
-    "BSMS",
+    "MNC",
 ]
 ELIGIBLE =[
     "Btech",
     "MS",
     "MTech",
     "PHD",
+    "BSMS",
 ]
 BATCHES = [    #change it accordingly
     "2023",
