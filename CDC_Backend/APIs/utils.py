@@ -238,38 +238,38 @@ def PlacementApplicationConditions(student, placement):
         PPO_PSU = [i for i in PPO if i.tier == 'psu']
         # find length of PPO
         if len(selected_companies) + len(PPO) >= MAX_OFFERS_PER_STUDENT:
-            raise PermissionError("Max Applications Reached for the Season")
+            raise PermissionError("Max Applications Reached for the Season1")
 
         if len(selected_companies_PSU) > 0:
-            raise PermissionError('Selected for PSU Can\'t apply anymore')
+            raise PermissionError('Selected for PSU Can\'t apply anymore2')
 
         if len(PPO_PSU) > 0:
-            raise PermissionError('Selected for PSU Can\'t apply anymore')
+            raise PermissionError('Selected for PSU Can\'t apply anymore3')
 
         if placement.tier == 'psu':
             return True, "Conditions Satisfied"
 
         for i in selected_companies:
-            if 1.5 * i.compensation_CTC  > placement.compensation_CTC:
+            if 1.5 * i.placement.compensation_CTC  > placement.compensation_CTC:
                 return False, "Can't apply for this Placement, 1.5 times CTC condition not satisfied"
 
         for i in PPO:
-            if 1.5 * i.compensation_CTC  > placement.compensation_CTC:
+            if 1.5 * i.compensation > placement.compensation_CTC:
                 return False, "Can't apply for this Placement, 1.5 times CTC condition not satisfied"
         if student.degree not in placement.eligiblestudents: 
-            raise PermissionError("Can't apply for this placement")
-        if student.degree == 'bTech' and student.batch not in placement.allowed_batch:
-            raise PermissionError("Can't apply for this placement")
+            raise PermissionError("Can't apply for this placement4")
+        if student.degree == bTech and student.batch not in placement.allowed_batch:
+            raise PermissionError("Can't apply for this placement5")
         if student.branch not in placement.allowed_branch:
-            raise PermissionError("Can't apply for this placement")
+            raise PermissionError("Can't apply for this placement6")
         if student.can_apply == False:
-            raise PermissionError("Can't apply for this placement")
+            raise PermissionError("Can't apply for this placement7")
         if student.isBacklog == True and placement.backlog_eligible == False:
-            raise PermissionError("Can't apply for this placement")
+            raise PermissionError("Can't apply for this placement8")
         if student.isPwd == True and placement.pwd_eligible == False:
-            raise PermissionError("Can't apply for this placement") 
+            raise PermissionError("Can't apply for this placement9") 
         if placement.cpi_eligible > student.cpi:
-            raise PermissionError("Can't apply for this placement")
+            raise PermissionError("Can't apply for this placement10")
 
         return True, "Conditions Satisfied"
 

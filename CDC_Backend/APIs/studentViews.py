@@ -1,3 +1,4 @@
+from datetime import datetime as dt
 from rest_framework.decorators import api_view
 from django.db.models import Q
 
@@ -104,7 +105,7 @@ def getDashboard(request, id, email, user_type):
         filters = Q(
             allowed_branch__contains=[studentDetails.branch],
             eligiblestudents__contains=[studentDetails.degree],
-            deadline_datetime__gte=datetime.now(),
+            deadline_datetime__gte=dt.now(),
             offer_accepted=True,
             email_verified=True
         )
