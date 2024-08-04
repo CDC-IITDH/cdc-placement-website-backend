@@ -84,11 +84,9 @@ def addPlacement(request):
         # Add a contact person details in the opening
         opening.contact_person_name = data[CONTACT_PERSON_NAME]
         # Check if Phone number is Integer
-        if data[PHONE_NUMBER].isdigit():
-            opening.phone_number = int(data[PHONE_NUMBER])
-        else:
-            raise ValueError('Phone number should be integer')
-
+       
+        opening.phone_number = data[PHONE_NUMBER]
+        
         opening.email = data[EMAIL]
 
         # Add a company location in the opening

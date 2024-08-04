@@ -32,9 +32,9 @@ class Student(models.Model):
                          default=list, blank=True)
     cpi = models.DecimalField(decimal_places=2, max_digits=4)
     can_apply = models.BooleanField(default=True, verbose_name='Registered')
-    can_apply_internship = models.BooleanField(default=True, verbose_name='Internship Registered') #added for internship
+    can_apply_internship = models.BooleanField(default=True, verbose_name='Internship Registered') 
     changed_by = models.ForeignKey(User, blank=True, on_delete=models.RESTRICT, default=None, null=True)
-    degree = models.CharField(choices=DEGREE_CHOICES, blank=False, max_length=10, default=DEGREE_CHOICES[0][0])
+    degree = models.CharField(choices=ELIGIBLE_CHOICES, blank=False, max_length=10, default=ELIGIBLE_CHOICES[0][0]) # should be ELIGIBLE_CHOICES
     isPwd = models.BooleanField(default=False, verbose_name='Person with Disability')
     isBacklog = models.BooleanField(default=False, verbose_name='Has Backlog')
     history = HistoricalRecords(user_model=User)
@@ -92,7 +92,7 @@ class Placement(models.Model):
         default=list, blank=True)
     is_company_details_pdf = models.BooleanField(blank=False, default=False)
     contact_person_name = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
-    phone_number = models.PositiveBigIntegerField(blank=False)
+    phone_number = models.CharField(max_length=15, blank=False)
     email = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
     city = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
     state = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
@@ -383,7 +383,7 @@ class Internship(models.Model):
     is_selection_procedure_details_pdf = models.BooleanField(blank=False, default=False)
     #contact details of company person
     contact_person_name = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
-    phone_number = models.PositiveBigIntegerField(blank=False)
+    phone_number = models.CharField(max_length=15, blank=False)
     email = models.EmailField(blank=False)
     # contact_person_designation = models.CharField(blank=False, max_length=JNF_SMALLTEXT_MAX_CHARACTER_COUNT, default="")
     # telephone_number = models.PositiveBigIntegerField(blank=True, default=None, null=True)

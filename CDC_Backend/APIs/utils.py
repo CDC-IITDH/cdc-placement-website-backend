@@ -238,31 +238,38 @@ def PlacementApplicationConditions(student, placement):
         PPO_PSU = [i for i in PPO if i.tier == 'psu']
         # find length of PPO
         if len(selected_companies) + len(PPO) >= MAX_OFFERS_PER_STUDENT:
-            raise PermissionError("Max Applications Reached for the Season")
+            raise PermissionError("Max Applications Reached for the Season1")
 
         if len(selected_companies_PSU) > 0:
-            raise PermissionError('Selected for PSU Can\'t apply anymore')
+            raise PermissionError('Selected for PSU Can\'t apply anymore2')
 
         if len(PPO_PSU) > 0:
-            raise PermissionError('Selected for PSU Can\'t apply anymore')
+            raise PermissionError('Selected for PSU Can\'t apply anymore3')
 
         if placement.tier == 'psu':
             return True, "Conditions Satisfied"
 
         for i in selected_companies:
-            if int(i.placement.tier) != 1 and int(i.placement.tier) <= int(placement.tier):
-                return False, "Can't apply for this tier"
-            elif int(i.placement.tier) == 1 and int(placement.tier) != 1:
-                return False, "Can't apply for this tier"
+            if 1.5 * i.placement.compensation_CTC  > placement.compensation_CTC:
+                return False, "Can't apply for this Placement, 1.5 times CTC condition not satisfied"
 
         for i in PPO:
-            if int(i.tier) != 1 and int(i.tier) <= int(placement.tier):
-                return False, "Can't apply for this tier"
-            elif int(i.tier) == 1 and int(placement.tier) != 1:
-                return False, "Can't apply for this tier"
-
-        if student.degree != 'bTech' and not placement.rs_eligible:
-            raise PermissionError("Can't apply for this placement")
+            if 1.5 * i.compensation > placement.compensation_CTC:
+                return False, "Can't apply for this Placement, 1.5 times CTC condition not satisfied"
+        if student.degree not in placement.eligiblestudents: 
+            raise PermissionError("Can't apply for this placement4")
+        if student.degree == bTech and student.batch not in placement.allowed_batch:
+            raise PermissionError("Can't apply for this placement5")
+        if student.branch not in placement.allowed_branch:
+            raise PermissionError("Can't apply for this placement6")
+        if student.can_apply == False:
+            raise PermissionError("Can't apply for this placement7")
+        if student.isBacklog == True and placement.backlog_eligible == False:
+            raise PermissionError("Can't apply for this placement8")
+        if student.isPwd == True and placement.pwd_eligible == False:
+            raise PermissionError("Can't apply for this placement9") 
+        if placement.cpi_eligible > student.cpi:
+            raise PermissionError("Can't apply for this placement10")
 
         return True, "Conditions Satisfied"
 
@@ -275,9 +282,23 @@ def PlacementApplicationConditions(student, placement):
 def InternshipApplicationConditions(student, internship):
     try:
         selected_companies = InternshipApplication.objects.filter(student=student, selected=True)
-        if len(selected_companies)>=1:
-           # print("selected companies > 1")
+        if len(selected_companies) >= 1:
             return False, "You have already secured a Internship"
+        if  student.degree not in internship.eligiblestudents:
+            raise PermissionError("Can't apply for this Internship")
+        if student.branch not in internship.allowed_branch:
+            raise PermissionError("Can't apply for this Internship")
+        if student.degree == 'bTech' and student.batch not in internship.allowed_batch:
+            raise PermissionError("Can't apply for this Internship")
+        if student.can_apply_internship == False:
+            raise PermissionError("Can't apply for this Internship")
+        if student.isBacklog == True and internship.backlog_eligible == False:
+            raise PermissionError("Can't apply for this Internship")
+        if student.isPwd == True and internship.pwd_eligible == False:
+            raise PermissionError("Can't apply for this Internship")
+        if internship.cpi_eligible > student.cpi:
+            raise PermissionError("Can't apply for this Internship")
+        
         return True, "Conditions Satisfied"
 
     except PermissionError as e:
@@ -410,6 +431,8 @@ def placement_eligibility_filters(student, placements):
     except:
         logger.warning("Utils - placement_eligibility_filters: " + str(sys.exc_info()))
         return placements
+    
+
 def internship_eligibility_filters(student, internships):
     try:
         filtered_internships = []
@@ -461,41 +484,47 @@ def send_opening_notifications(opening_id, opening_type=PLACEMENT):
         logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
         return False
 
-def get_eligible_emails(opening_id, opening_type=PLACEMENT,send_all=False):
+
+def get_eligible_emails(opening_id, opening_type='PLACEMENT', send_all=False):
     try:
-       # print(opening_id, opening_type)
-        if opening_type == PLACEMENT:
+        if opening_type == 'PLACEMENT':
             opening = get_object_or_404(Placement, id=opening_id)
         else:
             opening = get_object_or_404(Internship, id=opening_id)
-        emails=[]
+
+        emails = []
         students = Student.objects.all()
+
         for student in students.iterator():
-            if student.branch in opening.allowed_branch:
-                if student.degree == 'bTech' or opening.rs_eligible is True:
-                    if (isinstance(opening,Placement) and PlacementApplicationConditions(student, opening)[0]) or (
-                        isinstance(opening,Internship) and InternshipApplicationConditions(student, opening)[0]):
-                        try:
+            if student.branch in opening.allowed_branch and student.degree in opening.eligiblestudents:
+                if student.degree == 'Btech' and student.batch in opening.allowed_batch:
+                    if (isinstance(opening, Placement) and PlacementApplicationConditions(student, opening)[0]) or (
+                            isinstance(opening, Internship) and InternshipApplicationConditions(student, opening)[0]):     
+                        if (opening_type == 'PLACEMENT' and student.can_apply) or (
+                                opening_type == 'INTERNSHIP' and student.can_apply_internship):
                             student_user = get_object_or_404(User, id=student.id)
-                            #if send_all True send all students eligible for the opening
+                            
+                            # if send_all True send all students eligible for the opening
                             if send_all:
                                 emails.append(student_user.email)
                                 continue
-                            # check if he applied
-                            if opening_type == PLACEMENT:
+                            
+                            # check if the student applied
+                            if opening_type == 'PLACEMENT':
                                 if PlacementApplication.objects.filter(student=student, placement=opening).exists():
                                     continue
                             else:
                                 if InternshipApplication.objects.filter(student=student, internship=opening).exists():
                                     continue
+                            
                             emails.append(student_user.email)
-                        except Exception as e:
-                            logger.warning('Utils - send_opening_notifications: For Loop' + str(e))
-                            return False, []
+
         return True, emails
-    except:
-        logger.warning('Utils - send_opening_notifications: ' + str(sys.exc_info()))
+
+    except Exception as e:
+        logger.warning('Utils - send_opening_notifications: ' + str(e))
         return False, []
+
 
 def exception_email(opening):
     opening = opening.dict()

@@ -10,6 +10,7 @@ BRANCH_CHOICES = [
     ['EP', 'EP'],
     ['CIVIL', 'CIVIL'],
     ['CHEMICAL', 'CHEMICAL'],
+    ['MNC','MNC']
 ]
 ELIGIBLE_CHOICES = [
     ["Btech", "Btech"],
@@ -41,6 +42,7 @@ BATCHES = [    #change it accordingly
     "2020",
 ]
 BATCH_CHOICES = [
+    ["2023","2023"],
     ["2022", "2022"],
     ["2021", "2021"],
     ["2020", "2020"],
@@ -65,7 +67,8 @@ TIERS = [
     ['7', 'Tier 7'],
     ['8', 'Open Tier'],
 ]
-
+bTech = 'Btech'
+# not being used anywhere
 DEGREE_CHOICES = [
     ['bTech', 'B.Tech'],
     ['ms/phd', 'MS/ PhD'],
@@ -83,7 +86,10 @@ CDC_REPS_EMAILS = [
     "satyapriya.gupta@iitdh.ac.in",
     "dhriti.ghosh@iitdh.ac.in",
     "suvamay.jana@iitdh.ac.in",
-    "ramesh.nayaka@iitdh.ac.in"
+    "ramesh.nayaka@iitdh.ac.in",
+    "210010003@iitdh.ac.in",
+    "210010046@iitdh.ac.in",
+    "210030035@iitdh.ac.in",
 ]
 CDC_REPS_EMAILS_FOR_ISSUE=[  #add reps emails 
     "cdc.support@iitdh.ac.in",

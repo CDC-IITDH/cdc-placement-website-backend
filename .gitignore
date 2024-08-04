@@ -144,3 +144,4 @@ dev.env
 
 #vscode settings
 .vscode/
+.DS_Store
