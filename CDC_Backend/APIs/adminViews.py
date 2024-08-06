@@ -784,7 +784,6 @@ def getStats(request, id, email, user_type):
                         status=status.HTTP_200_OK)
     except:
         logger.warning("Get Stats: " + str(sys.exc_info()))
-        print(sys.exc_info())
         return Response({'action': "Get Stats", 'message': "Something Went Wrong"},
                         status=status.HTTP_400_BAD_REQUEST)
 

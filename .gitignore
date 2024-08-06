@@ -130,6 +130,7 @@ dmypy.json
 
 /venv/
 ./CDC_Backend/static
+CDC_Backend/static_url*
 ./CDC_Backend/Storage
 /CDC_Backend/CDC_Backend/__pycache__/
 /CDC_Backend/APIs/__pycache__/

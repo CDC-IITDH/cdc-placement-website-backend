@@ -30,7 +30,7 @@ DEBUG = os.environ.get('DEBUG') == "True"
 
 ALLOWED_HOSTS = ['cdc.iitdh.ac.in', 'localhost']
 
-ADMINS = [ ('Jaya Surya', '210020040@iitdh.ac.in')]
+ADMINS = [ ('Jaya Surya', '210020051@iitdh.ac.in')]
 # Application definition
 
 INSTALLED_APPS = [
@@ -143,10 +143,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = '/static_url/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_url')
 STATICFILES_DIR = (
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'static_url'),
 )
 
 CORS_ORIGIN_ALLOW_ALL = False

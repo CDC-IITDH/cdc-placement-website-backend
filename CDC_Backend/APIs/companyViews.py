@@ -47,7 +47,6 @@ def addPlacement(request):
             opening.eligiblestudents = json.loads(data[ELIGIBLESTUDENTS])
         else:
             raise ValueError('Allowed Branch must be a subset of ' + str(ELIGIBLE))
-        print(opening.eligiblestudents)
         if data[PWD_ELIGIBLE] == 'Yes':
             opening.pwd_eligible = True
         else:

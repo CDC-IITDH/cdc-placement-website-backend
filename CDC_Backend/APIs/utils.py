@@ -450,7 +450,6 @@ def internship_eligibility_filters(student, internships):
 @background_task.background(schedule=2)
 def send_opening_notifications(opening_id, opening_type=PLACEMENT):
     try:
-       # print(opening_id, opening_type)
         if opening_type == PLACEMENT:
             opening = get_object_or_404(Placement, id=opening_id)
         else:

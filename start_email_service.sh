@@ -4,4 +4,4 @@ source /home/cdc/Desktop/CDC_Web_Portal_Backend/cdc-placement-website-backend/ve
 
 cd /home/cdc/Desktop/CDC_Web_Portal_Backend/cdc-placement-website-backend/CDC_Backend
 
-python manage.py process_tasks
+python3 manage.py process_tasks

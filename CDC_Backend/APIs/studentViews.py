@@ -50,6 +50,7 @@ def refresh(request):
 @isAuthorized(allowed_users=[STUDENT])
 def studentProfile(request, id, email, user_type):
     try:
+
         studentDetails = get_object_or_404(Student, id=id)
 
         data = StudentSerializer(studentDetails).data
