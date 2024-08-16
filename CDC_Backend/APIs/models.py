@@ -26,7 +26,7 @@ class Student(models.Model):
     roll_no = models.CharField(blank=False, max_length=15, unique=True)
     name = models.CharField(blank=False, max_length=JNF_TEXT_MAX_CHARACTER_COUNT)
     batch = models.CharField(max_length=10, choices=BATCH_CHOICES, blank=False)
-    branch = models.CharField(choices=BRANCH_CHOICES, blank=False, max_length=10)
+    branch = models.CharField(choices=BRANCH_CHOICES, blank=True,default=None, null=True, max_length=10)
     phone_number = models.PositiveBigIntegerField(blank=True, default=None, null=True)
     resumes = ArrayField(models.CharField(null=True, default=None, max_length=JNF_TEXT_MAX_CHARACTER_COUNT), size=10,
                          default=list, blank=True)

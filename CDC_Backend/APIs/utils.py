@@ -286,9 +286,9 @@ def InternshipApplicationConditions(student, internship):
             return False, "You have already secured a Internship"
         if  student.degree not in internship.eligiblestudents:
             raise PermissionError("Can't apply for this Internship")
-        if student.branch not in internship.allowed_branch:
+        if student.degree != 'BSMS' and student.branch not in internship.allowed_branch: # for BSMS branch is not considered
             raise PermissionError("Can't apply for this Internship")
-        if student.degree == 'bTech' and student.batch not in internship.allowed_batch:
+        if student.degree == bTech and student.batch not in internship.allowed_batch:
             raise PermissionError("Can't apply for this Internship")
         if student.can_apply_internship == False:
             raise PermissionError("Can't apply for this Internship")

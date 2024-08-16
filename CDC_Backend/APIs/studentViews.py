@@ -121,10 +121,22 @@ def getDashboard(request, id, email, user_type):
 
         placementApplications = PlacementApplication.objects.filter(student_id=id).order_by('-updated_at')
         placementApplications = PlacementApplicationSerializer(placementApplications, many=True).data
-        internships = Internship.objects.filter(allowed_batch__contains=[studentDetails.batch],
-                                              allowed_branch__contains=[studentDetails.branch],
-                                              deadline_datetime__gte=datetime.datetime.now(),
-                                              offer_accepted=True, email_verified=True).order_by('deadline_datetime')
+        if studentDetails.degree == 'BSMS': # for BSMS branch is not considered
+            internships = Internship.objects.filter(
+            allowed_batch__contains=[studentDetails.batch],
+            deadline_datetime__gte=datetime.datetime.now(),
+            offer_accepted=True,
+            email_verified=True
+        ).order_by('deadline_datetime')
+        else:
+            internships = Internship.objects.filter(
+                allowed_batch__contains=[studentDetails.batch],
+                allowed_branch__contains=[studentDetails.branch],
+                deadline_datetime__gte=datetime.datetime.now(),
+                offer_accepted=True,
+                email_verified=True
+            ).order_by('deadline_datetime')
+
         
         filtered_internships = internship_eligibility_filters(studentDetails, internships)
         internshipsdata = InternshipSerializerForStudent(filtered_internships, many=True).data
