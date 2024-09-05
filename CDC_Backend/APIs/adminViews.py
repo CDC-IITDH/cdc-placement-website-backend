@@ -479,9 +479,9 @@ def downloadResume(request, id, email, user_type):
         if not os.path.isdir(STORAGE_DESTINATION_RESUME_ZIP):
             os.makedirs(STORAGE_DESTINATION_RESUME_ZIP, exist_ok=True)
         resumes = {}
-        for apl in applications:
-            if apl.selected:
-                resumes[apl.student.roll_no] = STORAGE_DESTINATION_RESUMES + apl.student.id + '/' + apl.resume   # Check if the folder name is student id or user id
+        for apl in applications: 
+            
+            resumes[apl.student.roll_no] = STORAGE_DESTINATION_RESUMES + apl.student.id + '/' + apl.resume   # Check if the folder name is student id or user id
         
         with zipfile.ZipFile(STORAGE_DESTINATION_RESUME_ZIP + zip_filename, 'w', zipfile.ZIP_DEFLATED) as zip_file:
             for student_roll_no, resume_path in resumes.items():
