@@ -467,8 +467,7 @@ def downloadResume(request, id, email, user_type):
         data = request.data
         if  OPENING_TYPE  in data:
             opening_type= data[OPENING_TYPE]
-        else:
-            opening_type= "Placement"
+        
         if opening_type == "Internship":
             opening = get_object_or_404(Internship, id=data[OPENING_ID])
             applications = InternshipApplication.objects.filter(internship=opening)
@@ -479,6 +478,7 @@ def downloadResume(request, id, email, user_type):
         if not os.path.isdir(STORAGE_DESTINATION_RESUME_ZIP):
             os.makedirs(STORAGE_DESTINATION_RESUME_ZIP, exist_ok=True)
         resumes = {}
+        print(applications);
         for apl in applications: 
             
             resumes[apl.student.roll_no] = STORAGE_DESTINATION_RESUMES + apl.student.id + '/' + apl.resume   # Check if the folder name is student id or user id
