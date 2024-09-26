@@ -623,6 +623,17 @@ def getStats(request, id, email, user_type):
                 "psu":0,
 
             },
+            "EP":{
+                "1":0,
+                "2":0,
+                "3":0,
+                "4":0,
+                "5":0,
+                "6":0,
+                "7":0,
+                "8":0,
+                "psu":0,
+            },
             "Total": {
                 "1":0,
                 "2":0,
@@ -639,6 +650,7 @@ def getStats(request, id, email, user_type):
             "CSE": 0,
             "EE": 0,
             "MMAE": 0,
+            "EP": 0,
             "Total": 0,
         }
         number_of_students_with_multiple_offers = 0
@@ -646,22 +658,26 @@ def getStats(request, id, email, user_type):
             "CSE": 0,
             "EE": 0,
             "MMAE": 0,
+            "EP": 0,
             "Total": 0,
         }
         max_CTC = {
             "CSE": 0,
             "EE": 0,
-            "MMAE": 0
+            "MMAE": 0,
+            "EP": 0,
         }
         average_CTC = {
             "CSE": 0,
             "EE": 0,
-            "MMAE": 0
+            "MMAE": 0,
+            "EP": 0,
         }
         count = {
             "CSE": 0,
             "EE": 0,
-            "MMAE": 0
+            "MMAE": 0,
+            "EP": 0,
         }
 
 
