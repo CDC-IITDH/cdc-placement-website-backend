@@ -116,7 +116,6 @@ def getDashboard(request, id, email, user_type):
 
         placements = Placement.objects.filter(filters).order_by('deadline_datetime')
         filtered_placements = placement_eligibility_filters(studentDetails, placements)
-
         placementsdata = PlacementSerializerForStudent(filtered_placements, many=True).data
 
         placementApplications = PlacementApplication.objects.filter(student_id=id).order_by('-updated_at')
@@ -207,11 +206,14 @@ def submitApplication(request, id, email, user_type):
             if not len(PlacementApplication.objects.filter(
                     student_id=id, placement_id=data[OPENING_ID])):
                 application = PlacementApplication()
-                opening = get_object_or_404(Placement, id=data[OPENING_ID],
-                                            allowed_batch__contains=[student.batch],
-                                            allowed_branch__contains=[student.branch],
-                                            deadline_datetime__gte=timezone.now()
-                                            )
+                opening = get_object_or_404(
+    Placement,
+    id=data[OPENING_ID],
+    allowed_branch__contains=[student.branch],
+    deadline_datetime__gte=timezone.now(),
+    # Only check allowed_batch if the degree is Btech
+    **({"allowed_batch__contains": [student.batch]} if student.degree == "Btech" else {})
+)
                 if not opening.offer_accepted or not opening.email_verified:
                     raise PermissionError("Placement Not Approved")
 
@@ -229,9 +231,10 @@ def submitApplication(request, id, email, user_type):
                     student_id=id, internship_id=data[OPENING_ID])):
                 application = InternshipApplication()
                 opening = get_object_or_404(Internship, id=data[OPENING_ID],
-                                            allowed_batch__contains=[student.batch],
                                             allowed_branch__contains=[student.branch],
                                             deadline_datetime__gte=timezone.now()
+                                             # Only check allowed_batch if the degree is Btech
+                                            **({"allowed_batch__contains": [student.batch]} if student.degree == "Btech" else {})
                                             )
                 if not opening.offer_accepted or not opening.email_verified:
                     raise PermissionError("Internship Not Approved")
