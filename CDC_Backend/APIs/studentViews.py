@@ -128,13 +128,7 @@ def getDashboard(request, id, email, user_type):
             email_verified=True
         ).order_by('deadline_datetime')
         else:
-            internships = Internship.objects.filter(
-                allowed_batch__contains=[studentDetails.batch],
-                allowed_branch__contains=[studentDetails.branch],
-                deadline_datetime__gte=datetime.datetime.now(),
-                offer_accepted=True,
-                email_verified=True
-            ).order_by('deadline_datetime')
+            internships = Internship.objects.filter(filters).order_by('deadline_datetime')
 
         
         filtered_internships = internship_eligibility_filters(studentDetails, internships)
@@ -206,14 +200,14 @@ def submitApplication(request, id, email, user_type):
             if not len(PlacementApplication.objects.filter(
                     student_id=id, placement_id=data[OPENING_ID])):
                 application = PlacementApplication()
-                opening = get_object_or_404(
-    Placement,
-    id=data[OPENING_ID],
-    allowed_branch__contains=[student.branch],
-    deadline_datetime__gte=timezone.now(),
-    # Only check allowed_batch if the degree is Btech
-    **({"allowed_batch__contains": [student.batch]} if student.degree == "Btech" else {})
-)
+                application_filters = Q(
+                    id=data[OPENING_ID],
+                    allowed_branch__contains=[student.branch],
+                    deadline_datetime__gte=timezone.now()
+                )
+                if student.degree == "Btech":
+                    application_filters &= Q(allowed_batch__contains=[student.batch])
+                opening = get_object_or_404(Placement.objects.filter(application_filters))
                 if not opening.offer_accepted or not opening.email_verified:
                     raise PermissionError("Placement Not Approved")
 
@@ -230,12 +224,14 @@ def submitApplication(request, id, email, user_type):
             if not len(InternshipApplication.objects.filter(
                     student_id=id, internship_id=data[OPENING_ID])):
                 application = InternshipApplication()
-                opening = get_object_or_404(Internship, id=data[OPENING_ID],
-                                            allowed_branch__contains=[student.branch],
-                                            deadline_datetime__gte=timezone.now()
-                                             # Only check allowed_batch if the degree is Btech
-                                            **({"allowed_batch__contains": [student.batch]} if student.degree == "Btech" else {})
-                                            )
+                application_filters = Q(
+                    id=data[OPENING_ID],
+                    allowed_branch__contains=[student.branch],
+                    deadline_datetime__gte=timezone.now()
+                )
+                if student.degree == "Btech":
+                    application_filters &= Q(allowed_batch__contains=[student.batch])
+                opening = get_object_or_404(Internship.objects.filter(application_filters))
                 if not opening.offer_accepted or not opening.email_verified:
                     raise PermissionError("Internship Not Approved")
 
