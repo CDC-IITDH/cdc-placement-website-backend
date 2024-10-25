@@ -310,13 +310,17 @@ def submitApplication(request, id, email, user_type):
     try:
         data = request.data
         if OPENING_TYPE  in data:
-            opening_type= data[OPENING_TYPE]
+            if data[OPENING_TYPE] == "Internship":
+                opening_type= "Internship"
+            elif data[OPENING_TYPE] == "placements":
+                opening_type= "Placement"
         else:
             opening_type= "Placement"
         if opening_type == "Internship":
             opening = get_object_or_404(Internship, pk=data[OPENING_ID])
         else:
             opening = get_object_or_404(Placement, pk=data[OPENING_ID])
+        # print(opening);
         student = get_object_or_404(Student, pk=data[STUDENT_ID])
        # opening = get_object_or_404(Placement, pk=data[OPENING_ID])
         student_user = get_object_or_404(User, id=student.id)
@@ -446,8 +450,7 @@ def generateCSV(request, id, email, user_type):
             row_details.append(apl.selected)
 
             for i in opening.additional_info:
-                row_details.append(json.loads(apl.additional_info)[i])
-
+                row_details.append(json.loads(apl.additional_info).get(i, ''))
             writer.writerow(row_details)
         f.close()
         file_path = LINK_TO_APPLICATIONS_CSV + urllib.parse.quote_plus(filename + ".csv")
