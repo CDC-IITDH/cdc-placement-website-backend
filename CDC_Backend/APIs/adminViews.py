@@ -450,8 +450,7 @@ def generateCSV(request, id, email, user_type):
             row_details.append(apl.selected)
 
             for i in opening.additional_info:
-                row_details.append(json.loads(apl.additional_info)[i])
-
+                row_details.append(json.loads(apl.additional_info).get(i, ''))
             writer.writerow(row_details)
         f.close()
         file_path = LINK_TO_APPLICATIONS_CSV + urllib.parse.quote_plus(filename + ".csv")
