@@ -79,6 +79,7 @@ TOTAL_BRANCHES = 7  # Total No of Branches
 TOTAL_BATCHES = 6  # Total No of Batches
 
 CDC_REPS_EMAILS = [
+    "tpo@iitdh.ac.in",
     "cdc@iitdh.ac.in",
     "cdcfic@iitdh.ac.in",
     "vandana@iitdh.ac.in",
